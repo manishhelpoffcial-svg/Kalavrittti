@@ -1,20 +1,23 @@
-# [Project name]
+# Kalavritti — Celebrating Handmade
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A traditional Indian handmade products e-commerce store celebrating artisans from Bengal and Assam. Single admin-operated with no seller panel.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080, served at `/api`)
+- `pnpm --filter @workspace/kalavritti run dev` — run the frontend (port 26070, served at `/`)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - Required env: `DATABASE_URL` — Postgres connection string
+- Required env: `SESSION_SECRET` — Express session secret
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
+- Frontend: React + Vite + Tailwind CSS + shadcn/ui, wouter routing
+- API: Express 5 with express-session (cart/wishlist)
 - DB: PostgreSQL + Drizzle ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - API codegen: Orval (from OpenAPI spec)
@@ -22,15 +25,33 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/kalavritti/` — React frontend (all pages)
+- `artifacts/kalavritti/src/pages/` — page components
+- `artifacts/kalavritti/src/components/` — shared components (Header, Footer, ProductCard, etc.)
+- `artifacts/api-server/src/routes/` — API route handlers
+- `lib/db/src/schema/` — Drizzle DB schema (categories, artisans, products, reviews, blog, testimonials, contacts)
+- `lib/api-spec/openapi.yaml` — OpenAPI spec (source of truth for API)
+- `lib/api-client-react/` — generated React Query hooks (do not edit manually)
+- `attached_assets/` — product images (served at `/api/assets/<filename>`)
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Session-based cart and wishlist (no auth required to shop)
+- Product images served via `express.static` on the API server at `/api/assets/`
+- `@assets/` alias in Vite config points to `attached_assets/` for compile-time imports (e.g. logo)
+- Prices stored as `numeric` in DB — parsed with `parseFloat()` in all routes
+- `inArray()` used for artisan enrichment queries (not `sql\`ANY()\`` which requires proper array param)
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Homepage with hero, category grid, featured/bestseller products, artisan spotlight, testimonials, newsletter
+- Product detail pages with full info, artisan story, related products, add to cart/wishlist
+- Category browsing and filtering
+- Artisan directory with filter by craft and region
+- Blog ("The Artisan Journal") with full articles
+- Cart page (session-based)
+- Contact and FAQ pages
+- Login/Register pages (UI only, no backend auth yet)
 
 ## User preferences
 
@@ -38,7 +59,11 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Never run `pnpm dev` at workspace root — use workflow restart or `pnpm --filter` commands
+- After schema changes: run `pnpm --filter @workspace/db run push` then restart API server workflow
+- After OpenAPI spec changes: run `pnpm --filter @workspace/api-spec run codegen` before typechecking
+- Product images live in `attached_assets/` and are served at `/api/assets/<filename>`
+- The API server's `cwd()` during runtime is `artifacts/api-server/`, so attached_assets path uses `../../attached_assets`
 
 ## Pointers
 

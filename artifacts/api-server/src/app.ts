@@ -1,6 +1,8 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
+import session from "express-session";
+import path from "path";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
@@ -25,9 +27,26 @@ app.use(
     },
   }),
 );
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "kalavritti-session-secret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false, maxAge: 7 * 24 * 60 * 60 * 1000 },
+  }),
+);
+
+app.use(
+  "/api/assets",
+  express.static(path.resolve(process.cwd(), "../../attached_assets"), {
+    maxAge: "7d",
+    index: false,
+  }),
+);
 
 app.use("/api", router);
 

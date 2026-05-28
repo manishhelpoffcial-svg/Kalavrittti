@@ -1,22 +1,40 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Kalavritti e-commerce API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: products
+    description: Product operations
+  - name: categories
+    description: Category operations
+  - name: artisans
+    description: Artisan operations
+  - name: cart
+    description: Cart operations
+  - name: wishlist
+    description: Wishlist operations
+  - name: orders
+    description: Order operations
+  - name: reviews
+    description: Review operations
+  - name: blog
+    description: Blog operations
+  - name: homepage
+    description: Homepage data
+  - name: contact
+    description: Contact operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +42,878 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /homepage/featured:
+    get:
+      operationId: getHomepageFeatured
+      tags: [homepage]
+      summary: Get homepage featured data
+      responses:
+        "200":
+          description: Homepage featured data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HomepageFeatured"
+
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [categories]
+      summary: List all categories
+      responses:
+        "200":
+          description: Categories list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+
+  /categories/{slug}:
+    get:
+      operationId: getCategoryBySlug
+      tags: [categories]
+      summary: Get category by slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "404":
+          description: Not found
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List products with optional filters
+      parameters:
+        - name: categorySlug
+          in: query
+          schema:
+            type: string
+        - name: artisanId
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: minPrice
+          in: query
+          schema:
+            type: ["number", "null"]
+        - name: maxPrice
+          in: query
+          schema:
+            type: ["number", "null"]
+        - name: featured
+          in: query
+          schema:
+            type: ["boolean", "null"]
+        - name: bestSeller
+          in: query
+          schema:
+            type: ["boolean", "null"]
+        - name: newArrival
+          in: query
+          schema:
+            type: ["boolean", "null"]
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [popularity, newest, price_asc, price_desc]
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Products list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListResponse"
+
+  /products/{slug}:
+    get:
+      operationId: getProductBySlug
+      tags: [products]
+      summary: Get product by slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDetail"
+        "404":
+          description: Not found
+
+  /products/{productId}/related:
+    get:
+      operationId: getRelatedProducts
+      tags: [products]
+      summary: Get related products
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Related products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductCard"
+
+  /artisans:
+    get:
+      operationId: listArtisans
+      tags: [artisans]
+      summary: List artisans
+      parameters:
+        - name: craftType
+          in: query
+          schema:
+            type: string
+        - name: state
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: featured
+          in: query
+          schema:
+            type: ["boolean", "null"]
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Artisans list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArtisanListResponse"
+
+  /artisans/{slug}:
+    get:
+      operationId: getArtisanBySlug
+      tags: [artisans]
+      summary: Get artisan by slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Artisan profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArtisanProfile"
+        "404":
+          description: Not found
+
+  /artisans/{artisanId}/products:
+    get:
+      operationId: getArtisanProducts
+      tags: [artisans]
+      summary: Get products by artisan
+      parameters:
+        - name: artisanId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Products by artisan
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductCard"
+
+  /products/{productId}/reviews:
+    get:
+      operationId: listProductReviews
+      tags: [reviews]
+      summary: List reviews for a product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reviews list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+
+  /blog:
+    get:
+      operationId: listBlogPosts
+      tags: [blog]
+      summary: List blog posts
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Blog posts list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogListResponse"
+
+  /blog/{slug}:
+    get:
+      operationId: getBlogPostBySlug
+      tags: [blog]
+      summary: Get blog post by slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Blog post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogPost"
+        "404":
+          description: Not found
+
+  /cart:
+    get:
+      operationId: getCart
+      tags: [cart]
+      summary: Get current cart
+      responses:
+        "200":
+          description: Cart
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+
+  /cart/items:
+    post:
+      operationId: addToCart
+      tags: [cart]
+      summary: Add item to cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartItemInput"
+      responses:
+        "200":
+          description: Updated cart
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+
+  /cart/items/{productId}:
+    patch:
+      operationId: updateCartItem
+      tags: [cart]
+      summary: Update cart item quantity
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartItemUpdate"
+      responses:
+        "200":
+          description: Updated cart
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+    delete:
+      operationId: removeFromCart
+      tags: [cart]
+      summary: Remove item from cart
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated cart
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+
+  /wishlist:
+    get:
+      operationId: getWishlist
+      tags: [wishlist]
+      summary: Get wishlist
+      responses:
+        "200":
+          description: Wishlist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductCard"
+
+  /wishlist/{productId}:
+    post:
+      operationId: addToWishlist
+      tags: [wishlist]
+      summary: Add product to wishlist
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+    delete:
+      operationId: removeFromWishlist
+      tags: [wishlist]
+      summary: Remove product from wishlist
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /contact:
+    post:
+      operationId: submitContact
+      tags: [contact]
+      summary: Submit contact form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /newsletter/subscribe:
+    post:
+      operationId: subscribeNewsletter
+      tags: [contact]
+      summary: Subscribe to newsletter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewsletterInput"
+      responses:
+        "200":
+          description: Subscribed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    SuccessResponse:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        message:
+          type: ["string", "null"]
+
+    Category:
+      type: object
+      required: [id, name, slug, productCount]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: ["string", "null"]
+        image:
+          type: ["string", "null"]
+        icon:
+          type: ["string", "null"]
+        productCount:
+          type: integer
+
+    ArtisanCard:
+      type: object
+      required: [id, name, slug, craftType, state]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        craftType:
+          type: string
+        state:
+          type: string
+        city:
+          type: ["string", "null"]
+        photo:
+          type: ["string", "null"]
+        shortBio:
+          type: ["string", "null"]
+        productCount:
+          type: integer
+        featured:
+          type: boolean
+
+    ArtisanProfile:
+      type: object
+      required: [id, name, slug, craftType, state]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        craftType:
+          type: string
+        state:
+          type: string
+        city:
+          type: ["string", "null"]
+        photo:
+          type: ["string", "null"]
+        coverImage:
+          type: ["string", "null"]
+        shortBio:
+          type: ["string", "null"]
+        fullStory:
+          type: ["string", "null"]
+        quote:
+          type: ["string", "null"]
+        yearsExperience:
+          type: ["integer", "null"]
+        productCount:
+          type: integer
+        featured:
+          type: boolean
+        instagramUrl:
+          type: ["string", "null"]
+        youtubeUrl:
+          type: ["string", "null"]
+
+    ArtisanListResponse:
+      type: object
+      required: [artisans, total, page, limit]
+      properties:
+        artisans:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArtisanCard"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    ProductCard:
+      type: object
+      required: [id, title, slug, price, mrp]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        slug:
+          type: string
+        price:
+          type: number
+        mrp:
+          type: number
+        discountPercent:
+          type: ["integer", "null"]
+        mainImage:
+          type: ["string", "null"]
+        artisanName:
+          type: ["string", "null"]
+        artisanPhoto:
+          type: ["string", "null"]
+        rating:
+          type: ["number", "null"]
+        reviewCount:
+          type: integer
+        isFeatured:
+          type: boolean
+        isBestSeller:
+          type: boolean
+        isNewArrival:
+          type: boolean
+        inStock:
+          type: boolean
+        categorySlug:
+          type: ["string", "null"]
+
+    ProductDetail:
+      type: object
+      required: [id, title, slug, price, mrp, description]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        slug:
+          type: string
+        price:
+          type: number
+        mrp:
+          type: number
+        discountPercent:
+          type: ["integer", "null"]
+        shortDescription:
+          type: ["string", "null"]
+        description:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        mainImage:
+          type: ["string", "null"]
+        material:
+          type: ["string", "null"]
+        placeOfOrigin:
+          type: ["string", "null"]
+        weight:
+          type: ["number", "null"]
+        careInstructions:
+          type: ["string", "null"]
+        stockQuantity:
+          type: integer
+        inStock:
+          type: boolean
+        isFeatured:
+          type: boolean
+        isBestSeller:
+          type: boolean
+        isNewArrival:
+          type: boolean
+        isCustomizable:
+          type: boolean
+        customizationDetails:
+          type: ["string", "null"]
+        freeShipping:
+          type: boolean
+        rating:
+          type: ["number", "null"]
+        reviewCount:
+          type: integer
+        categorySlug:
+          type: ["string", "null"]
+        categoryName:
+          type: ["string", "null"]
+        tags:
+          type: array
+          items:
+            type: string
+        artisan:
+          $ref: "#/components/schemas/ArtisanCard"
+
+    ProductListResponse:
+      type: object
+      required: [products, total, page, limit]
+      properties:
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductCard"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    HomepageFeatured:
+      type: object
+      required: [featuredProducts, bestSellers, newArrivals, featuredArtisans, categories]
+      properties:
+        featuredProducts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductCard"
+        bestSellers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductCard"
+        newArrivals:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductCard"
+        featuredArtisans:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArtisanCard"
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"
+        testimonials:
+          type: array
+          items:
+            $ref: "#/components/schemas/Testimonial"
+
+    Testimonial:
+      type: object
+      required: [id, buyerName, rating, comment]
+      properties:
+        id:
+          type: integer
+        buyerName:
+          type: string
+        buyerLocation:
+          type: ["string", "null"]
+        rating:
+          type: number
+        comment:
+          type: string
+        productName:
+          type: ["string", "null"]
+        date:
+          type: string
+
+    Review:
+      type: object
+      required: [id, buyerName, rating, comment, date]
+      properties:
+        id:
+          type: integer
+        buyerName:
+          type: string
+        rating:
+          type: number
+        title:
+          type: ["string", "null"]
+        comment:
+          type: string
+        date:
+          type: string
+        verifiedPurchase:
+          type: boolean
+
+    BlogPost:
+      type: object
+      required: [id, title, slug, content, publishedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        slug:
+          type: string
+        excerpt:
+          type: ["string", "null"]
+        content:
+          type: string
+        featuredImage:
+          type: ["string", "null"]
+        categoryTag:
+          type: ["string", "null"]
+        authorName:
+          type: ["string", "null"]
+        authorPhoto:
+          type: ["string", "null"]
+        publishedAt:
+          type: string
+        readTime:
+          type: ["integer", "null"]
+
+    BlogListResponse:
+      type: object
+      required: [posts, total, page, limit]
+      properties:
+        posts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlogPost"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    CartItem:
+      type: object
+      required: [productId, title, price, quantity, mainImage]
+      properties:
+        productId:
+          type: integer
+        title:
+          type: string
+        price:
+          type: number
+        mrp:
+          type: number
+        quantity:
+          type: integer
+        mainImage:
+          type: ["string", "null"]
+        artisanName:
+          type: ["string", "null"]
+        slug:
+          type: string
+
+    Cart:
+      type: object
+      required: [items, subtotal, total, itemCount]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartItem"
+        subtotal:
+          type: number
+        shipping:
+          type: number
+        discount:
+          type: number
+        total:
+          type: number
+        itemCount:
+          type: integer
+
+    CartItemInput:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId:
+          type: integer
+        quantity:
+          type: integer
+
+    CartItemUpdate:
+      type: object
+      required: [quantity]
+      properties:
+        quantity:
+          type: integer
+
+    ContactInput:
+      type: object
+      required: [fullName, email, subject, message]
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        subject:
+          type: string
+        message:
+          type: string
+
+    NewsletterInput:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
