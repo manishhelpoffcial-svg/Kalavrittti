@@ -231,6 +231,17 @@
   --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.5);
 }
 
+/* === Extended Brand Colors === */
+:root {
+  --saffron: #D4860A;
+  --saffron-light: #F0A835;
+  --teal: #1B6B7B;
+  --teal-dark: #124E5A;
+  --forest: #2D6A4F;
+  --forest-dark: #1F5C3A;
+  --rose: #9B2335;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -238,11 +249,107 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    scroll-behavior: smooth;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
   }
+}
+
+/* === Utility Color Classes === */
+@layer utilities {
+  .text-saffron { color: var(--saffron); }
+  .text-teal { color: var(--teal); }
+  .text-forest { color: var(--forest); }
+  .text-rose { color: var(--rose); }
+  .bg-saffron { background-color: var(--saffron); }
+  .bg-teal { background-color: var(--teal); }
+  .bg-teal-dark { background-color: var(--teal-dark); }
+  .bg-forest { background-color: var(--forest); }
+  .bg-forest-dark { background-color: var(--forest-dark); }
+  .bg-saffron-dark { background-color: #B5700A; }
+  .bg-rose { background-color: var(--rose); }
+  .border-saffron { border-color: var(--saffron); }
+  .border-teal { border-color: var(--teal); }
+  .border-forest { border-color: var(--forest); }
+  .border-rose { border-color: var(--rose); }
+}
+
+/* === Keyframe Animations === */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-18px) rotate(3deg); }
+}
+@keyframes float-medium {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(-3deg); }
+}
+@keyframes float-fast {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.5); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes heroBgKen {
+  0% { transform: scale(1.1); }
+  100% { transform: scale(1.0); }
+}
+@keyframes bounceOnce {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.3); }
+  60% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+/* === Animation Utilities === */
+.animate-float-slow { animation: float-slow 7s ease-in-out infinite; }
+.animate-float-medium { animation: float-medium 5s ease-in-out infinite; }
+.animate-float-fast { animation: float-fast 3.5s ease-in-out infinite; }
+.animate-twinkle { animation: twinkle 2.5s ease-in-out infinite; }
+.animate-bounce-once { animation: bounceOnce 0.5s ease-out; }
+
+/* Hero entrance animations */
+.hero-section .hero-content { opacity: 1; }
+.hero-bg-img { animation: heroBgKen 8s ease-out forwards; }
+.hero-fade-up {
+  opacity: 0;
+  animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Section scroll reveal - sections are visible by default, animation is enhancement */
+.section-reveal { opacity: 1; transform: none; }
+.section-reveal.animate-ready { opacity: 0; transform: translateY(30px); transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+.section-reveal.section-revealed { opacity: 1; transform: translateY(0); }
+
+/* Card stagger reveal */
+.card-reveal { opacity: 1; transform: none; }
+.animate-ready .card-reveal {
+  opacity: 0;
+  transform: translateY(20px) scale(0.97);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.section-revealed .card-reveal {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 @layer utilities {
