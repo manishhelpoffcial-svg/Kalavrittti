@@ -70,7 +70,7 @@ export function Header() {
   const toggleMenu = () => setIsMobileMenuOpen(p => !p);
 
   return (
-    <header className={`sticky top-0 z-50 w-full transition-shadow duration-300 ${isScrolled ? "shadow-lg" : "shadow-sm"}`}>
+    <header className={`sticky top-0 z-[200] w-full transition-shadow duration-300 bg-transparent ${isScrolled ? "shadow-lg" : "shadow-sm"}`}>
 
       {/* Announcement Bar */}
       <div className="bg-maroon-dark text-cream py-1.5 px-4 text-xs flex justify-between items-center relative overflow-hidden h-8">
@@ -185,7 +185,7 @@ export function Header() {
       </div>
 
       {/* Desktop Navigation */}
-      <nav className="hidden md:block border-b border-cream-dark dark:border-maroon/50 bg-cream/95 dark:bg-maroon-dark/95 backdrop-blur-sm">
+      <nav className="hidden md:block border-b border-cream-dark dark:border-maroon/50 bg-cream dark:bg-maroon-dark">
         <div className="container mx-auto px-4">
           <ul className="flex items-center justify-center gap-1 py-0 text-sm font-semibold text-maroon-dark dark:text-cream/80 uppercase tracking-wide">
             {NAV_LINKS.map((link) => {

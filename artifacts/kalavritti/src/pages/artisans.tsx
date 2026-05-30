@@ -2,10 +2,21 @@ import React, { useState } from "react";
 import { Link } from "wouter";
 import { useListArtisans } from "@workspace/api-client-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SectionHeading } from "@/components/shared/SectionHeading";
-import { MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import heroImage from "@assets/ba5cb3c6-4c87-4549-899d-7384ad420ccd_1779952388650.jpeg";
+
+const FALLBACK_ARTISANS = [
+  { id: 1, name: "Arjun Das", craftType: "Assamese Weaving", city: "Guwahati", state: "Assam", photo: "/assets/artisan-1.jpeg", slug: "arjun-das", productCount: 12 },
+  { id: 2, name: "Priya Sharma", craftType: "Puja Decor & Painting", city: "Kolkata", state: "West Bengal", photo: "/assets/artisan-2.jpeg", slug: "priya-sharma", productCount: 18 },
+  { id: 3, name: "Meera Nair", craftType: "Madhubani Art", city: "Darbhanga", state: "Bihar", photo: "/assets/artisan-3.jpeg", slug: "meera-nair", productCount: 9 },
+  { id: 4, name: "Rohini Patel", craftType: "Gallery Paintings", city: "Ahmedabad", state: "Gujarat", photo: "/assets/artisan-4.jpeg", slug: "rohini-patel", productCount: 15 },
+  { id: 5, name: "Vikram Singh", craftType: "Embroidery & Kurta", city: "Jaipur", state: "Rajasthan", photo: "/assets/artisan-5.jpeg", slug: "vikram-singh", productCount: 22 },
+  { id: 6, name: "Rajan Bora", craftType: "Folk Dance & Crafts", city: "Jorhat", state: "Assam", photo: "/assets/artisan-6.jpeg", slug: "rajan-bora", productCount: 7 },
+];
+
+const ACCENT_COLORS = ["#8B1A1A", "#D4860A", "#1B6B7B", "#2D6A4F", "#9B2335", "#8B3A3A"];
+
+const states = ["West Bengal", "Rajasthan", "Gujarat", "Odisha", "Uttar Pradesh", "Assam"];
+const crafts = ["Terracotta", "Handloom", "Wood Carving", "Bamboo Craft", "Metal Craft", "Painting"];
 
 export default function Artisans() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,88 +29,129 @@ export default function Artisans() {
     craftType: selectedCraft || undefined
   });
 
-  const states = ["West Bengal", "Rajasthan", "Gujarat", "Odisha", "Uttar Pradesh", "Assam"];
-  const crafts = ["Terracotta", "Handloom", "Wood Carving", "Bamboo Craft", "Metal Craft", "Painting"];
+  const displayArtisans = (data?.artisans && data.artisans.length > 0) ? data.artisans : FALLBACK_ARTISANS;
 
   return (
-    <div className="min-h-screen bg-cream">
-      {/* Hero */}
-      <div className="relative h-[300px] md:h-[400px] w-full flex items-center justify-center overflow-hidden bg-maroon-dark">
-        <img src={heroImage} alt="Artisans of Bharat" className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-multiply" />
-        <div className="relative z-10 text-center px-4">
-          <h1 className="font-serif text-4xl md:text-5xl text-gold mb-4">Our Artisans</h1>
-          <p className="text-cream/90 text-lg max-w-2xl mx-auto">
-            Meet the hands that shape our heritage. Every piece tells a story of generations of skill and dedication.
-          </p>
+    <div className="min-h-screen bg-cream dark:bg-maroon-dark">
+
+      {/* ── Hero Banner — styled like reference 7, using artisan painting image ── */}
+      <div className="relative w-full overflow-hidden" style={{ minHeight: "380px" }}>
+        <img
+          src="/assets/banner-artisans.png"
+          alt="Artisan painting a pot"
+          className="absolute inset-0 w-full h-full object-cover object-right"
+        />
+        {/* Dark overlay — strong left, fades right so image subject shows */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1a0800]/95 via-[#1a0800]/80 to-[#1a0800]/25 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1a0800]/60 via-transparent to-transparent pointer-events-none"></div>
+
+        <div className="relative z-10 container mx-auto px-6 md:px-10 lg:px-14 py-14 md:py-20 flex flex-col justify-between h-full" style={{ minHeight: "380px" }}>
+          <div className="max-w-xl">
+            {/* Label */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-px w-8 bg-gold/60"></div>
+              <span className="text-gold/80 text-xs uppercase font-bold tracking-[0.3em]">Meet the Makers</span>
+            </div>
+
+            {/* Title */}
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white font-semibold leading-[1.05] mb-3">
+              Artisans of
+              <span className="block" style={{ color: "#D4860A" }}>Bharat</span>
+            </h1>
+
+            <p className="text-white/70 text-sm md:text-base max-w-sm leading-relaxed mb-7">
+              A platform for artisans to share their journey, showcase their craft and connect with the world.
+            </p>
+
+            {/* CTA buttons */}
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="#artisan-grid"
+                className="inline-flex items-center gap-2 bg-maroon hover:bg-maroon-light text-white font-semibold px-6 py-3 text-sm tracking-wide transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+              >
+                <i className="fa-solid fa-people-group text-xs"></i>
+                Explore Artisans
+                <i className="fa-solid fa-arrow-right text-xs"></i>
+              </a>
+              <Link
+                href="/our-story"
+                className="inline-flex items-center gap-2 border border-gold/60 text-gold hover:bg-gold/10 font-semibold px-6 py-3 text-sm tracking-wide transition-all duration-300"
+              >
+                <i className="fa-regular fa-circle-play text-sm"></i>
+                Our Story
+              </Link>
+            </div>
+          </div>
+
+          {/* Stats card — bottom right, like reference 7's promo card */}
+          <div
+            className="absolute bottom-6 right-6 md:right-10 bg-[#1a0800]/85 backdrop-blur-sm border border-gold/25 p-4 md:p-5 max-w-[240px] hidden md:block"
+          >
+            <div className="flex items-start gap-3 mb-3">
+              <div className="w-8 h-8 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
+                <i className="fa-solid fa-bullhorn text-gold text-xs"></i>
+              </div>
+              <div>
+                <p className="text-white text-sm font-semibold leading-tight">500+ Artisans Across India</p>
+                <p className="text-white/55 text-xs mt-0.5">28 states · 50+ craft forms</p>
+              </div>
+            </div>
+            <Link
+              href="/our-story"
+              className="inline-flex items-center gap-1.5 text-gold text-xs font-bold uppercase tracking-wider hover:gap-2.5 transition-all duration-200"
+            >
+              Learn More <i className="fa-solid fa-arrow-right text-[9px]"></i>
+            </Link>
+          </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-16 flex flex-col md:flex-row gap-8">
-        {/* Sidebar */}
-        <aside className="w-full md:w-64 shrink-0">
-          <div className="bg-white p-6 rounded-xl border border-gold/20 sticky top-24">
-            <h3 className="font-serif text-lg text-maroon-dark mb-4 border-b border-border pb-2">Filter Artisans</h3>
-            
-            <div className="mb-6">
-              <div className="relative mb-4">
+      {/* ── Artisan Grid ── */}
+      <div id="artisan-grid" className="container mx-auto px-4 py-16 flex flex-col md:flex-row gap-8">
+
+        {/* Sidebar filters */}
+        <aside className="w-full md:w-60 shrink-0">
+          <div className="bg-white dark:bg-maroon/40 p-6 rounded-xl border border-gold/20 dark:border-maroon/60 sticky top-24">
+            <h3 className="font-serif text-lg text-maroon-dark dark:text-cream mb-4 border-b border-border pb-2">
+              Filter Artisans
+            </h3>
+
+            <div className="mb-5">
+              <div className="relative">
                 <input
                   type="text"
                   placeholder="Search by name..."
-                  className="w-full bg-cream-dark/50 border border-border rounded-lg py-2 pl-3 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-gold"
+                  className="w-full bg-cream-dark/50 dark:bg-maroon/40 border border-border rounded-lg py-2 pl-3 pr-8 text-sm text-maroon-dark dark:text-cream focus:outline-none focus:ring-1 focus:ring-gold"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <i className="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-maroon-dark/40 dark:text-cream/40 text-xs"></i>
               </div>
             </div>
 
-            <div className="mb-6">
-              <h4 className="font-medium text-sm mb-3">By Craft</h4>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input 
-                    type="radio" 
-                    name="craft" 
-                    checked={selectedCraft === ""} 
-                    onChange={() => setSelectedCraft("")} 
-                    className="text-maroon focus:ring-maroon" 
-                  /> All Crafts
+            <div className="mb-5">
+              <h4 className="font-semibold text-xs uppercase tracking-wider text-maroon-dark/60 dark:text-cream/50 mb-3">By Craft</h4>
+              <div className="space-y-2 text-sm text-maroon-dark/80 dark:text-cream/70">
+                <label className="flex items-center gap-2 cursor-pointer hover:text-maroon dark:hover:text-gold transition-colors">
+                  <input type="radio" name="craft" checked={selectedCraft === ""} onChange={() => setSelectedCraft("")} className="accent-maroon" /> All Crafts
                 </label>
                 {crafts.map(craft => (
-                  <label key={craft} className="flex items-center gap-2 cursor-pointer">
-                    <input 
-                      type="radio" 
-                      name="craft" 
-                      checked={selectedCraft === craft} 
-                      onChange={() => setSelectedCraft(craft)} 
-                      className="text-maroon focus:ring-maroon" 
-                    /> {craft}
+                  <label key={craft} className="flex items-center gap-2 cursor-pointer hover:text-maroon dark:hover:text-gold transition-colors">
+                    <input type="radio" name="craft" checked={selectedCraft === craft} onChange={() => setSelectedCraft(craft)} className="accent-maroon" /> {craft}
                   </label>
                 ))}
               </div>
             </div>
 
-            <div className="mb-6">
-              <h4 className="font-medium text-sm mb-3">By Region</h4>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input 
-                    type="radio" 
-                    name="region" 
-                    checked={selectedState === ""} 
-                    onChange={() => setSelectedState("")} 
-                    className="text-maroon focus:ring-maroon" 
-                  /> All Regions
+            <div className="mb-2">
+              <h4 className="font-semibold text-xs uppercase tracking-wider text-maroon-dark/60 dark:text-cream/50 mb-3">By Region</h4>
+              <div className="space-y-2 text-sm text-maroon-dark/80 dark:text-cream/70">
+                <label className="flex items-center gap-2 cursor-pointer hover:text-maroon dark:hover:text-gold transition-colors">
+                  <input type="radio" name="region" checked={selectedState === ""} onChange={() => setSelectedState("")} className="accent-maroon" /> All Regions
                 </label>
                 {states.map(state => (
-                  <label key={state} className="flex items-center gap-2 cursor-pointer">
-                    <input 
-                      type="radio" 
-                      name="region" 
-                      checked={selectedState === state} 
-                      onChange={() => setSelectedState(state)} 
-                      className="text-maroon focus:ring-maroon" 
-                    /> {state}
+                  <label key={state} className="flex items-center gap-2 cursor-pointer hover:text-maroon dark:hover:text-gold transition-colors">
+                    <input type="radio" name="region" checked={selectedState === state} onChange={() => setSelectedState(state)} className="accent-maroon" /> {state}
                   </label>
                 ))}
               </div>
@@ -107,70 +159,81 @@ export default function Artisans() {
           </div>
         </aside>
 
-        {/* Main Content */}
+        {/* Grid */}
         <div className="flex-1">
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="bg-white p-6 rounded-xl border border-gold/20 flex flex-col gap-4">
+                <div key={i} className="bg-white dark:bg-maroon/30 p-6 rounded-xl border border-gold/10 flex flex-col gap-4">
                   <Skeleton className="w-24 h-24 rounded-full mx-auto" />
                   <Skeleton className="h-6 w-3/4 mx-auto" />
                   <Skeleton className="h-4 w-1/2 mx-auto" />
-                  <Skeleton className="h-16 w-full" />
-                </div>
-              ))}
-            </div>
-          ) : data?.artisans && data.artisans.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {data.artisans.map(artisan => (
-                <div key={artisan.id} className="bg-white border border-gold/20 rounded-xl p-6 flex flex-col items-center text-center transition-all duration-300 hover:border-gold hover:shadow-md">
-                  <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gold/50 mb-4 bg-cream-dark">
-                    {artisan.photo ? (
-                      <img src={artisan.photo} alt={artisan.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-maroon-dark font-serif text-3xl">
-                        {artisan.name.charAt(0)}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <h3 className="font-serif text-xl text-maroon-dark mb-1">{artisan.name}</h3>
-                  <p className="text-maroon font-medium text-sm mb-2">{artisan.craftType}</p>
-                  
-                  <div className="flex items-center text-muted-foreground text-xs mb-4">
-                    <MapPin className="w-3 h-3 mr-1" />
-                    <span>{artisan.city ? `${artisan.city}, ` : ''}{artisan.state}</span>
-                  </div>
-
-                  {artisan.shortBio && (
-                    <p className="text-sm text-muted-foreground line-clamp-3 mb-6 flex-1">
-                      {artisan.shortBio}
-                    </p>
-                  )}
-
-                  <div className="w-full mt-auto flex items-center justify-between border-t border-border pt-4">
-                    <span className="text-xs font-medium text-muted-foreground">
-                      {artisan.productCount || 0} Products
-                    </span>
-                    <Button asChild variant="outline" size="sm" className="border-maroon text-maroon hover:bg-maroon hover:text-white">
-                      <Link href={`/artisans/${artisan.slug}`}>View Profile</Link>
-                    </Button>
-                  </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="py-24 text-center bg-white rounded-xl border border-gold/10">
-              <h3 className="font-serif text-xl text-maroon-dark mb-2">No artisans found</h3>
-              <p className="text-muted-foreground">Try adjusting your filters to find what you're looking for.</p>
-              <Button 
-                variant="outline" 
-                className="mt-4 border-maroon text-maroon"
-                onClick={() => {
-                  setSearchTerm("");
-                  setSelectedState("");
-                  setSelectedCraft("");
-                }}
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              {displayArtisans.map((artisan, idx) => (
+                <Link
+                  key={artisan.id}
+                  href={`/artisans/${(artisan as any).slug || artisan.id}`}
+                  className="group bg-white dark:bg-maroon/30 border border-gold/15 dark:border-maroon/50 rounded-xl overflow-hidden hover:border-gold hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col"
+                >
+                  {/* Photo */}
+                  <div className="relative w-full aspect-[4/3] overflow-hidden bg-cream-dark dark:bg-maroon">
+                    <img
+                      src={(artisan as any).photo || FALLBACK_ARTISANS[idx % FALLBACK_ARTISANS.length].photo}
+                      alt={artisan.name}
+                      className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                      onError={e => { (e.target as HTMLImageElement).src = FALLBACK_ARTISANS[idx % FALLBACK_ARTISANS.length].photo; }}
+                    />
+                    <div
+                      className="absolute top-0 left-0 w-full h-1"
+                      style={{ backgroundColor: ACCENT_COLORS[idx % ACCENT_COLORS.length] }}
+                    ></div>
+                    <div className="absolute inset-0 bg-maroon-dark/0 group-hover:bg-maroon-dark/30 transition-colors duration-300 flex items-end justify-end p-3">
+                      <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gold text-maroon-dark text-xs font-bold px-3 py-1.5 flex items-center gap-1">
+                        View Profile <i className="fa-solid fa-arrow-right text-[10px]"></i>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div className="p-5 flex flex-col flex-1">
+                    <h3 className="font-serif text-lg text-maroon-dark dark:text-cream group-hover:text-maroon dark:group-hover:text-gold transition-colors duration-200 leading-tight mb-0.5">
+                      {artisan.name}
+                    </h3>
+                    <p className="text-sm font-medium mb-2" style={{ color: ACCENT_COLORS[idx % ACCENT_COLORS.length] }}>
+                      {(artisan as any).craftType}
+                    </p>
+                    <div className="flex items-center gap-1 text-maroon-dark/50 dark:text-cream/50 text-xs mb-4">
+                      <i className="fa-solid fa-location-dot text-[9px]"></i>
+                      <span>{(artisan as any).city ? `${(artisan as any).city}, ` : ''}{(artisan as any).state}</span>
+                    </div>
+                    <div className="mt-auto pt-3 border-t border-gold/10 flex items-center justify-between">
+                      <span className="text-xs font-medium text-maroon-dark/50 dark:text-cream/50">
+                        <i className="fa-solid fa-box text-[9px] mr-1"></i>
+                        {(artisan as any).productCount || 0} Products
+                      </span>
+                      <span className="text-xs font-bold uppercase tracking-wider text-maroon dark:text-gold flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
+                        View Profile <i className="fa-solid fa-arrow-right text-[9px]"></i>
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {!isLoading && displayArtisans.length === 0 && (
+            <div className="py-24 text-center bg-white dark:bg-maroon/20 rounded-xl border border-gold/10">
+              <i className="fa-solid fa-users-slash text-3xl text-maroon-dark/20 dark:text-cream/20 mb-4 block"></i>
+              <h3 className="font-serif text-xl text-maroon-dark dark:text-cream mb-2">No artisans found</h3>
+              <p className="text-maroon-dark/60 dark:text-cream/60 mb-4">Try adjusting your filters.</p>
+              <Button
+                variant="outline"
+                className="border-maroon text-maroon"
+                onClick={() => { setSearchTerm(""); setSelectedState(""); setSelectedCraft(""); }}
               >
                 Clear Filters
               </Button>
