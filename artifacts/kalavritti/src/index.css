@@ -175,10 +175,10 @@
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
-  /* Fallback dark mode mapping if ever needed */
+  /* Dark mode — rich warm darks so all text stays readable */
   --background: var(--maroon-dark);
   --foreground: var(--cream);
-  
+
   --border: var(--maroon);
   --input: var(--maroon);
   --ring: var(--gold);
@@ -198,10 +198,10 @@
   --secondary-foreground: var(--cream);
 
   --muted: var(--maroon);
-  --muted-foreground: var(--cream-dark);
+  --muted-foreground: 44 50% 80%;
 
-  --accent: var(--maroon-light);
-  --accent-foreground: var(--cream);
+  --accent: var(--gold);
+  --accent-foreground: var(--maroon-dark);
 
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;

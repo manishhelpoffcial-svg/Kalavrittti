@@ -5,9 +5,9 @@ import img2 from "@assets/07429135-a06b-4d39-aef7-64723be9c49e_1779952388673.jpe
 import img3 from "@assets/f0cf35a4-ffd9-4c98-b0ae-4b2559101ab3_1779952388596.jpeg";
 
 const VIBES = [
-  { href: "/categories/wedding-essentials", img: img1, title: "Traditional Gifting", subtitle: "For every celebration", accent: "from-maroon-dark/80", tag: "🎁 Gifting" },
-  { href: "/categories/home-decor", img: img2, title: "Festive Decor", subtitle: "Transform your space", accent: "from-maroon-dark/75", tag: "🏮 Decor" },
-  { href: "/categories/puja-samagri", img: img3, title: "Puja Essentials", subtitle: "Sacred & authentic", accent: "from-maroon-dark/80", tag: "🪔 Puja" },
+  { href: "/categories/wedding-essentials", img: img1, title: "Traditional Gifting", subtitle: "For every celebration", accent: "from-maroon-dark/80", tagIcon: "fa-gift", tag: "Gifting" },
+  { href: "/categories/home-decor", img: img2, title: "Festive Decor", subtitle: "Transform your space", accent: "from-maroon-dark/75", tagIcon: "fa-house-chimney", tag: "Decor" },
+  { href: "/categories/puja-samagri", img: img3, title: "Puja Essentials", subtitle: "Sacred & authentic", accent: "from-maroon-dark/80", tagIcon: "fa-fire-flame-curved", tag: "Puja" },
 ];
 
 export function ShopVibe() {
@@ -25,12 +25,12 @@ export function ShopVibe() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-20 bg-cream section-reveal">
+    <section ref={sectionRef} className="py-20 bg-cream dark:bg-maroon-dark section-reveal">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <span className="inline-block text-maroon/50 text-xs uppercase tracking-[0.3em] font-bold mb-3">Collections</span>
-          <h2 className="font-serif text-3xl md:text-4xl text-maroon-dark">
-            Shop by <span className="text-maroon italic">Occasion</span>
+          <span className="inline-block text-maroon/50 dark:text-cream/40 text-xs uppercase tracking-[0.3em] font-bold mb-3">Collections</span>
+          <h2 className="font-serif text-3xl md:text-4xl text-maroon-dark dark:text-cream">
+            Shop by <span className="text-maroon dark:text-gold italic">Occasion</span>
           </h2>
         </div>
 
@@ -47,15 +47,13 @@ export function ShopVibe() {
                 alt={vibe.title}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              {/* Gradient */}
               <div className={`absolute inset-0 bg-gradient-to-t ${vibe.accent} via-black/20 to-transparent`}></div>
 
-              {/* Tag */}
-              <div className="absolute top-4 left-4 bg-gold/90 text-maroon-dark text-xs font-bold px-3 py-1 rounded-full backdrop-blur-sm">
+              <div className="absolute top-4 left-4 bg-gold/90 text-maroon-dark text-xs font-bold px-3 py-1 rounded-full backdrop-blur-sm flex items-center gap-1.5">
+                <i className={`fa-solid ${vibe.tagIcon} text-[10px]`}></i>
                 {vibe.tag}
               </div>
 
-              {/* Content */}
               <div className="absolute bottom-0 left-0 right-0 p-6 transform transition-transform duration-300">
                 <p className="text-cream/70 text-xs uppercase tracking-wider mb-1">{vibe.subtitle}</p>
                 <h3 className="font-serif text-2xl text-cream mb-3 group-hover:text-gold transition-colors duration-300">

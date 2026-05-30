@@ -29,7 +29,7 @@ export function Testimonials() {
   const STAR_COLORS = ["text-gold", "text-saffron", "text-teal", "text-forest"];
 
   return (
-    <section ref={sectionRef} className="py-20 bg-cream-dark overflow-hidden section-reveal">
+    <section ref={sectionRef} className="py-20 bg-cream-dark dark:bg-maroon overflow-hidden section-reveal">
       <div className="container mx-auto px-4">
         <SectionHeading
           title="Words from Our Patrons"
@@ -40,10 +40,10 @@ export function Testimonials() {
           {isLoading ? (
             <div className="flex gap-5">
               {[1, 2, 3].map(i => (
-                <div key={i} className="flex-1 min-w-0 bg-cream p-6 rounded-2xl border border-gold/10 animate-pulse">
-                  <div className="h-3 w-20 bg-cream-dark rounded mb-4"></div>
-                  <div className="h-16 w-full bg-cream-dark rounded mb-4"></div>
-                  <div className="h-4 w-24 bg-cream-dark rounded"></div>
+                <div key={i} className="flex-1 min-w-0 bg-cream dark:bg-maroon-dark p-6 rounded-2xl border border-gold/10 animate-pulse">
+                  <div className="h-3 w-20 bg-cream-dark dark:bg-maroon rounded mb-4"></div>
+                  <div className="h-16 w-full bg-cream-dark dark:bg-maroon rounded mb-4"></div>
+                  <div className="h-4 w-24 bg-cream-dark dark:bg-maroon rounded"></div>
                 </div>
               ))}
             </div>
@@ -57,27 +57,24 @@ export function Testimonials() {
                       key={testimonial.id}
                       className="flex-[0_0_100%] md:flex-[0_0_calc(50%-10px)] lg:flex-[0_0_calc(33.33%-14px)] min-w-0"
                     >
-                      <div className="bg-cream border border-gold/15 rounded-2xl p-7 h-full flex flex-col relative shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group">
-                        {/* Quote icon */}
+                      <div className="bg-cream dark:bg-maroon-dark border border-gold/15 rounded-2xl p-7 h-full flex flex-col relative shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group">
                         <i className="fa-solid fa-quote-left text-4xl absolute top-5 right-6 text-gold/10 group-hover:text-gold/20 transition-colors duration-300"></i>
 
-                        {/* Stars */}
                         <div className="flex gap-1 mb-4">
                           {Array(5).fill(0).map((_, i) => (
                             <i
                               key={i}
-                              className={`fa-star text-sm ${i < testimonial.rating ? `fa-solid ${starColor}` : "fa-regular text-cream-dark"}`}
+                              className={`fa-star text-sm ${i < testimonial.rating ? `fa-solid ${starColor}` : "fa-regular text-cream-dark dark:text-maroon/50"}`}
                             ></i>
                           ))}
                         </div>
 
-                        <p className="text-maroon-dark/75 text-sm leading-relaxed italic flex-grow mb-6">
+                        <p className="text-maroon-dark/75 dark:text-cream/75 text-sm leading-relaxed italic flex-grow mb-6">
                           "{testimonial.comment}"
                         </p>
 
                         <div className="mt-auto pt-4 border-t border-gold/10 flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            {/* Avatar initial */}
                             <div
                               className="w-9 h-9 rounded-full flex items-center justify-center text-white font-serif font-bold text-base flex-shrink-0"
                               style={{ backgroundColor: ["#8B1A1A", "#D4860A", "#1B6B7B", "#2D6A4F"][idx % 4] }}
@@ -85,9 +82,9 @@ export function Testimonials() {
                               {testimonial.buyerName.charAt(0)}
                             </div>
                             <div>
-                              <p className="font-serif font-semibold text-maroon-dark text-sm">{testimonial.buyerName}</p>
+                              <p className="font-serif font-semibold text-maroon-dark dark:text-cream text-sm">{testimonial.buyerName}</p>
                               {testimonial.buyerLocation && (
-                                <p className="text-xs text-maroon-dark/50 flex items-center gap-1">
+                                <p className="text-xs text-maroon-dark/50 dark:text-cream/50 flex items-center gap-1">
                                   <i className="fa-solid fa-location-dot text-[9px]"></i>
                                   {testimonial.buyerLocation}
                                 </p>
@@ -95,8 +92,9 @@ export function Testimonials() {
                             </div>
                           </div>
                           {testimonial.productName && (
-                            <span className="text-[9px] uppercase tracking-wider font-bold bg-maroon-dark text-gold px-2 py-1 rounded-full">
-                              ✓ Verified
+                            <span className="text-[9px] uppercase tracking-wider font-bold bg-maroon-dark dark:bg-gold/20 text-gold dark:text-gold px-2 py-1 rounded-full flex items-center gap-1">
+                              <i className="fa-solid fa-circle-check text-[9px]"></i>
+                              Verified
                             </span>
                           )}
                         </div>

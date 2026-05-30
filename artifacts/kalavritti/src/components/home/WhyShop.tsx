@@ -5,8 +5,6 @@ const FEATURES = [
     icon: "fa-hand-sparkles",
     title: "100% Handmade",
     description: "Every piece is crafted by hand using traditional techniques passed down through generations.",
-    bg: "bg-maroon-dark",
-    iconColor: "text-gold",
     accent: "#8B1A1A",
     tag: "Artisan Promise"
   },
@@ -14,8 +12,6 @@ const FEATURES = [
     icon: "fa-truck-fast",
     title: "Secure Shipping",
     description: "Carefully packed and safely delivered to your doorstep, anywhere in India.",
-    bg: "bg-teal-dark",
-    iconColor: "text-teal",
     accent: "#1B6B7B",
     tag: "Pan India"
   },
@@ -23,8 +19,6 @@ const FEATURES = [
     icon: "fa-certificate",
     title: "Authenticity Guaranteed",
     description: "We source directly from master artisans, ensuring genuine traditional crafts every time.",
-    bg: "bg-saffron-dark",
-    iconColor: "text-saffron",
     accent: "#C4700A",
     tag: "Verified"
   },
@@ -32,9 +26,7 @@ const FEATURES = [
     icon: "fa-seedling",
     title: "Eco Friendly",
     description: "Sustainable materials and earth-friendly processes that respect both craft and nature.",
-    bg: "bg-forest-dark",
-    iconColor: "text-forest",
-    accent: "#1F5C3A",
+    accent: "#2D6A4F",
     tag: "Sustainable"
   },
 ];
@@ -54,30 +46,38 @@ export function WhyShop() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-20 bg-cream border-t border-gold/10 section-reveal">
-      <div className="container mx-auto px-4">
-        {/* Heading */}
-        <div className="text-center mb-14">
-          <span className="inline-block text-maroon/60 text-xs uppercase tracking-[0.3em] font-bold mb-3">Why Choose Us</span>
-          <h2 className="font-serif text-3xl md:text-4xl text-maroon-dark">
-            The <span className="text-maroon italic">Kalavritti</span> Difference
-          </h2>
-        </div>
+    <section ref={sectionRef} className="py-20 bg-cream dark:bg-maroon-dark border-t border-gold/10 section-reveal">
 
+      {/* Weaving image banner */}
+      <div className="relative w-full h-28 md:h-36 overflow-hidden mb-14">
+        <img
+          src="/assets/banner-weaving.jpg"
+          alt="Traditional weaving"
+          className="w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1a0800]/80 via-[#1a0800]/60 to-transparent flex items-center">
+          <div className="container mx-auto px-6 md:px-10">
+            <span className="block text-gold/80 text-xs uppercase tracking-[0.25em] font-bold mb-1">Why Choose Us</span>
+            <h2 className="font-serif text-2xl md:text-3xl text-cream font-semibold">
+              The <span className="italic text-gold">Kalavritti</span> Difference
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {FEATURES.map((feature, idx) => (
             <div
               key={idx}
-              className="group relative flex flex-col p-7 rounded-2xl bg-cream-dark/50 border border-cream-dark hover:border-transparent overflow-hidden cursor-default transition-all duration-400 hover:-translate-y-1 hover:shadow-xl card-reveal"
+              className="group relative flex flex-col p-7 rounded-2xl bg-cream-dark/50 dark:bg-maroon/30 border border-cream-dark dark:border-maroon/50 hover:border-transparent overflow-hidden cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-xl card-reveal"
               style={{ animationDelay: `${idx * 100}ms` }}
             >
-              {/* Colored left border accent */}
               <div
-                className="absolute left-0 top-0 w-1 h-full rounded-l-2xl transition-all duration-300 group-hover:w-2"
+                className="absolute left-0 top-0 w-1 h-full rounded-l-2xl transition-all duration-300 group-hover:w-1.5"
                 style={{ backgroundColor: feature.accent }}
               ></div>
 
-              {/* Tag */}
               <span
                 className="self-start text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full mb-4 text-white"
                 style={{ backgroundColor: feature.accent }}
@@ -85,7 +85,6 @@ export function WhyShop() {
                 {feature.tag}
               </span>
 
-              {/* Icon */}
               <div
                 className="w-14 h-14 rounded-xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110"
                 style={{ backgroundColor: `${feature.accent}18` }}
@@ -93,14 +92,13 @@ export function WhyShop() {
                 <i className={`fa-solid ${feature.icon} text-2xl`} style={{ color: feature.accent }}></i>
               </div>
 
-              <h3 className="font-serif text-xl text-maroon-dark mb-2 group-hover:text-maroon transition-colors duration-200">
+              <h3 className="font-serif text-xl text-maroon-dark dark:text-cream mb-2 group-hover:text-maroon dark:group-hover:text-gold transition-colors duration-200">
                 {feature.title}
               </h3>
-              <p className="text-sm text-maroon-dark/60 leading-relaxed">
+              <p className="text-sm text-maroon-dark/65 dark:text-cream/65 leading-relaxed">
                 {feature.description}
               </p>
 
-              {/* Bottom arrow */}
               <div className="mt-5 flex items-center gap-1 text-xs font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0" style={{ color: feature.accent }}>
                 Learn more <i className="fa-solid fa-arrow-right text-[10px]"></i>
               </div>

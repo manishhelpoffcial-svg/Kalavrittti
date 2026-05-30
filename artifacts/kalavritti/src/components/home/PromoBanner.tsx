@@ -22,22 +22,26 @@ export function PromoBanner() {
   }, []);
 
   return (
-    <section
-      ref={bannerRef}
-      className="w-full bg-maroon-dark text-cream relative overflow-hidden py-14 border-y-4 border-gold"
-    >
-      {/* Animated bg pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.06]"
-        style={{
-          backgroundImage: `repeating-linear-gradient(45deg, #C9A84C 0px, #C9A84C 1px, transparent 1px, transparent 12px)`
-        }}
-      ></div>
-      <div className="absolute -top-16 -right-16 w-64 h-64 bg-saffron/10 rounded-full blur-2xl"></div>
-      <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-gold/10 rounded-full blur-2xl"></div>
+    <section ref={bannerRef} className="w-full relative overflow-hidden border-y-4 border-gold">
+      {/* Full-bleed background image */}
+      <div className="absolute inset-0">
+        <img
+          src="/assets/banner-promo.jpg"
+          alt="Festive offer"
+          className="w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1a0600]/95 via-[#1a0600]/85 to-[#1a0600]/60"></div>
+      </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      {/* Subtle grid overlay */}
+      <div
+        className="absolute inset-0 opacity-[0.04]"
+        style={{ backgroundImage: `repeating-linear-gradient(45deg, #C9A84C 0px, #C9A84C 1px, transparent 1px, transparent 12px)` }}
+      ></div>
+
+      <div className="container mx-auto px-4 relative z-10 py-14">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+
           {/* Left: Offer text */}
           <div className="text-center lg:text-left flex-1">
             <div className="flex items-center justify-center lg:justify-start gap-2 mb-3">
@@ -56,7 +60,7 @@ export function PromoBanner() {
               <span className="text-cream/60 text-xs uppercase tracking-wider">Ends in:</span>
               {[timeLeft.h, timeLeft.m, timeLeft.s].map((val, i) => (
                 <React.Fragment key={i}>
-                  <div className="bg-maroon rounded-lg px-2.5 py-1.5 min-w-[2.5rem] text-center">
+                  <div className="bg-maroon/70 backdrop-blur-sm rounded-lg px-2.5 py-1.5 min-w-[2.5rem] text-center border border-gold/20">
                     <div className="font-mono text-xl font-bold text-gold leading-none">{val}</div>
                     <div className="text-[9px] text-cream/50 uppercase">{["HRS", "MIN", "SEC"][i]}</div>
                   </div>
@@ -70,7 +74,7 @@ export function PromoBanner() {
           <div className="flex-shrink-0 text-center">
             <div className="mb-5">
               <p className="text-cream/60 text-xs uppercase tracking-wider mb-2">Use Code at Checkout</p>
-              <div className="inline-flex items-center gap-3 border-2 border-dashed border-gold/60 px-6 py-3 rounded-lg bg-maroon/40">
+              <div className="inline-flex items-center gap-3 border-2 border-dashed border-gold/60 px-6 py-3 rounded-lg bg-maroon/30 backdrop-blur-sm">
                 <i className="fa-solid fa-tag text-gold"></i>
                 <span className="font-mono text-2xl font-black text-gold tracking-[0.2em]">FESTIVE15</span>
                 <button

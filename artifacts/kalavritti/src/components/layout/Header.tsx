@@ -4,9 +4,9 @@ import { useGetCart, useGetWishlist } from "@workspace/api-client-react";
 import logo from "@assets/logo_1779952388538.png";
 
 const ANNOUNCEMENTS = [
-  "🎁 Use Code KALA10 — Get 10% OFF on your first order",
-  "🚚 Free Shipping Above ₹499 — Pan India",
-  "🏺 Authentic Indian Handicrafts — Direct from Artisans"
+  "Use Code KALA10 — Get 10% OFF on your first order",
+  "Free Shipping Above ₹499 — Pan India",
+  "Authentic Indian Handicrafts — Direct from Artisans"
 ];
 
 const NAV_LINKS = [
@@ -18,10 +18,31 @@ const NAV_LINKS = [
   { href: "/contact", label: "Contact", icon: "fa-envelope" },
 ];
 
+const ANNOUNCEMENT_ICONS = ["fa-tag", "fa-truck-fast", "fa-certificate"];
+
+function useDarkMode() {
+  const [isDark, setIsDark] = useState(() => {
+    try { return localStorage.getItem("kalavritti-dark-mode") === "true"; } catch { return false; }
+  });
+
+  useEffect(() => {
+    const html = document.documentElement;
+    if (isDark) {
+      html.classList.add("dark");
+    } else {
+      html.classList.remove("dark");
+    }
+    try { localStorage.setItem("kalavritti-dark-mode", String(isDark)); } catch {}
+  }, [isDark]);
+
+  return [isDark, () => setIsDark(p => !p)] as const;
+}
+
 export function Header() {
   const [currentAnnouncement, setCurrentAnnouncement] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isDark, toggleDark] = useDarkMode();
   const [location] = useLocation();
 
   const { data: cart } = useGetCart();
@@ -41,11 +62,7 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [isMobileMenuOpen]);
 
@@ -54,6 +71,7 @@ export function Header() {
 
   return (
     <header className={`sticky top-0 z-50 w-full transition-shadow duration-300 ${isScrolled ? "shadow-lg" : "shadow-sm"}`}>
+
       {/* Announcement Bar */}
       <div className="bg-maroon-dark text-cream py-1.5 px-4 text-xs flex justify-between items-center relative overflow-hidden h-8">
         <div className="hidden md:flex items-center gap-1.5 w-1/3 text-cream/80">
@@ -64,13 +82,14 @@ export function Header() {
           {ANNOUNCEMENTS.map((text, idx) => (
             <div
               key={idx}
-              className="absolute w-full left-0 transition-all duration-700"
+              className="absolute w-full left-0 flex items-center justify-center gap-1.5 transition-all duration-700"
               style={{
                 opacity: idx === currentAnnouncement ? 1 : 0,
                 transform: idx === currentAnnouncement ? "translateY(0)" : "translateY(16px)"
               }}
             >
-              {text}
+              <i className={`fa-solid ${ANNOUNCEMENT_ICONS[idx]} text-gold text-[10px]`}></i>
+              <span>{text}</span>
             </div>
           ))}
         </div>
@@ -82,38 +101,26 @@ export function Header() {
       </div>
 
       {/* Main Header */}
-      <div className="bg-cream border-b border-cream-dark">
+      <div className="bg-cream dark:bg-maroon-dark border-b border-cream-dark dark:border-maroon/50">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
-          {/* Hamburger Button */}
+
+          {/* Hamburger Button (mobile) */}
           <button
-            className="md:hidden relative w-8 h-8 flex flex-col justify-center items-center gap-[5px] group z-10"
+            className="md:hidden relative w-8 h-8 flex flex-col justify-center items-center gap-[5px] z-10"
             onClick={toggleMenu}
             aria-label="Toggle menu"
           >
-            <span
-              className="block w-6 h-[2px] bg-maroon-dark transition-all duration-300 origin-center"
-              style={{
-                transform: isMobileMenuOpen ? "translateY(7px) rotate(45deg)" : "none"
-              }}
-            />
-            <span
-              className="block w-6 h-[2px] bg-maroon-dark transition-all duration-300"
-              style={{
-                opacity: isMobileMenuOpen ? 0 : 1,
-                transform: isMobileMenuOpen ? "scaleX(0)" : "scaleX(1)"
-              }}
-            />
-            <span
-              className="block w-6 h-[2px] bg-maroon-dark transition-all duration-300 origin-center"
-              style={{
-                transform: isMobileMenuOpen ? "translateY(-7px) rotate(-45deg)" : "none"
-              }}
-            />
+            <span className="block w-6 h-[2px] bg-maroon-dark dark:bg-cream transition-all duration-300 origin-center"
+              style={{ transform: isMobileMenuOpen ? "translateY(7px) rotate(45deg)" : "none" }} />
+            <span className="block w-6 h-[2px] bg-maroon-dark dark:bg-cream transition-all duration-300"
+              style={{ opacity: isMobileMenuOpen ? 0 : 1, transform: isMobileMenuOpen ? "scaleX(0)" : "scaleX(1)" }} />
+            <span className="block w-6 h-[2px] bg-maroon-dark dark:bg-cream transition-all duration-300 origin-center"
+              style={{ transform: isMobileMenuOpen ? "translateY(-7px) rotate(-45deg)" : "none" }} />
           </button>
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <img src={logo} alt="Kalavritti" className="h-10 md:h-14" />
+            <img src={logo} alt="Kalavritti" className="h-10 md:h-14 dark:brightness-0 dark:invert" />
           </Link>
 
           {/* Search */}
@@ -121,45 +128,66 @@ export function Header() {
             <input
               type="search"
               placeholder="Search for handicrafts, artisans..."
-              className="w-full bg-cream-dark border border-cream-dark rounded-full py-2.5 pl-5 pr-12 text-sm focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all duration-200 placeholder:text-maroon-dark/40"
+              className="w-full bg-cream-dark dark:bg-maroon/40 border border-cream-dark dark:border-maroon/60 rounded-full py-2.5 pl-5 pr-12 text-sm text-maroon-dark dark:text-cream focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all duration-200 placeholder:text-maroon-dark/40 dark:placeholder:text-cream/40"
             />
-            <button className="absolute right-4 top-1/2 -translate-y-1/2 text-maroon hover:text-gold transition-colors duration-200">
+            <button className="absolute right-4 top-1/2 -translate-y-1/2 text-maroon dark:text-cream/70 hover:text-gold transition-colors duration-200">
               <i className="fa-solid fa-magnifying-glass text-sm"></i>
             </button>
           </div>
 
           {/* Action Icons */}
-          <div className="flex items-center gap-3 md:gap-5">
-            <Link href="/login" className="hidden md:flex flex-col items-center gap-0.5 text-maroon hover:text-saffron transition-colors duration-200 group">
+          <div className="flex items-center gap-3 md:gap-4">
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={toggleDark}
+              aria-label="Toggle dark mode"
+              className="flex flex-col items-center gap-0.5 text-maroon dark:text-cream/80 hover:text-gold dark:hover:text-gold transition-colors duration-200 group"
+            >
+              <i className={`${isDark ? "fa-solid fa-sun" : "fa-solid fa-moon"} text-lg group-hover:scale-110 transition-transform duration-200`}></i>
+              <span className="hidden md:block text-[9px] uppercase tracking-wider font-semibold opacity-70">
+                {isDark ? "Light" : "Dark"}
+              </span>
+            </button>
+
+            <Link href="/login" className="hidden md:flex flex-col items-center gap-0.5 text-maroon dark:text-cream/80 hover:text-saffron transition-colors duration-200 group">
               <i className="fa-regular fa-user text-lg group-hover:scale-110 transition-transform duration-200"></i>
               <span className="text-[9px] uppercase tracking-wider font-semibold opacity-70">Account</span>
             </Link>
-            <Link href="/wishlist" className="relative flex flex-col items-center gap-0.5 text-maroon hover:text-rose transition-colors duration-200 group">
+            <Link href="/wishlist" className="relative flex flex-col items-center gap-0.5 text-maroon dark:text-cream/80 hover:text-rose transition-colors duration-200 group">
               <i className="fa-regular fa-heart text-lg group-hover:scale-110 transition-transform duration-200"></i>
               <span className="hidden md:block text-[9px] uppercase tracking-wider font-semibold opacity-70">Wishlist</span>
               {wishlist && wishlist.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-saffron text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-bounce-once">
+                <span className="absolute -top-1 -right-1 bg-saffron text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                   {wishlist.length}
                 </span>
               )}
             </Link>
-            <Link href="/cart" className="relative flex flex-col items-center gap-0.5 text-maroon hover:text-teal transition-colors duration-200 group">
+            <Link href="/cart" className="relative flex flex-col items-center gap-0.5 text-maroon dark:text-cream/80 hover:text-teal transition-colors duration-200 group">
               <i className="fa-solid fa-bag-shopping text-lg group-hover:scale-110 transition-transform duration-200"></i>
               <span className="hidden md:block text-[9px] uppercase tracking-wider font-semibold opacity-70">Cart</span>
               {cart && cart.itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-teal text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-bounce-once">
+                <span className="absolute -top-1 -right-1 bg-teal text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                   {cart.itemCount}
                 </span>
               )}
+            </Link>
+
+            {/* CTA Button */}
+            <Link
+              href="/categories"
+              className="hidden md:inline-flex items-center gap-1.5 bg-maroon hover:bg-maroon-dark text-cream text-xs font-bold uppercase tracking-wider px-4 py-2.5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ml-1"
+            >
+              <i className="fa-solid fa-bag-shopping text-[10px]"></i>
+              Shop Now
             </Link>
           </div>
         </div>
       </div>
 
       {/* Desktop Navigation */}
-      <nav className="hidden md:block border-b border-cream-dark bg-cream/95 backdrop-blur-sm">
+      <nav className="hidden md:block border-b border-cream-dark dark:border-maroon/50 bg-cream/95 dark:bg-maroon-dark/95 backdrop-blur-sm">
         <div className="container mx-auto px-4">
-          <ul className="flex items-center justify-center gap-1 py-0 text-sm font-semibold text-maroon-dark uppercase tracking-wide">
+          <ul className="flex items-center justify-center gap-1 py-0 text-sm font-semibold text-maroon-dark dark:text-cream/80 uppercase tracking-wide">
             {NAV_LINKS.map((link) => {
               const isActive = location === link.href;
               return (
@@ -167,7 +195,9 @@ export function Header() {
                   <Link
                     href={link.href}
                     className={`flex items-center gap-1.5 px-4 py-3 relative transition-colors duration-200 ${
-                      isActive ? "text-maroon" : "hover:text-maroon"
+                      isActive
+                        ? "text-maroon dark:text-gold"
+                        : "hover:text-maroon dark:hover:text-gold"
                     }`}
                   >
                     <i className={`fa-solid ${link.icon} text-xs opacity-60`}></i>
@@ -189,18 +219,14 @@ export function Header() {
       {/* Mobile Menu Overlay */}
       <div
         className="fixed inset-0 z-[100] transition-all duration-300 md:hidden"
-        style={{
-          opacity: isMobileMenuOpen ? 1 : 0,
-          pointerEvents: isMobileMenuOpen ? "all" : "none"
-        }}
+        style={{ opacity: isMobileMenuOpen ? 1 : 0, pointerEvents: isMobileMenuOpen ? "all" : "none" }}
       >
         <div className="absolute inset-0 bg-maroon-dark/60 backdrop-blur-sm" onClick={closeMenu} />
         <div
-          className="absolute top-0 left-0 w-4/5 max-w-sm h-full bg-cream shadow-2xl flex flex-col transition-transform duration-300"
+          className="absolute top-0 left-0 w-4/5 max-w-sm h-full bg-cream dark:bg-maroon-dark shadow-2xl flex flex-col transition-transform duration-300"
           style={{ transform: isMobileMenuOpen ? "translateX(0)" : "translateX(-100%)" }}
           onClick={e => e.stopPropagation()}
         >
-          {/* Menu Header */}
           <div className="bg-maroon-dark p-5 flex justify-between items-center">
             <img src={logo} alt="Kalavritti" className="h-8 brightness-0 invert" />
             <button onClick={closeMenu} className="text-cream/80 hover:text-gold transition-colors">
@@ -208,19 +234,17 @@ export function Header() {
             </button>
           </div>
 
-          {/* Search in Mobile */}
-          <div className="p-4 border-b border-cream-dark">
+          <div className="p-4 border-b border-cream-dark dark:border-maroon/50">
             <div className="relative">
               <input
                 type="search"
                 placeholder="Search handicrafts..."
-                className="w-full bg-cream-dark border border-cream-dark rounded-full py-2.5 pl-5 pr-10 text-sm focus:outline-none focus:border-gold"
+                className="w-full bg-cream-dark dark:bg-maroon/40 border border-cream-dark dark:border-maroon/60 rounded-full py-2.5 pl-5 pr-10 text-sm text-maroon-dark dark:text-cream focus:outline-none focus:border-gold"
               />
-              <i className="fa-solid fa-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-maroon-dark/50 text-sm"></i>
+              <i className="fa-solid fa-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-maroon-dark/50 dark:text-cream/50 text-sm"></i>
             </div>
           </div>
 
-          {/* Navigation Links */}
           <nav className="flex-1 overflow-y-auto p-4">
             <ul className="flex flex-col gap-1">
               {NAV_LINKS.map((link, idx) => {
@@ -233,11 +257,11 @@ export function Header() {
                       className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all duration-200 ${
                         isActive
                           ? "bg-maroon text-cream"
-                          : "text-maroon-dark hover:bg-cream-dark hover:text-maroon"
+                          : "text-maroon-dark dark:text-cream hover:bg-cream-dark dark:hover:bg-maroon/50 hover:text-maroon dark:hover:text-gold"
                       }`}
                       style={{ animationDelay: `${idx * 50}ms` }}
                     >
-                      <i className={`fa-solid ${link.icon} w-5 text-center ${isActive ? "text-gold" : "text-maroon-light/70"}`}></i>
+                      <i className={`fa-solid ${link.icon} w-5 text-center ${isActive ? "text-gold" : "text-maroon-light/70 dark:text-cream/50"}`}></i>
                       {link.label}
                       {isActive && <i className="fa-solid fa-chevron-right ml-auto text-xs text-gold"></i>}
                     </Link>
@@ -247,10 +271,17 @@ export function Header() {
             </ul>
           </nav>
 
-          {/* Footer Links */}
-          <div className="p-4 border-t border-cream-dark bg-cream-dark/30">
-            <div className="flex gap-3">
-              <Link href="/login" onClick={closeMenu} className="flex-1 text-center py-2.5 border border-maroon text-maroon rounded-full text-sm font-semibold hover:bg-maroon hover:text-cream transition-all duration-200">
+          <div className="p-4 border-t border-cream-dark dark:border-maroon/50">
+            <Link
+              href="/categories"
+              onClick={closeMenu}
+              className="flex items-center justify-center gap-2 w-full py-3 bg-maroon text-cream font-bold uppercase tracking-wider text-sm hover:bg-maroon-dark transition-all duration-200"
+            >
+              <i className="fa-solid fa-bag-shopping text-xs"></i>
+              Shop Now
+            </Link>
+            <div className="flex gap-3 mt-3">
+              <Link href="/login" onClick={closeMenu} className="flex-1 text-center py-2.5 border border-maroon dark:border-cream/30 text-maroon dark:text-cream rounded-full text-sm font-semibold hover:bg-maroon hover:text-cream dark:hover:bg-maroon/50 transition-all duration-200">
                 Login
               </Link>
               <Link href="/register" onClick={closeMenu} className="flex-1 text-center py-2.5 bg-maroon text-cream rounded-full text-sm font-semibold hover:bg-maroon-dark transition-all duration-200">
