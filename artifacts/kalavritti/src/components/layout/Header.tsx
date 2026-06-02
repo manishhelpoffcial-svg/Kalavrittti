@@ -12,7 +12,7 @@ const ANNOUNCEMENTS = [
 const NAV_LINKS = [
   { href: "/", label: "Home", icon: "fa-house" },
   { href: "/categories", label: "Categories", icon: "fa-grid-2", hasDropdown: true },
-  { href: "/artisans", label: "Our Artisans", icon: "fa-hands" },
+  { href: "/artisans", label: "Artisans", icon: "fa-hands" },
   { href: "/our-story", label: "Our Story", icon: "fa-scroll" },
   { href: "/blog", label: "Blog", icon: "fa-feather-pointed" },
   { href: "/contact", label: "Contact", icon: "fa-envelope" },
@@ -214,6 +214,17 @@ export function Header() {
               })}
             </ul>
           </nav>
+
+          <div className="p-4 border-t border-maroon/50">
+            <div className="flex gap-3">
+              <Link href="/login" onClick={closeMenu} className="flex-1 text-center py-2.5 border border-gold/50 text-gold rounded-full text-sm font-semibold hover:bg-gold/10 transition-all duration-200">
+                Login
+              </Link>
+              <Link href="/register" onClick={closeMenu} className="flex-1 text-center py-2.5 bg-gold text-maroon-dark rounded-full text-sm font-semibold hover:bg-gold/90 transition-all duration-200">
+                Register
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </header>

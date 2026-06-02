@@ -52,7 +52,7 @@ export function ArtisanSpotlight() {
           <div className="flex items-center gap-4 w-full justify-center mb-3">
             <div className="h-px bg-gradient-to-r from-transparent to-gold/50 flex-1 max-w-[120px]"></div>
             <i className="fa-solid fa-hands text-gold text-xl"></i>
-            <h2 className="font-serif text-3xl md:text-4xl text-gold">Master Artisans</h2>
+            <h2 className="font-serif text-3xl md:text-4xl text-gold">Our Artisans</h2>
             <i className="fa-solid fa-hands text-gold text-xl" style={{ transform: "scaleX(-1)" }}></i>
             <div className="h-px bg-gradient-to-l from-transparent to-gold/50 flex-1 max-w-[120px]"></div>
           </div>
