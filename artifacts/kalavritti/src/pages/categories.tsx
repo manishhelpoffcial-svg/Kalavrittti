@@ -17,7 +17,7 @@ export default function Categories() {
   const displayCategories = (categories && categories.length > 0) ? categories : FALLBACK_CATEGORIES;
 
   return (
-    <div className="min-h-screen bg-maroon-dark">
+    <div className="min-h-screen bg-white">
 
       {/* Banner */}
       <div className="relative w-full overflow-hidden" style={{ minHeight: "220px" }}>
@@ -34,10 +34,10 @@ export default function Categories() {
             <div className="h-px w-8 bg-gold/60"></div>
             <span className="text-gold/80 text-xs uppercase font-bold tracking-[0.3em]">Our Collection</span>
           </div>
-          <h1 className="font-serif text-3xl md:text-5xl text-cream font-semibold mb-2">Shop by Category</h1>
+          <h1 className="font-serif text-3xl md:text-5xl text-white font-semibold mb-2">Shop by Category</h1>
           <div className="flex items-center gap-2 mt-1.5">
             <div className="w-6 h-px bg-gold/60"></div>
-            <p className="text-cream/65 text-sm md:text-base">
+            <p className="text-white/65 text-sm md:text-base">
               Explore authentic handmade treasures across India, crafted with love and tradition.
             </p>
           </div>
@@ -61,9 +61,9 @@ export default function Categories() {
               <Link
                 key={cat.id}
                 href={`/categories/${cat.slug}`}
-                className="group flex flex-col bg-maroon/30 rounded-xl overflow-hidden border border-maroon/50 hover:border-gold/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                className="group flex flex-col bg-white rounded-xl overflow-hidden border border-maroon/15 hover:border-gold/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 shadow-sm"
               >
-                <div className="w-full aspect-[4/3] overflow-hidden relative bg-maroon">
+                <div className="w-full aspect-[4/3] overflow-hidden relative bg-maroon/5">
                   <img
                     src={(cat as any).image || defaultImg}
                     alt={cat.name}
@@ -75,15 +75,15 @@ export default function Categories() {
                   </div>
                 </div>
                 <div className="p-5 w-full">
-                  <h3 className="font-serif text-xl text-cream mb-1.5 group-hover:text-gold transition-colors">{cat.name}</h3>
+                  <h3 className="font-serif text-xl text-maroon-dark mb-1.5 group-hover:text-maroon transition-colors">{cat.name}</h3>
                   {(cat as any).description && (
-                    <p className="text-sm text-cream/60 line-clamp-2 mb-3">{(cat as any).description}</p>
+                    <p className="text-sm text-maroon/60 line-clamp-2 mb-3">{(cat as any).description}</p>
                   )}
-                  <div className="flex items-center justify-between pt-3 border-t border-gold/10">
+                  <div className="flex items-center justify-between pt-3 border-t border-maroon/10">
                     <span className="text-xs font-bold uppercase tracking-wider text-gold">
                       {(cat as any).productCount || 0} Products
                     </span>
-                    <span className="text-xs font-semibold text-gold/70 flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
+                    <span className="text-xs font-semibold text-maroon/60 flex items-center gap-1 group-hover:gap-2 transition-all duration-200 group-hover:text-maroon">
                       Explore <i className="fa-solid fa-arrow-right text-[9px]"></i>
                     </span>
                   </div>

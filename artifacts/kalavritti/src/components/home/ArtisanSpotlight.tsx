@@ -37,26 +37,18 @@ export function ArtisanSpotlight() {
     : FALLBACK_ARTISANS;
 
   return (
-    <section ref={sectionRef} className="py-20 bg-maroon-dark relative overflow-hidden section-reveal">
-      {/* Background decoration */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
-        backgroundImage: `radial-gradient(circle at 1px 1px, #C9A84C 1px, transparent 0)`,
-        backgroundSize: "40px 40px"
-      }}></div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-saffron/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl pointer-events-none"></div>
-
+    <section ref={sectionRef} className="py-20 bg-maroon/5 relative overflow-hidden section-reveal">
       <div className="container mx-auto px-4 relative z-10">
         {/* Heading */}
         <div className="flex flex-col items-center text-center mb-14">
           <div className="flex items-center gap-4 w-full justify-center mb-3">
-            <div className="h-px bg-gradient-to-r from-transparent to-gold/50 flex-1 max-w-[120px]"></div>
-            <i className="fa-solid fa-hands text-gold text-xl"></i>
-            <h2 className="font-serif text-3xl md:text-4xl text-gold">Our Artisans</h2>
-            <i className="fa-solid fa-hands text-gold text-xl" style={{ transform: "scaleX(-1)" }}></i>
-            <div className="h-px bg-gradient-to-l from-transparent to-gold/50 flex-1 max-w-[120px]"></div>
+            <div className="h-px bg-gradient-to-r from-transparent to-maroon/30 flex-1 max-w-[120px]"></div>
+            <i className="fa-solid fa-hands text-maroon text-xl"></i>
+            <h2 className="font-serif text-3xl md:text-4xl text-maroon-dark">Our Artisans</h2>
+            <i className="fa-solid fa-hands text-maroon text-xl" style={{ transform: "scaleX(-1)" }}></i>
+            <div className="h-px bg-gradient-to-l from-transparent to-maroon/30 flex-1 max-w-[120px]"></div>
           </div>
-          <p className="text-cream/70 text-sm max-w-xl">The hands that shape our heritage. Meet the creators behind every masterpiece.</p>
+          <p className="text-maroon/60 text-sm max-w-xl">The hands that shape our heritage. Meet the creators behind every masterpiece.</p>
         </div>
 
         {/* Artisan Grid */}
@@ -70,7 +62,7 @@ export function ArtisanSpotlight() {
             >
               {/* Photo */}
               <div
-                className={`relative w-full aspect-square rounded-2xl overflow-hidden border-2 ${ACCENT_BORDERS[idx % ACCENT_BORDERS.length]} mb-3 shadow-lg group-hover:shadow-2xl transition-all duration-400 group-hover:-translate-y-1`}
+                className={`relative w-full aspect-square rounded-2xl overflow-hidden border-2 ${ACCENT_BORDERS[idx % ACCENT_BORDERS.length]} mb-3 shadow-md group-hover:shadow-xl transition-all duration-400 group-hover:-translate-y-1`}
               >
                 <img
                   src={artisan.photo || FALLBACK_ARTISANS[idx % FALLBACK_ARTISANS.length].photo}
@@ -80,9 +72,9 @@ export function ArtisanSpotlight() {
                     (e.target as HTMLImageElement).src = FALLBACK_ARTISANS[idx % FALLBACK_ARTISANS.length].photo;
                   }}
                 />
-                {/* Craft type overlay */}
+                {/* Hover overlay */}
                 <div className="absolute inset-0 bg-maroon-dark/0 group-hover:bg-maroon-dark/40 transition-colors duration-300 flex items-center justify-center">
-                  <span className="text-cream text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1 px-2 text-center">
+                  <span className="text-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1 px-2 text-center">
                     View Profile <i className="fa-solid fa-arrow-right text-[10px]"></i>
                   </span>
                 </div>
@@ -94,11 +86,11 @@ export function ArtisanSpotlight() {
               </div>
 
               {/* Info */}
-              <h3 className="font-serif text-sm md:text-base text-cream group-hover:text-gold transition-colors duration-200 leading-tight mb-0.5">
+              <h3 className="font-serif text-sm md:text-base text-maroon-dark group-hover:text-maroon transition-colors duration-200 leading-tight mb-0.5">
                 {artisan.name}
               </h3>
-              <p className="text-gold/70 text-xs font-medium mb-1 leading-tight">{artisan.craftType}</p>
-              <div className="flex items-center gap-1 text-cream/40 text-[11px]">
+              <p className="text-gold text-xs font-medium mb-1 leading-tight">{artisan.craftType}</p>
+              <div className="flex items-center gap-1 text-maroon/40 text-[11px]">
                 <i className="fa-solid fa-location-dot text-[9px]"></i>
                 <span>{artisan.city ? `${artisan.city}` : artisan.state}</span>
               </div>
@@ -109,7 +101,7 @@ export function ArtisanSpotlight() {
         <div className="text-center mt-12">
           <Link
             href="/artisans"
-            className="inline-flex items-center gap-2 border border-gold text-gold hover:bg-gold hover:text-maroon-dark px-8 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 border border-maroon text-maroon hover:bg-maroon hover:text-white px-8 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
           >
             <i className="fa-solid fa-people-group text-xs"></i>
             Meet All Artisans

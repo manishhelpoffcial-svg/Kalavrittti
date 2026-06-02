@@ -57,6 +57,19 @@
   --color-sidebar-accent-border: var(--sidebar-accent-border);
   --color-sidebar-ring: hsl(var(--sidebar-ring));
 
+  /* Brand color utilities — always the same regardless of light/dark mode */
+  --color-maroon-dark: hsl(var(--maroon-dark));
+  --color-maroon: hsl(var(--maroon));
+  --color-maroon-light: hsl(var(--maroon-light));
+  --color-gold: hsl(var(--gold));
+  --color-gold-light: hsl(var(--gold-light));
+  --color-cream: hsl(var(--cream));
+  --color-cream-dark: hsl(var(--cream-dark));
+  --color-saffron: #D4860A;
+  --color-teal: #1B6B7B;
+  --color-forest: #2D6A4F;
+  --color-rose: #9B2335;
+
   --font-sans: var(--app-font-sans);
   --font-serif: var(--app-font-serif);
   --font-mono: var(--app-font-mono);
@@ -88,7 +101,7 @@
   --text-dark: 0 44% 7%;
   --text-mid: 0 40% 21%;
 
-  --background: var(--cream);
+  --background: 0 0% 100%;
   --foreground: var(--text-dark);
 
   --border: var(--cream-dark);
@@ -229,20 +242,6 @@
   --shadow-lg: 0px 2px 0px 0px hsl(0 0% 0% / 0.5), 0px 4px 6px -1px hsl(0 0% 0% / 0.8);
   --shadow-xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.5), 0px 8px 10px -1px hsl(0 0% 0% / 0.8);
   --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.5);
-}
-
-/* === Kolka Pattern (set via JS in Layout.tsx) === */
-:root {
-  --kolka-url: none;
-}
-
-/* Apply pattern only to the dark maroon background layer.
-   Cards (bg-maroon/30, bg-maroon/40), inputs, and images have their own
-   backgrounds and will naturally sit on top, hiding the pattern beneath them. */
-.bg-maroon-dark {
-  background-image: var(--kolka-url);
-  background-repeat: repeat;
-  background-size: 140px 140px;
 }
 
 /* === Extended Brand Colors === */

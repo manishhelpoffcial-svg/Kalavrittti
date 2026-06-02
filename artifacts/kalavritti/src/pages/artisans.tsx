@@ -32,7 +32,7 @@ export default function Artisans() {
   const displayArtisans = (data?.artisans && data.artisans.length > 0) ? data.artisans : FALLBACK_ARTISANS;
 
   return (
-    <div className="min-h-screen bg-maroon-dark">
+    <div className="min-h-screen bg-white">
 
       {/* Hero Banner */}
       <div className="relative w-full overflow-hidden" style={{ minHeight: "380px" }}>
@@ -50,17 +50,17 @@ export default function Artisans() {
               <div className="h-px w-8 bg-gold/60"></div>
               <span className="text-gold/80 text-xs uppercase font-bold tracking-[0.3em]">Meet the Makers</span>
             </div>
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-cream font-semibold leading-[1.05] mb-3">
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white font-semibold leading-[1.05] mb-3">
               Artisans of
               <span className="block" style={{ color: "#D4860A" }}>Bharat</span>
             </h1>
-            <p className="text-cream/70 text-sm md:text-base max-w-sm leading-relaxed mb-7">
+            <p className="text-white/70 text-sm md:text-base max-w-sm leading-relaxed mb-7">
               A platform for artisans to share their journey, showcase their craft and connect with the world.
             </p>
             <div className="flex flex-wrap gap-3">
               <a
                 href="#artisan-grid"
-                className="inline-flex items-center gap-2 bg-maroon hover:bg-maroon-light text-cream font-semibold px-6 py-3 text-sm tracking-wide transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                className="inline-flex items-center gap-2 bg-maroon hover:bg-maroon-light text-white font-semibold px-6 py-3 text-sm tracking-wide transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
               >
                 <i className="fa-solid fa-people-group text-xs"></i>
                 Explore Artisans
@@ -82,8 +82,8 @@ export default function Artisans() {
                 <i className="fa-solid fa-bullhorn text-gold text-xs"></i>
               </div>
               <div>
-                <p className="text-cream text-sm font-semibold leading-tight">500+ Artisans Across India</p>
-                <p className="text-cream/55 text-xs mt-0.5">28 states · 50+ craft forms</p>
+                <p className="text-white text-sm font-semibold leading-tight">500+ Artisans Across India</p>
+                <p className="text-white/55 text-xs mt-0.5">28 states · 50+ craft forms</p>
               </div>
             </div>
             <Link
@@ -101,8 +101,8 @@ export default function Artisans() {
 
         {/* Sidebar filters */}
         <aside className="w-full md:w-60 shrink-0">
-          <div className="bg-maroon/40 p-6 rounded-xl border border-maroon/60 sticky top-24">
-            <h3 className="font-serif text-lg text-cream mb-4 border-b border-gold/20 pb-2">
+          <div className="bg-gray-50 p-6 rounded-xl border border-maroon/15 sticky top-24">
+            <h3 className="font-serif text-lg text-maroon-dark mb-4 border-b border-maroon/15 pb-2">
               Filter Artisans
             </h3>
 
@@ -111,22 +111,22 @@ export default function Artisans() {
                 <input
                   type="text"
                   placeholder="Search by name..."
-                  className="w-full bg-maroon/40 border border-maroon/60 rounded-lg py-2 pl-3 pr-8 text-sm text-cream placeholder:text-cream/40 focus:outline-none focus:ring-1 focus:ring-gold"
+                  className="w-full bg-white border border-maroon/25 rounded-lg py-2 pl-3 pr-8 text-sm text-maroon-dark placeholder:text-maroon/30 focus:outline-none focus:ring-1 focus:ring-gold"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <i className="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-cream/40 text-xs"></i>
+                <i className="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-maroon/30 text-xs"></i>
               </div>
             </div>
 
             <div className="mb-5">
-              <h4 className="font-semibold text-xs uppercase tracking-wider text-cream/50 mb-3">By Craft</h4>
-              <div className="space-y-2 text-sm text-cream/70">
-                <label className="flex items-center gap-2 cursor-pointer hover:text-gold transition-colors">
+              <h4 className="font-semibold text-xs uppercase tracking-wider text-maroon/50 mb-3">By Craft</h4>
+              <div className="space-y-2 text-sm text-maroon/70">
+                <label className="flex items-center gap-2 cursor-pointer hover:text-maroon transition-colors">
                   <input type="radio" name="craft" checked={selectedCraft === ""} onChange={() => setSelectedCraft("")} className="accent-gold" /> All Crafts
                 </label>
                 {crafts.map(craft => (
-                  <label key={craft} className="flex items-center gap-2 cursor-pointer hover:text-gold transition-colors">
+                  <label key={craft} className="flex items-center gap-2 cursor-pointer hover:text-maroon transition-colors">
                     <input type="radio" name="craft" checked={selectedCraft === craft} onChange={() => setSelectedCraft(craft)} className="accent-gold" /> {craft}
                   </label>
                 ))}
@@ -134,13 +134,13 @@ export default function Artisans() {
             </div>
 
             <div className="mb-2">
-              <h4 className="font-semibold text-xs uppercase tracking-wider text-cream/50 mb-3">By Region</h4>
-              <div className="space-y-2 text-sm text-cream/70">
-                <label className="flex items-center gap-2 cursor-pointer hover:text-gold transition-colors">
+              <h4 className="font-semibold text-xs uppercase tracking-wider text-maroon/50 mb-3">By Region</h4>
+              <div className="space-y-2 text-sm text-maroon/70">
+                <label className="flex items-center gap-2 cursor-pointer hover:text-maroon transition-colors">
                   <input type="radio" name="region" checked={selectedState === ""} onChange={() => setSelectedState("")} className="accent-gold" /> All Regions
                 </label>
                 {states.map(state => (
-                  <label key={state} className="flex items-center gap-2 cursor-pointer hover:text-gold transition-colors">
+                  <label key={state} className="flex items-center gap-2 cursor-pointer hover:text-maroon transition-colors">
                     <input type="radio" name="region" checked={selectedState === state} onChange={() => setSelectedState(state)} className="accent-gold" /> {state}
                   </label>
                 ))}
@@ -154,7 +154,7 @@ export default function Artisans() {
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="bg-maroon/30 p-6 rounded-xl border border-gold/10 flex flex-col gap-4">
+                <div key={i} className="bg-white p-6 rounded-xl border border-maroon/10 flex flex-col gap-4 shadow-sm">
                   <Skeleton className="w-24 h-24 rounded-full mx-auto" />
                   <Skeleton className="h-6 w-3/4 mx-auto" />
                   <Skeleton className="h-4 w-1/2 mx-auto" />
@@ -167,9 +167,9 @@ export default function Artisans() {
                 <Link
                   key={artisan.id}
                   href={`/artisans/${(artisan as any).slug || artisan.id}`}
-                  className="group bg-maroon/30 border border-maroon/50 rounded-xl overflow-hidden hover:border-gold/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col"
+                  className="group bg-white border border-maroon/15 rounded-xl overflow-hidden hover:border-gold/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col shadow-sm"
                 >
-                  <div className="relative w-full aspect-[4/3] overflow-hidden bg-maroon">
+                  <div className="relative w-full aspect-[4/3] overflow-hidden bg-maroon/5">
                     <img
                       src={(artisan as any).photo || FALLBACK_ARTISANS[idx % FALLBACK_ARTISANS.length].photo}
                       alt={artisan.name}
@@ -188,18 +188,18 @@ export default function Artisans() {
                   </div>
 
                   <div className="p-5 flex flex-col flex-1">
-                    <h3 className="font-serif text-lg text-cream group-hover:text-gold transition-colors duration-200 leading-tight mb-0.5">
+                    <h3 className="font-serif text-lg text-maroon-dark group-hover:text-maroon transition-colors duration-200 leading-tight mb-0.5">
                       {artisan.name}
                     </h3>
                     <p className="text-sm font-medium mb-2" style={{ color: ACCENT_COLORS[idx % ACCENT_COLORS.length] }}>
                       {(artisan as any).craftType}
                     </p>
-                    <div className="flex items-center gap-1 text-cream/50 text-xs mb-4">
+                    <div className="flex items-center gap-1 text-maroon/50 text-xs mb-4">
                       <i className="fa-solid fa-location-dot text-[9px]"></i>
                       <span>{(artisan as any).city ? `${(artisan as any).city}, ` : ''}{(artisan as any).state}</span>
                     </div>
-                    <div className="mt-auto pt-3 border-t border-gold/10 flex items-center justify-between">
-                      <span className="text-xs font-medium text-cream/50">
+                    <div className="mt-auto pt-3 border-t border-maroon/10 flex items-center justify-between">
+                      <span className="text-xs font-medium text-maroon/50">
                         <i className="fa-solid fa-box text-[9px] mr-1"></i>
                         {(artisan as any).productCount || 0} Products
                       </span>
@@ -214,10 +214,10 @@ export default function Artisans() {
           )}
 
           {!isLoading && displayArtisans.length === 0 && (
-            <div className="py-24 text-center bg-maroon/20 rounded-xl border border-gold/10">
-              <i className="fa-solid fa-users-slash text-3xl text-cream/20 mb-4 block"></i>
-              <h3 className="font-serif text-xl text-cream mb-2">No artisans found</h3>
-              <p className="text-cream/60 mb-4">Try adjusting your filters.</p>
+            <div className="py-24 text-center bg-maroon/5 rounded-xl border border-maroon/10">
+              <i className="fa-solid fa-users-slash text-3xl text-maroon/20 mb-4 block"></i>
+              <h3 className="font-serif text-xl text-maroon-dark mb-2">No artisans found</h3>
+              <p className="text-maroon/60 mb-4">Try adjusting your filters.</p>
               <Button
                 variant="outline"
                 className="border-gold text-gold hover:bg-gold/10"

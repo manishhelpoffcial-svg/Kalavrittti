@@ -26,29 +26,29 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-maroon-dark text-cream mt-auto border-t-[4px] border-gold">
+    <footer className="bg-black text-white mt-auto border-t-[4px] border-gold">
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Info */}
           <div className="lg:col-span-2">
-            <Link href="/" className="inline-block bg-cream p-2 rounded mb-6">
+            <Link href="/" className="inline-block bg-white p-2 rounded mb-6">
               <img src={logo} alt="Kalavritti" className="h-12" />
             </Link>
             <p className="font-serif text-xl text-gold mb-2">Celebrating Handmade. Honoring Artisans.</p>
-            <p className="text-cream/80 text-sm mb-6 leading-relaxed">
+            <p className="text-white/70 text-sm mb-6 leading-relaxed">
               Empowering Artisans. Enriching Bharat. We bring you the authentic richness of Indian craft traditions, carefully curated from across the country.
             </p>
             <div className="flex items-center gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-maroon flex items-center justify-center hover:bg-gold hover:text-maroon-dark transition-colors">
+              <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold hover:text-black transition-colors">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-maroon flex items-center justify-center hover:bg-gold hover:text-maroon-dark transition-colors">
+              <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold hover:text-black transition-colors">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-maroon flex items-center justify-center hover:bg-gold hover:text-maroon-dark transition-colors">
+              <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold hover:text-black transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-maroon flex items-center justify-center hover:bg-gold hover:text-maroon-dark transition-colors">
+              <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold hover:text-black transition-colors">
                 <Youtube className="w-5 h-5" />
               </a>
             </div>
@@ -57,7 +57,7 @@ export function Footer() {
           {/* Quick Links */}
           <div>
             <h3 className="font-serif text-xl text-gold mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-gold">Quick Links</h3>
-            <ul className="space-y-3 text-sm text-cream/80">
+            <ul className="space-y-3 text-sm text-white/70">
               <li><Link href="/about" className="hover:text-gold transition-colors">About Us</Link></li>
               <li><Link href="/our-story" className="hover:text-gold transition-colors">Our Story</Link></li>
               <li><Link href="/artisans" className="hover:text-gold transition-colors">Our Artisans</Link></li>
@@ -69,7 +69,7 @@ export function Footer() {
           {/* Help & Support */}
           <div>
             <h3 className="font-serif text-xl text-gold mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-gold">Help & Support</h3>
-            <ul className="space-y-3 text-sm text-cream/80">
+            <ul className="space-y-3 text-sm text-white/70">
               <li><Link href="/faq" className="hover:text-gold transition-colors">FAQ</Link></li>
               <li><Link href="/shipping" className="hover:text-gold transition-colors">Shipping Policy</Link></li>
               <li><Link href="/returns" className="hover:text-gold transition-colors">Returns & Refunds</Link></li>
@@ -81,7 +81,7 @@ export function Footer() {
           {/* Contact & Newsletter */}
           <div>
             <h3 className="font-serif text-xl text-gold mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-gold">Get in Touch</h3>
-            <ul className="space-y-4 text-sm text-cream/80 mb-6">
+            <ul className="space-y-4 text-sm text-white/70 mb-6">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-gold shrink-0 mt-0.5" />
                 <span>123 Heritage Lane, Craft District, New Delhi, India 110001</span>
@@ -97,20 +97,20 @@ export function Footer() {
             </ul>
 
             <form onSubmit={handleSubscribe} className="space-y-2">
-              <p className="text-sm font-medium text-cream">Subscribe to our newsletter</p>
+              <p className="text-sm font-medium text-white">Subscribe to our newsletter</p>
               <div className="flex">
                 <input
                   type="email"
                   placeholder="Your email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-maroon border border-maroon-light text-cream px-3 py-2 text-sm rounded-l w-full focus:outline-none focus:border-gold placeholder:text-cream/50"
+                  className="bg-white/10 border border-white/20 text-white px-3 py-2 text-sm rounded-l w-full focus:outline-none focus:border-gold placeholder:text-white/40"
                   required
                 />
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={subscribe.isPending}
-                  className="rounded-l-none bg-gold text-maroon-dark hover:bg-gold-light"
+                  className="rounded-l-none bg-gold text-black hover:bg-gold/90"
                 >
                   Join
                 </Button>
@@ -119,10 +119,10 @@ export function Footer() {
           </div>
         </div>
       </div>
-      
+
       {/* Copyright */}
-      <div className="border-t border-maroon">
-        <div className="container mx-auto px-4 py-6 text-center text-xs text-cream/60">
+      <div className="border-t border-white/10">
+        <div className="container mx-auto px-4 py-6 text-center text-xs text-white/50">
           <p>&copy; {new Date().getFullYear()} Kalavritti. All rights reserved. Celebrating the spirit of Bharat.</p>
         </div>
       </div>
