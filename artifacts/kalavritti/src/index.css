@@ -231,6 +231,20 @@
   --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.5);
 }
 
+/* === Kolka Pattern (set via JS in Layout.tsx) === */
+:root {
+  --kolka-url: none;
+}
+
+/* Apply pattern only to the dark maroon background layer.
+   Cards (bg-maroon/30, bg-maroon/40), inputs, and images have their own
+   backgrounds and will naturally sit on top, hiding the pattern beneath them. */
+.bg-maroon-dark {
+  background-image: var(--kolka-url);
+  background-repeat: repeat;
+  background-size: 140px 140px;
+}
+
 /* === Extended Brand Colors === */
 :root {
   --saffron: #D4860A;

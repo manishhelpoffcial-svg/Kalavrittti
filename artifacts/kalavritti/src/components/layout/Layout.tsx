@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 
@@ -7,7 +7,10 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
-  const patternUrl = `${import.meta.env.BASE_URL}assets/pattern-kolka.svg`;
+  useEffect(() => {
+    const patternUrl = `${import.meta.env.BASE_URL}assets/pattern-kolka.svg`;
+    document.documentElement.style.setProperty("--kolka-url", `url("${patternUrl}")`);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-[100dvh] bg-background">
@@ -16,21 +19,6 @@ export function Layout({ children }: LayoutProps) {
         {children}
       </main>
       <Footer />
-
-      {/* Gold kolka pattern — fixed overlay on top of everything, pointer-events disabled */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 9999,
-          pointerEvents: "none",
-          backgroundImage: `url(${patternUrl})`,
-          backgroundRepeat: "repeat",
-          backgroundSize: "140px 140px",
-          opacity: 0.09,
-        }}
-      />
     </div>
   );
 }
