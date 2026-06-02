@@ -1,98 +1,72 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140">
-  <defs>
-    <style>
-      .p { fill: #C9A84C; }
-      .s { fill: none; stroke: #C9A84C; stroke-width: 0.6; }
-    </style>
-  </defs>
 
   <!-- ── Central lotus at (70,70) ── -->
-  <!-- Center jewel -->
-  <circle cx="70" cy="70" r="3" class="p" opacity="0.22"/>
-  <circle cx="70" cy="70" r="1.4" class="p" opacity="0.35"/>
+  <circle cx="70" cy="70" r="3" fill="#C9A84C"/>
+  <circle cx="70" cy="70" r="1.4" fill="#F0CC7A"/>
 
-  <!-- 8 petals — pointed teardrop shapes radiating out -->
-  <!-- North -->
-  <path d="M70,70 C67.5,62 67.5,50 70,41 C72.5,50 72.5,62 70,70Z" class="p" opacity="0.13"/>
-  <!-- South -->
-  <path d="M70,70 C72.5,78 72.5,90 70,99 C67.5,90 67.5,78 70,70Z" class="p" opacity="0.13"/>
-  <!-- East -->
-  <path d="M70,70 C78,72.5 90,72.5 99,70 C90,67.5 78,67.5 70,70Z" class="p" opacity="0.13"/>
-  <!-- West -->
-  <path d="M70,70 C62,67.5 50,67.5 41,70 C50,72.5 62,72.5 70,70Z" class="p" opacity="0.13"/>
-  <!-- NE -->
-  <path d="M70,70 C71,64 75,56 81,51 C78,57 74,64 70,70Z" class="p" opacity="0.11"/>
-  <!-- NW -->
-  <path d="M70,70 C64,71 56,75 51,81 C57,78 64,74 70,70Z" class="p" opacity="0.11"/>
-  <!-- SE -->
-  <path d="M70,70 C76,69 84,65 89,59 C86,65 82,70 70,70Z" class="p" opacity="0.11"/>
-  <!-- SW -->
-  <path d="M70,70 C69,76 65,84 59,89 C65,86 70,82 70,70Z" class="p" opacity="0.11"/>
+  <!-- 8 petals — solid fills -->
+  <path d="M70,70 C67.5,62 67.5,50 70,41 C72.5,50 72.5,62 70,70Z" fill="#C9A84C"/>
+  <path d="M70,70 C72.5,78 72.5,90 70,99 C67.5,90 67.5,78 70,70Z" fill="#C9A84C"/>
+  <path d="M70,70 C78,72.5 90,72.5 99,70 C90,67.5 78,67.5 70,70Z" fill="#C9A84C"/>
+  <path d="M70,70 C62,67.5 50,67.5 41,70 C50,72.5 62,72.5 70,70Z" fill="#C9A84C"/>
+  <path d="M70,70 C71,64 75,56 81,51 C78,57 74,64 70,70Z" fill="#C9A84C"/>
+  <path d="M70,70 C64,71 56,75 51,81 C57,78 64,74 70,70Z" fill="#C9A84C"/>
+  <path d="M70,70 C76,69 84,65 89,59 C86,65 82,70 70,70Z" fill="#C9A84C"/>
+  <path d="M70,70 C69,76 65,84 59,89 C65,86 70,82 70,70Z" fill="#C9A84C"/>
 
-  <!-- Petal outline ring (dashed) -->
-  <circle cx="70" cy="70" r="20" class="s" opacity="0.12" stroke-dasharray="2 4"/>
+  <!-- Outer dashed ring -->
+  <circle cx="70" cy="70" r="20" fill="none" stroke="#C9A84C" stroke-width="0.6" stroke-dasharray="2 4"/>
 
-  <!-- Dot ring at petal tips -->
-  <circle cx="70" cy="49" r="1.2" class="p" opacity="0.20"/>
-  <circle cx="70" cy="91" r="1.2" class="p" opacity="0.20"/>
-  <circle cx="49" cy="70" r="1.2" class="p" opacity="0.20"/>
-  <circle cx="91" cy="70" r="1.2" class="p" opacity="0.20"/>
-  <circle cx="84" cy="56" r="0.9" class="p" opacity="0.18"/>
-  <circle cx="56" cy="84" r="0.9" class="p" opacity="0.18"/>
-  <circle cx="84" cy="84" r="0.9" class="p" opacity="0.18"/>
-  <circle cx="56" cy="56" r="0.9" class="p" opacity="0.18"/>
+  <!-- Dot ring -->
+  <circle cx="70" cy="49" r="1.4" fill="#C9A84C"/>
+  <circle cx="70" cy="91" r="1.4" fill="#C9A84C"/>
+  <circle cx="49" cy="70" r="1.4" fill="#C9A84C"/>
+  <circle cx="91" cy="70" r="1.4" fill="#C9A84C"/>
+  <circle cx="84" cy="56" r="1" fill="#C9A84C"/>
+  <circle cx="56" cy="84" r="1" fill="#C9A84C"/>
+  <circle cx="84" cy="84" r="1" fill="#C9A84C"/>
+  <circle cx="56" cy="56" r="1" fill="#C9A84C"/>
 
-  <!-- ── Kolka (paisley) motifs at mid-field ── -->
-  <!-- Top kolka -->
-  <path d="M70,22 C68,17 66,11 69,7 C73,4 77,8 74,14 C72,18 70,22 70,22Z" class="p" opacity="0.16"/>
-  <path d="M70,22 C68,17 66,11 69,7 C73,4 77,8 74,14 C72,18 70,22 70,22Z" class="s" opacity="0.14" stroke-width="0.4"/>
+  <!-- ── Kolka (paisley) motifs ── -->
+  <path d="M70,22 C68,17 66,11 69,7 C73,4 77,8 74,14 C72,18 70,22 70,22Z" fill="#C9A84C" stroke="#C9A84C" stroke-width="0.3"/>
+  <path d="M70,118 C72,123 74,129 71,133 C67,136 63,132 66,126 C68,122 70,118 70,118Z" fill="#C9A84C" stroke="#C9A84C" stroke-width="0.3"/>
+  <path d="M22,70 C17,72 11,74 7,71 C4,67 8,63 14,66 C18,68 22,70 22,70Z" fill="#C9A84C" stroke="#C9A84C" stroke-width="0.3"/>
+  <path d="M118,70 C123,68 129,66 133,69 C136,73 132,77 126,74 C122,72 118,70 118,70Z" fill="#C9A84C" stroke="#C9A84C" stroke-width="0.3"/>
 
-  <!-- Bottom kolka -->
-  <path d="M70,118 C72,123 74,129 71,133 C67,136 63,132 66,126 C68,122 70,118 70,118Z" class="p" opacity="0.16"/>
-  <path d="M70,118 C72,123 74,129 71,133 C67,136 63,132 66,126 C68,122 70,118 70,118Z" class="s" opacity="0.14" stroke-width="0.4"/>
+  <!-- Spoke lines -->
+  <line x1="70" y1="50" x2="70" y2="22" stroke="#C9A84C" stroke-width="0.5"/>
+  <line x1="70" y1="90" x2="70" y2="118" stroke="#C9A84C" stroke-width="0.5"/>
+  <line x1="50" y1="70" x2="22" y2="70" stroke="#C9A84C" stroke-width="0.5"/>
+  <line x1="90" y1="70" x2="118" y2="70" stroke="#C9A84C" stroke-width="0.5"/>
 
-  <!-- Left kolka -->
-  <path d="M22,70 C17,72 11,74 7,71 C4,67 8,63 14,66 C18,68 22,70 22,70Z" class="p" opacity="0.16"/>
+  <!-- ── Corner quarter-lotus arcs (tile into full lotuses at grid intersections) ── -->
+  <path d="M0,0 C5,8 8,15 0,22" fill="none" stroke="#C9A84C" stroke-width="0.6"/>
+  <path d="M0,0 C8,5 15,8 22,0" fill="none" stroke="#C9A84C" stroke-width="0.6"/>
+  <path d="M0,0 C4,4 6,8 5,13" fill="#C9A84C"/>
+  <path d="M0,0 C4,4 8,6 13,5" fill="#C9A84C"/>
+  <circle cx="0" cy="0" r="2.5" fill="#C9A84C"/>
 
-  <!-- Right kolka -->
-  <path d="M118,70 C123,68 129,66 133,69 C136,73 132,77 126,74 C122,72 118,70 118,70Z" class="p" opacity="0.16"/>
+  <path d="M140,0 C135,8 132,15 140,22" fill="none" stroke="#C9A84C" stroke-width="0.6"/>
+  <path d="M140,0 C132,5 125,8 118,0" fill="none" stroke="#C9A84C" stroke-width="0.6"/>
+  <path d="M140,0 C136,4 134,8 135,13" fill="#C9A84C"/>
+  <path d="M140,0 C136,4 132,6 127,5" fill="#C9A84C"/>
+  <circle cx="140" cy="0" r="2.5" fill="#C9A84C"/>
 
-  <!-- Thin spokes from center to kolkas -->
-  <line x1="70" y1="50" x2="70" y2="22" class="s" opacity="0.09" stroke-width="0.4"/>
-  <line x1="70" y1="90" x2="70" y2="118" class="s" opacity="0.09" stroke-width="0.4"/>
-  <line x1="50" y1="70" x2="22" y2="70" class="s" opacity="0.09" stroke-width="0.4"/>
-  <line x1="90" y1="70" x2="118" y2="70" class="s" opacity="0.09" stroke-width="0.4"/>
+  <path d="M0,140 C5,132 8,125 0,118" fill="none" stroke="#C9A84C" stroke-width="0.6"/>
+  <path d="M0,140 C8,135 15,132 22,140" fill="none" stroke="#C9A84C" stroke-width="0.6"/>
+  <path d="M0,140 C4,136 6,132 5,127" fill="#C9A84C"/>
+  <path d="M0,140 C4,136 8,134 13,135" fill="#C9A84C"/>
+  <circle cx="0" cy="140" r="2.5" fill="#C9A84C"/>
 
-  <!-- ── Corner quarter-lotus accents (tile together to form full lotuses at grid intersections) ── -->
-  <!-- Top-left quarter -->
-  <path d="M0,0 C5,8 8,15 0,22" class="s" opacity="0.13" stroke-width="0.5"/>
-  <path d="M0,0 C8,5 15,8 22,0" class="s" opacity="0.13" stroke-width="0.5"/>
-  <path d="M0,0 C4,4 6,8 5,13" class="p" opacity="0.10"/>
-  <path d="M0,0 C4,4 8,6 13,5" class="p" opacity="0.10"/>
-  <circle cx="0" cy="0" r="2.5" class="p" opacity="0.18"/>
+  <path d="M140,140 C135,132 132,125 140,118" fill="none" stroke="#C9A84C" stroke-width="0.6"/>
+  <path d="M140,140 C132,135 125,132 118,140" fill="none" stroke="#C9A84C" stroke-width="0.6"/>
+  <path d="M140,140 C136,136 134,132 135,127" fill="#C9A84C"/>
+  <path d="M140,140 C136,136 132,134 127,135" fill="#C9A84C"/>
+  <circle cx="140" cy="140" r="2.5" fill="#C9A84C"/>
 
-  <!-- Top-right quarter -->
-  <path d="M140,0 C135,8 132,15 140,22" class="s" opacity="0.13" stroke-width="0.5"/>
-  <path d="M140,0 C132,5 125,8 118,0" class="s" opacity="0.13" stroke-width="0.5"/>
-  <circle cx="140" cy="0" r="2.5" class="p" opacity="0.18"/>
-
-  <!-- Bottom-left quarter -->
-  <path d="M0,140 C5,132 8,125 0,118" class="s" opacity="0.13" stroke-width="0.5"/>
-  <path d="M0,140 C8,135 15,132 22,140" class="s" opacity="0.13" stroke-width="0.5"/>
-  <circle cx="0" cy="140" r="2.5" class="p" opacity="0.18"/>
-
-  <!-- Bottom-right quarter -->
-  <path d="M140,140 C135,132 132,125 140,118" class="s" opacity="0.13" stroke-width="0.5"/>
-  <path d="M140,140 C132,135 125,132 118,140" class="s" opacity="0.13" stroke-width="0.5"/>
-  <circle cx="140" cy="140" r="2.5" class="p" opacity="0.18"/>
-
-  <!-- Mid-edge small accents (tile with adjacent tiles) -->
-  <!-- Top edge mid -->
-  <circle cx="70" cy="0" r="1.5" class="p" opacity="0.16"/>
-  <!-- Bottom edge mid -->
-  <circle cx="70" cy="140" r="1.5" class="p" opacity="0.16"/>
-  <!-- Left edge mid -->
-  <circle cx="0" cy="70" r="1.5" class="p" opacity="0.16"/>
-  <!-- Right edge mid -->
-  <circle cx="140" cy="70" r="1.5" class="p" opacity="0.16"/>
+  <!-- Mid-edge dots -->
+  <circle cx="70" cy="0" r="1.5" fill="#C9A84C"/>
+  <circle cx="70" cy="140" r="1.5" fill="#C9A84C"/>
+  <circle cx="0" cy="70" r="1.5" fill="#C9A84C"/>
+  <circle cx="140" cy="70" r="1.5" fill="#C9A84C"/>
 </svg>
