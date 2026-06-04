@@ -256,6 +256,244 @@ export interface NewsletterInput {
   email: string;
 }
 
+export interface AdminLoginInput {
+  credential: string;
+  password: string;
+}
+
+export interface AdminInfo {
+  name: string;
+  email: string;
+}
+
+export interface AdminAuthResult {
+  success: boolean;
+  token: string;
+  admin: AdminInfo;
+}
+
+export interface SellerApplication {
+  id: number;
+  applicationId: string;
+  fullName: string;
+  /** @nullable */
+  age?: number | null;
+  /** @nullable */
+  dob?: string | null;
+  /** @nullable */
+  gender?: string | null;
+  mobile: string;
+  mobileVerified?: boolean;
+  email: string;
+  emailVerified?: boolean;
+  /** @nullable */
+  categoryName?: string | null;
+  /** @nullable */
+  categoryDescription?: string | null;
+  /** @nullable */
+  aadhaarUrl?: string | null;
+  /** @nullable */
+  panCardUrl?: string | null;
+  /** @nullable */
+  gstNumber?: string | null;
+  /** @nullable */
+  businessName?: string | null;
+  /** @nullable */
+  businessAddress?: string | null;
+  videoKycRequested?: boolean;
+  /** @nullable */
+  accountHolderName?: string | null;
+  /** @nullable */
+  bankName?: string | null;
+  /** @nullable */
+  accountNumber?: string | null;
+  /** @nullable */
+  ifscCode?: string | null;
+  /** @nullable */
+  upiId?: string | null;
+  termsAccepted?: boolean;
+  privacyAccepted?: boolean;
+  status: string;
+  /** @nullable */
+  supabaseUserId?: string | null;
+  createdAt: string;
+}
+
+export interface AdminStats {
+  totalProducts: number;
+  totalArtisans: number;
+  totalCategories: number;
+  totalBlogPosts: number;
+  totalContacts: number;
+  totalSellers: number;
+  pendingSellers: number;
+  approvedSellers: number;
+  rejectedSellers: number;
+  recentSellers: SellerApplication[];
+}
+
+export interface AdminSellerListResponse {
+  sellers: SellerApplication[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface SellerStatusUpdate {
+  status: string;
+  /** @nullable */
+  note?: string | null;
+}
+
+export interface AdminProduct {
+  id: number;
+  title: string;
+  slug: string;
+  price: number;
+  mrp: number;
+  /** @nullable */
+  discountPercent?: number | null;
+  /** @nullable */
+  mainImage?: string | null;
+  /** @nullable */
+  categoryName?: string | null;
+  /** @nullable */
+  categorySlug?: string | null;
+  /** @nullable */
+  artisanId?: number | null;
+  stockQuantity?: number;
+  inStock: boolean;
+  isFeatured?: boolean;
+  isBestSeller?: boolean;
+  isNewArrival?: boolean;
+  /** @nullable */
+  rating?: number | null;
+  reviewCount?: number;
+  status: string;
+  createdAt: string;
+}
+
+export interface AdminProductListResponse {
+  products: AdminProduct[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface AdminProductUpdate {
+  /** @nullable */
+  isFeatured?: boolean | null;
+  /** @nullable */
+  isBestSeller?: boolean | null;
+  /** @nullable */
+  isNewArrival?: boolean | null;
+  /** @nullable */
+  inStock?: boolean | null;
+  /** @nullable */
+  status?: string | null;
+  /** @nullable */
+  stockQuantity?: number | null;
+  /** @nullable */
+  price?: number | null;
+}
+
+export interface AdminArtisan {
+  id: number;
+  name: string;
+  slug: string;
+  craftType: string;
+  state: string;
+  /** @nullable */
+  city?: string | null;
+  /** @nullable */
+  photo?: string | null;
+  /** @nullable */
+  shortBio?: string | null;
+  featured: boolean;
+  productCount: number;
+}
+
+export interface AdminArtisanListResponse {
+  artisans: AdminArtisan[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface AdminArtisanUpdate {
+  /** @nullable */
+  featured?: boolean | null;
+  /** @nullable */
+  craftType?: string | null;
+  /** @nullable */
+  state?: string | null;
+}
+
+export interface CategoryInput {
+  name: string;
+  slug: string;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  image?: string | null;
+  /** @nullable */
+  icon?: string | null;
+}
+
+export interface BlogInput {
+  title: string;
+  slug: string;
+  /** @nullable */
+  excerpt?: string | null;
+  content: string;
+  /** @nullable */
+  featuredImage?: string | null;
+  /** @nullable */
+  categoryTag?: string | null;
+  /** @nullable */
+  authorName?: string | null;
+}
+
+export interface AdminContact {
+  id: number;
+  fullName: string;
+  email: string;
+  /** @nullable */
+  phone?: string | null;
+  subject: string;
+  message: string;
+  createdAt: string;
+}
+
+export interface AdminContactListResponse {
+  contacts: AdminContact[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface AdminReview {
+  id: number;
+  buyerName: string;
+  /** @nullable */
+  productId?: number | null;
+  /** @nullable */
+  productTitle?: string | null;
+  rating: number;
+  /** @nullable */
+  title?: string | null;
+  comment: string;
+  date: string;
+  verifiedPurchase?: boolean;
+}
+
+export interface AdminReviewListResponse {
+  reviews: AdminReview[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export type ListProductsParams = {
 categorySlug?: string;
 /**
@@ -311,6 +549,43 @@ limit?: number;
 };
 
 export type ListBlogPostsParams = {
+page?: number;
+limit?: number;
+};
+
+export type AdminListSellersParams = {
+status?: string;
+page?: number;
+limit?: number;
+search?: string;
+};
+
+export type AdminListProductsParams = {
+page?: number;
+limit?: number;
+search?: string;
+status?: string;
+categorySlug?: string;
+};
+
+export type AdminListArtisansParams = {
+page?: number;
+limit?: number;
+search?: string;
+};
+
+export type AdminListBlogParams = {
+page?: number;
+limit?: number;
+search?: string;
+};
+
+export type AdminListContactsParams = {
+page?: number;
+limit?: number;
+};
+
+export type AdminListReviewsParams = {
 page?: number;
 limit?: number;
 };

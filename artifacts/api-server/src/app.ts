@@ -4,6 +4,7 @@ import pinoHttp from "pino-http";
 import session from "express-session";
 import path from "path";
 import router from "./routes";
+import adminRouter from "./routes/admin";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
@@ -49,5 +50,6 @@ app.use(
 );
 
 app.use("/api", router);
+app.use("/api", adminRouter);
 
 export default app;

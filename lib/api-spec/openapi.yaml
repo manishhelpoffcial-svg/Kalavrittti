@@ -481,6 +481,474 @@ paths:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
 
+  /admin/login:
+    post:
+      operationId: adminLogin
+      tags: [admin]
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginInput"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminAuthResult"
+        "401":
+          description: Invalid credentials
+
+  /admin/logout:
+    post:
+      operationId: adminLogout
+      tags: [admin]
+      summary: Admin logout
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/stats/overview:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Get admin dashboard overview stats
+      responses:
+        "200":
+          description: Stats overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /admin/sellers:
+    get:
+      operationId: adminListSellers
+      tags: [admin]
+      summary: List all seller applications
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Seller applications
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSellerListResponse"
+
+  /admin/sellers/{id}/status:
+    patch:
+      operationId: updateSellerStatus
+      tags: [admin]
+      summary: Update seller application status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SellerStatusUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/products:
+    get:
+      operationId: adminListProducts
+      tags: [admin]
+      summary: Admin list products
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: categorySlug
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminProductListResponse"
+
+  /admin/products/{id}:
+    patch:
+      operationId: adminUpdateProduct
+      tags: [admin]
+      summary: Admin update product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminProductUpdate"
+      responses:
+        "200":
+          description: Updated product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+    delete:
+      operationId: adminDeleteProduct
+      tags: [admin]
+      summary: Admin delete product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/artisans:
+    get:
+      operationId: adminListArtisans
+      tags: [admin]
+      summary: Admin list artisans
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Artisans
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminArtisanListResponse"
+
+  /admin/artisans/{id}:
+    patch:
+      operationId: adminUpdateArtisan
+      tags: [admin]
+      summary: Admin update artisan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminArtisanUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+    delete:
+      operationId: adminDeleteArtisan
+      tags: [admin]
+      summary: Admin delete artisan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/categories:
+    get:
+      operationId: adminListCategories
+      tags: [admin]
+      summary: Admin list categories
+      responses:
+        "200":
+          description: Categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+    post:
+      operationId: adminCreateCategory
+      tags: [admin]
+      summary: Admin create category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryInput"
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/categories/{id}:
+    patch:
+      operationId: adminUpdateCategory
+      tags: [admin]
+      summary: Admin update category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+    delete:
+      operationId: adminDeleteCategory
+      tags: [admin]
+      summary: Admin delete category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/blog:
+    get:
+      operationId: adminListBlog
+      tags: [admin]
+      summary: Admin list blog posts
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Blog posts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogListResponse"
+    post:
+      operationId: adminCreateBlogPost
+      tags: [admin]
+      summary: Admin create blog post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlogInput"
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/blog/{id}:
+    patch:
+      operationId: adminUpdateBlogPost
+      tags: [admin]
+      summary: Admin update blog post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlogInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+    delete:
+      operationId: adminDeleteBlogPost
+      tags: [admin]
+      summary: Admin delete blog post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /admin/contacts:
+    get:
+      operationId: adminListContacts
+      tags: [admin]
+      summary: Admin list contact messages
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Contact messages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminContactListResponse"
+
+  /admin/reviews:
+    get:
+      operationId: adminListReviews
+      tags: [admin]
+      summary: Admin list all reviews
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reviews
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminReviewListResponse"
+
+  /admin/reviews/{id}:
+    delete:
+      operationId: adminDeleteReview
+      tags: [admin]
+      summary: Admin delete review
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
   /newsletter/subscribe:
     post:
       operationId: subscribeNewsletter
@@ -917,3 +1385,376 @@ components:
       properties:
         email:
           type: string
+
+    AdminLoginInput:
+      type: object
+      required: [credential, password]
+      properties:
+        credential:
+          type: string
+        password:
+          type: string
+
+    AdminAuthResult:
+      type: object
+      required: [success, token, admin]
+      properties:
+        success:
+          type: boolean
+        token:
+          type: string
+        admin:
+          $ref: "#/components/schemas/AdminInfo"
+
+    AdminInfo:
+      type: object
+      required: [name, email]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+
+    AdminStats:
+      type: object
+      required: [totalProducts, totalArtisans, totalCategories, totalBlogPosts, totalContacts, totalSellers, pendingSellers, approvedSellers, rejectedSellers, recentSellers]
+      properties:
+        totalProducts:
+          type: integer
+        totalArtisans:
+          type: integer
+        totalCategories:
+          type: integer
+        totalBlogPosts:
+          type: integer
+        totalContacts:
+          type: integer
+        totalSellers:
+          type: integer
+        pendingSellers:
+          type: integer
+        approvedSellers:
+          type: integer
+        rejectedSellers:
+          type: integer
+        recentSellers:
+          type: array
+          items:
+            $ref: "#/components/schemas/SellerApplication"
+
+    SellerApplication:
+      type: object
+      required: [id, applicationId, fullName, mobile, email, status, createdAt]
+      properties:
+        id:
+          type: integer
+        applicationId:
+          type: string
+        fullName:
+          type: string
+        age:
+          type: ["integer", "null"]
+        dob:
+          type: ["string", "null"]
+        gender:
+          type: ["string", "null"]
+        mobile:
+          type: string
+        mobileVerified:
+          type: boolean
+        email:
+          type: string
+        emailVerified:
+          type: boolean
+        categoryName:
+          type: ["string", "null"]
+        categoryDescription:
+          type: ["string", "null"]
+        aadhaarUrl:
+          type: ["string", "null"]
+        panCardUrl:
+          type: ["string", "null"]
+        gstNumber:
+          type: ["string", "null"]
+        businessName:
+          type: ["string", "null"]
+        businessAddress:
+          type: ["string", "null"]
+        videoKycRequested:
+          type: boolean
+        accountHolderName:
+          type: ["string", "null"]
+        bankName:
+          type: ["string", "null"]
+        accountNumber:
+          type: ["string", "null"]
+        ifscCode:
+          type: ["string", "null"]
+        upiId:
+          type: ["string", "null"]
+        termsAccepted:
+          type: boolean
+        privacyAccepted:
+          type: boolean
+        status:
+          type: string
+        supabaseUserId:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    AdminSellerListResponse:
+      type: object
+      required: [sellers, total, page, limit]
+      properties:
+        sellers:
+          type: array
+          items:
+            $ref: "#/components/schemas/SellerApplication"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    SellerStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+        note:
+          type: ["string", "null"]
+
+    AdminProduct:
+      type: object
+      required: [id, title, slug, price, mrp, status, inStock, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        slug:
+          type: string
+        price:
+          type: number
+        mrp:
+          type: number
+        discountPercent:
+          type: ["integer", "null"]
+        mainImage:
+          type: ["string", "null"]
+        categoryName:
+          type: ["string", "null"]
+        categorySlug:
+          type: ["string", "null"]
+        artisanId:
+          type: ["integer", "null"]
+        stockQuantity:
+          type: integer
+        inStock:
+          type: boolean
+        isFeatured:
+          type: boolean
+        isBestSeller:
+          type: boolean
+        isNewArrival:
+          type: boolean
+        rating:
+          type: ["number", "null"]
+        reviewCount:
+          type: integer
+        status:
+          type: string
+        createdAt:
+          type: string
+
+    AdminProductListResponse:
+      type: object
+      required: [products, total, page, limit]
+      properties:
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminProduct"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    AdminProductUpdate:
+      type: object
+      properties:
+        isFeatured:
+          type: ["boolean", "null"]
+        isBestSeller:
+          type: ["boolean", "null"]
+        isNewArrival:
+          type: ["boolean", "null"]
+        inStock:
+          type: ["boolean", "null"]
+        status:
+          type: ["string", "null"]
+        stockQuantity:
+          type: ["integer", "null"]
+        price:
+          type: ["number", "null"]
+
+    AdminArtisan:
+      type: object
+      required: [id, name, slug, craftType, state, featured, productCount]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        craftType:
+          type: string
+        state:
+          type: string
+        city:
+          type: ["string", "null"]
+        photo:
+          type: ["string", "null"]
+        shortBio:
+          type: ["string", "null"]
+        featured:
+          type: boolean
+        productCount:
+          type: integer
+
+    AdminArtisanListResponse:
+      type: object
+      required: [artisans, total, page, limit]
+      properties:
+        artisans:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminArtisan"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    AdminArtisanUpdate:
+      type: object
+      properties:
+        featured:
+          type: ["boolean", "null"]
+        craftType:
+          type: ["string", "null"]
+        state:
+          type: ["string", "null"]
+
+    CategoryInput:
+      type: object
+      required: [name, slug]
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: ["string", "null"]
+        image:
+          type: ["string", "null"]
+        icon:
+          type: ["string", "null"]
+
+    BlogInput:
+      type: object
+      required: [title, slug, content]
+      properties:
+        title:
+          type: string
+        slug:
+          type: string
+        excerpt:
+          type: ["string", "null"]
+        content:
+          type: string
+        featuredImage:
+          type: ["string", "null"]
+        categoryTag:
+          type: ["string", "null"]
+        authorName:
+          type: ["string", "null"]
+
+    AdminContact:
+      type: object
+      required: [id, fullName, email, subject, message, createdAt]
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        subject:
+          type: string
+        message:
+          type: string
+        createdAt:
+          type: string
+
+    AdminContactListResponse:
+      type: object
+      required: [contacts, total, page, limit]
+      properties:
+        contacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminContact"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    AdminReview:
+      type: object
+      required: [id, buyerName, rating, comment, date]
+      properties:
+        id:
+          type: integer
+        buyerName:
+          type: string
+        productId:
+          type: ["integer", "null"]
+        productTitle:
+          type: ["string", "null"]
+        rating:
+          type: number
+        title:
+          type: ["string", "null"]
+        comment:
+          type: string
+        date:
+          type: string
+        verifiedPurchase:
+          type: boolean
+
+    AdminReviewListResponse:
+      type: object
+      required: [reviews, total, page, limit]
+      properties:
+        reviews:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminReview"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer

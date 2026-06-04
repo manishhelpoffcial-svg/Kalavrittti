@@ -588,6 +588,492 @@ export const SubmitContactResponse = zod.object({
 
 
 /**
+ * @summary Admin login
+ */
+export const AdminLoginBody = zod.object({
+  "credential": zod.string(),
+  "password": zod.string()
+})
+
+export const AdminLoginResponse = zod.object({
+  "success": zod.boolean(),
+  "token": zod.string(),
+  "admin": zod.object({
+  "name": zod.string(),
+  "email": zod.string()
+})
+})
+
+
+/**
+ * @summary Admin logout
+ */
+export const AdminLogoutResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get admin dashboard overview stats
+ */
+export const GetAdminStatsResponse = zod.object({
+  "totalProducts": zod.number(),
+  "totalArtisans": zod.number(),
+  "totalCategories": zod.number(),
+  "totalBlogPosts": zod.number(),
+  "totalContacts": zod.number(),
+  "totalSellers": zod.number(),
+  "pendingSellers": zod.number(),
+  "approvedSellers": zod.number(),
+  "rejectedSellers": zod.number(),
+  "recentSellers": zod.array(zod.object({
+  "id": zod.number(),
+  "applicationId": zod.string(),
+  "fullName": zod.string(),
+  "age": zod.number().nullish(),
+  "dob": zod.string().nullish(),
+  "gender": zod.string().nullish(),
+  "mobile": zod.string(),
+  "mobileVerified": zod.boolean().optional(),
+  "email": zod.string(),
+  "emailVerified": zod.boolean().optional(),
+  "categoryName": zod.string().nullish(),
+  "categoryDescription": zod.string().nullish(),
+  "aadhaarUrl": zod.string().nullish(),
+  "panCardUrl": zod.string().nullish(),
+  "gstNumber": zod.string().nullish(),
+  "businessName": zod.string().nullish(),
+  "businessAddress": zod.string().nullish(),
+  "videoKycRequested": zod.boolean().optional(),
+  "accountHolderName": zod.string().nullish(),
+  "bankName": zod.string().nullish(),
+  "accountNumber": zod.string().nullish(),
+  "ifscCode": zod.string().nullish(),
+  "upiId": zod.string().nullish(),
+  "termsAccepted": zod.boolean().optional(),
+  "privacyAccepted": zod.boolean().optional(),
+  "status": zod.string(),
+  "supabaseUserId": zod.string().nullish(),
+  "createdAt": zod.string()
+}))
+})
+
+
+/**
+ * @summary List all seller applications
+ */
+export const AdminListSellersQueryParams = zod.object({
+  "status": zod.coerce.string().optional(),
+  "page": zod.coerce.number().optional(),
+  "limit": zod.coerce.number().optional(),
+  "search": zod.coerce.string().optional()
+})
+
+export const AdminListSellersResponse = zod.object({
+  "sellers": zod.array(zod.object({
+  "id": zod.number(),
+  "applicationId": zod.string(),
+  "fullName": zod.string(),
+  "age": zod.number().nullish(),
+  "dob": zod.string().nullish(),
+  "gender": zod.string().nullish(),
+  "mobile": zod.string(),
+  "mobileVerified": zod.boolean().optional(),
+  "email": zod.string(),
+  "emailVerified": zod.boolean().optional(),
+  "categoryName": zod.string().nullish(),
+  "categoryDescription": zod.string().nullish(),
+  "aadhaarUrl": zod.string().nullish(),
+  "panCardUrl": zod.string().nullish(),
+  "gstNumber": zod.string().nullish(),
+  "businessName": zod.string().nullish(),
+  "businessAddress": zod.string().nullish(),
+  "videoKycRequested": zod.boolean().optional(),
+  "accountHolderName": zod.string().nullish(),
+  "bankName": zod.string().nullish(),
+  "accountNumber": zod.string().nullish(),
+  "ifscCode": zod.string().nullish(),
+  "upiId": zod.string().nullish(),
+  "termsAccepted": zod.boolean().optional(),
+  "privacyAccepted": zod.boolean().optional(),
+  "status": zod.string(),
+  "supabaseUserId": zod.string().nullish(),
+  "createdAt": zod.string()
+})),
+  "total": zod.number(),
+  "page": zod.number(),
+  "limit": zod.number()
+})
+
+
+/**
+ * @summary Update seller application status
+ */
+export const UpdateSellerStatusParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateSellerStatusBody = zod.object({
+  "status": zod.string(),
+  "note": zod.string().nullish()
+})
+
+export const UpdateSellerStatusResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
+ * @summary Admin list products
+ */
+export const AdminListProductsQueryParams = zod.object({
+  "page": zod.coerce.number().optional(),
+  "limit": zod.coerce.number().optional(),
+  "search": zod.coerce.string().optional(),
+  "status": zod.coerce.string().optional(),
+  "categorySlug": zod.coerce.string().optional()
+})
+
+export const AdminListProductsResponse = zod.object({
+  "products": zod.array(zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "slug": zod.string(),
+  "price": zod.number(),
+  "mrp": zod.number(),
+  "discountPercent": zod.number().nullish(),
+  "mainImage": zod.string().nullish(),
+  "categoryName": zod.string().nullish(),
+  "categorySlug": zod.string().nullish(),
+  "artisanId": zod.number().nullish(),
+  "stockQuantity": zod.number().optional(),
+  "inStock": zod.boolean(),
+  "isFeatured": zod.boolean().optional(),
+  "isBestSeller": zod.boolean().optional(),
+  "isNewArrival": zod.boolean().optional(),
+  "rating": zod.number().nullish(),
+  "reviewCount": zod.number().optional(),
+  "status": zod.string(),
+  "createdAt": zod.string()
+})),
+  "total": zod.number(),
+  "page": zod.number(),
+  "limit": zod.number()
+})
+
+
+/**
+ * @summary Admin update product
+ */
+export const AdminUpdateProductParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AdminUpdateProductBody = zod.object({
+  "isFeatured": zod.boolean().nullish(),
+  "isBestSeller": zod.boolean().nullish(),
+  "isNewArrival": zod.boolean().nullish(),
+  "inStock": zod.boolean().nullish(),
+  "status": zod.string().nullish(),
+  "stockQuantity": zod.number().nullish(),
+  "price": zod.number().nullish()
+})
+
+export const AdminUpdateProductResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
+ * @summary Admin delete product
+ */
+export const AdminDeleteProductParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AdminDeleteProductResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
+ * @summary Admin list artisans
+ */
+export const AdminListArtisansQueryParams = zod.object({
+  "page": zod.coerce.number().optional(),
+  "limit": zod.coerce.number().optional(),
+  "search": zod.coerce.string().optional()
+})
+
+export const AdminListArtisansResponse = zod.object({
+  "artisans": zod.array(zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "craftType": zod.string(),
+  "state": zod.string(),
+  "city": zod.string().nullish(),
+  "photo": zod.string().nullish(),
+  "shortBio": zod.string().nullish(),
+  "featured": zod.boolean(),
+  "productCount": zod.number()
+})),
+  "total": zod.number(),
+  "page": zod.number(),
+  "limit": zod.number()
+})
+
+
+/**
+ * @summary Admin update artisan
+ */
+export const AdminUpdateArtisanParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AdminUpdateArtisanBody = zod.object({
+  "featured": zod.boolean().nullish(),
+  "craftType": zod.string().nullish(),
+  "state": zod.string().nullish()
+})
+
+export const AdminUpdateArtisanResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
+ * @summary Admin delete artisan
+ */
+export const AdminDeleteArtisanParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AdminDeleteArtisanResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
+ * @summary Admin list categories
+ */
+export const AdminListCategoriesResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "description": zod.string().nullish(),
+  "image": zod.string().nullish(),
+  "icon": zod.string().nullish(),
+  "productCount": zod.number()
+})
+export const AdminListCategoriesResponse = zod.array(AdminListCategoriesResponseItem)
+
+
+/**
+ * @summary Admin create category
+ */
+export const AdminCreateCategoryBody = zod.object({
+  "name": zod.string(),
+  "slug": zod.string(),
+  "description": zod.string().nullish(),
+  "image": zod.string().nullish(),
+  "icon": zod.string().nullish()
+})
+
+export const AdminCreateCategoryResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
+ * @summary Admin update category
+ */
+export const AdminUpdateCategoryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AdminUpdateCategoryBody = zod.object({
+  "name": zod.string(),
+  "slug": zod.string(),
+  "description": zod.string().nullish(),
+  "image": zod.string().nullish(),
+  "icon": zod.string().nullish()
+})
+
+export const AdminUpdateCategoryResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
+ * @summary Admin delete category
+ */
+export const AdminDeleteCategoryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AdminDeleteCategoryResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
+ * @summary Admin list blog posts
+ */
+export const AdminListBlogQueryParams = zod.object({
+  "page": zod.coerce.number().optional(),
+  "limit": zod.coerce.number().optional(),
+  "search": zod.coerce.string().optional()
+})
+
+export const AdminListBlogResponse = zod.object({
+  "posts": zod.array(zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "slug": zod.string(),
+  "excerpt": zod.string().nullish(),
+  "content": zod.string(),
+  "featuredImage": zod.string().nullish(),
+  "categoryTag": zod.string().nullish(),
+  "authorName": zod.string().nullish(),
+  "authorPhoto": zod.string().nullish(),
+  "publishedAt": zod.string(),
+  "readTime": zod.number().nullish()
+})),
+  "total": zod.number(),
+  "page": zod.number(),
+  "limit": zod.number()
+})
+
+
+/**
+ * @summary Admin create blog post
+ */
+export const AdminCreateBlogPostBody = zod.object({
+  "title": zod.string(),
+  "slug": zod.string(),
+  "excerpt": zod.string().nullish(),
+  "content": zod.string(),
+  "featuredImage": zod.string().nullish(),
+  "categoryTag": zod.string().nullish(),
+  "authorName": zod.string().nullish()
+})
+
+export const AdminCreateBlogPostResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
+ * @summary Admin update blog post
+ */
+export const AdminUpdateBlogPostParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AdminUpdateBlogPostBody = zod.object({
+  "title": zod.string(),
+  "slug": zod.string(),
+  "excerpt": zod.string().nullish(),
+  "content": zod.string(),
+  "featuredImage": zod.string().nullish(),
+  "categoryTag": zod.string().nullish(),
+  "authorName": zod.string().nullish()
+})
+
+export const AdminUpdateBlogPostResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
+ * @summary Admin delete blog post
+ */
+export const AdminDeleteBlogPostParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AdminDeleteBlogPostResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
+ * @summary Admin list contact messages
+ */
+export const AdminListContactsQueryParams = zod.object({
+  "page": zod.coerce.number().optional(),
+  "limit": zod.coerce.number().optional()
+})
+
+export const AdminListContactsResponse = zod.object({
+  "contacts": zod.array(zod.object({
+  "id": zod.number(),
+  "fullName": zod.string(),
+  "email": zod.string(),
+  "phone": zod.string().nullish(),
+  "subject": zod.string(),
+  "message": zod.string(),
+  "createdAt": zod.string()
+})),
+  "total": zod.number(),
+  "page": zod.number(),
+  "limit": zod.number()
+})
+
+
+/**
+ * @summary Admin list all reviews
+ */
+export const AdminListReviewsQueryParams = zod.object({
+  "page": zod.coerce.number().optional(),
+  "limit": zod.coerce.number().optional()
+})
+
+export const AdminListReviewsResponse = zod.object({
+  "reviews": zod.array(zod.object({
+  "id": zod.number(),
+  "buyerName": zod.string(),
+  "productId": zod.number().nullish(),
+  "productTitle": zod.string().nullish(),
+  "rating": zod.number(),
+  "title": zod.string().nullish(),
+  "comment": zod.string(),
+  "date": zod.string(),
+  "verifiedPurchase": zod.boolean().optional()
+})),
+  "total": zod.number(),
+  "page": zod.number(),
+  "limit": zod.number()
+})
+
+
+/**
+ * @summary Admin delete review
+ */
+export const AdminDeleteReviewParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AdminDeleteReviewResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
  * @summary Subscribe to newsletter
  */
 export const SubscribeNewsletterBody = zod.object({
