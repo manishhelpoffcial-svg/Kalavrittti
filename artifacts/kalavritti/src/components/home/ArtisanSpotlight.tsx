@@ -90,7 +90,7 @@ export function ArtisanSpotlight() {
                 {artisan.name}
               </h3>
               <p className="text-gold text-xs font-medium mb-1 leading-tight">{artisan.craftType}</p>
-              <div className="flex items-center gap-1 text-maroon/40 text-[11px]">
+              <div className="flex items-center gap-1 text-maroon/60 text-[11px]">
                 <i className="fa-solid fa-location-dot text-[9px]"></i>
                 <span>{artisan.city ? `${artisan.city}` : artisan.state}</span>
               </div>

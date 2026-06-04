@@ -31,8 +31,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Info */}
           <div className="lg:col-span-2">
-            <Link href="/" className="inline-block bg-white p-2 rounded mb-6">
-              <img src={logo} alt="Kalavritti" className="h-12" />
+            <Link href="/" className="inline-block mb-6">
+              <img src={logo} alt="Kalavritti" className="h-12" style={{ filter: "brightness(0) invert(1)" }} />
             </Link>
             <p className="font-serif text-xl text-gold mb-2">Celebrating Handmade. Honoring Artisans.</p>
             <p className="text-white/70 text-sm mb-6 leading-relaxed">
