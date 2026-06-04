@@ -1,27 +1,35 @@
 import React, { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import logo from "@assets/logo_1779952388538.png";
 import bgImg from "@assets/8e7146a5-cf56-4b57-abf7-9df0a59231b2_1779952388686.jpeg";
 
 export default function Login() {
   const { toast } = useToast();
-  const [method, setMethod] = useState<"email" | "phone">("email");
+  const { signIn, user } = useAuth();
+  const [, navigate] = useLocation();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  if (user) {
+    navigate("/");
+    return null;
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate login
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully logged in."
-      });
-      window.location.href = "/"; // Quick redirect for demo
-    }, 1500);
+    const { error } = await signIn(email, password);
+    setIsLoading(false);
+    if (error) {
+      toast({ title: "Sign in failed", description: error, variant: "destructive" });
+    } else {
+      toast({ title: "Welcome back!", description: "You have successfully signed in." });
+      navigate("/");
+    }
   };
 
   return (
@@ -50,61 +58,32 @@ export default function Login() {
           <h2 className="font-serif text-3xl text-maroon-dark mb-2 text-center">Welcome Back</h2>
           <p className="text-muted-foreground text-center mb-8 text-sm">Please enter your details to sign in.</p>
 
-          <div className="flex mb-8 bg-cream p-1 rounded-lg">
-            <button 
-              className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${method === 'email' ? 'bg-white shadow-sm text-maroon-dark' : 'text-muted-foreground hover:text-maroon-dark'}`}
-              onClick={() => setMethod('email')}
-            >
-              Email
-            </button>
-            <button 
-              className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${method === 'phone' ? 'bg-white shadow-sm text-maroon-dark' : 'text-muted-foreground hover:text-maroon-dark'}`}
-              onClick={() => setMethod('phone')}
-            >
-              Phone Number
-            </button>
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-5">
-            {method === 'email' ? (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-maroon-dark mb-1.5">Email Address</label>
-                  <input 
-                    type="email" 
-                    required 
-                    className="w-full bg-cream-dark/50 border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent transition-all"
-                    placeholder="namaste@example.com"
-                  />
-                </div>
-                <div>
-                  <div className="flex justify-between items-center mb-1.5">
-                    <label className="block text-sm font-medium text-maroon-dark">Password</label>
-                    <a href="#" className="text-xs text-maroon hover:text-maroon-light">Forgot password?</a>
-                  </div>
-                  <input 
-                    type="password" 
-                    required 
-                    className="w-full bg-cream-dark/50 border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent transition-all"
-                    placeholder="••••••••"
-                  />
-                </div>
-              </>
-            ) : (
-              <div>
-                <label className="block text-sm font-medium text-maroon-dark mb-1.5">Phone Number</label>
-                <div className="flex">
-                  <span className="bg-cream-dark border border-r-0 border-border rounded-l-lg px-4 py-2.5 text-muted-foreground flex items-center">+91</span>
-                  <input 
-                    type="tel" 
-                    required 
-                    pattern="[0-9]{10}"
-                    className="w-full bg-cream-dark/50 border border-border rounded-r-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent transition-all"
-                    placeholder="98765 43210"
-                  />
-                </div>
+            <div>
+              <label className="block text-sm font-medium text-maroon-dark mb-1.5">Email Address</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                className="w-full bg-cream-dark/50 border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent transition-all"
+                placeholder="namaste@example.com"
+              />
+            </div>
+            <div>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="block text-sm font-medium text-maroon-dark">Password</label>
+                <a href="#" className="text-xs text-maroon hover:text-maroon-light">Forgot password?</a>
               </div>
-            )}
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                className="w-full bg-cream-dark/50 border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent transition-all"
+                placeholder="••••••••"
+              />
+            </div>
 
             <Button 
               type="submit" 

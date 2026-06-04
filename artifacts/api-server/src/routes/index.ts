@@ -9,6 +9,8 @@ import homepageRouter from "./homepage";
 import cartRouter from "./cart";
 import wishlistRouter from "./wishlist";
 import contactRouter from "./contact";
+import authRouter from "./auth";
+import uploadRouter from "./upload";
 
 const router: IRouter = Router();
 
@@ -22,5 +24,7 @@ router.use(blogRouter);
 router.use(cartRouter);
 router.use(wishlistRouter);
 router.use(contactRouter);
+router.use(authRouter);
+router.use(uploadRouter);
 
 export default router;
