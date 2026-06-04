@@ -90,7 +90,7 @@ export default function Login() {
               className="w-full bg-maroon hover:bg-maroon-light text-white py-6 text-base rounded-lg mt-4 shadow-md"
               disabled={isLoading}
             >
-              {isLoading ? "Signing in..." : method === 'phone' ? "Get OTP" : "Sign In"}
+              {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
 

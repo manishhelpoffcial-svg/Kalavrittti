@@ -11,6 +11,7 @@ import wishlistRouter from "./wishlist";
 import contactRouter from "./contact";
 import authRouter from "./auth";
 import uploadRouter from "./upload";
+import sellerRouter from "./seller";
 
 const router: IRouter = Router();
 
@@ -26,5 +27,6 @@ router.use(wishlistRouter);
 router.use(contactRouter);
 router.use(authRouter);
 router.use(uploadRouter);
+router.use(sellerRouter);
 
 export default router;

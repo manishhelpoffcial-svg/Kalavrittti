@@ -1,0 +1,3 @@
+- [Supabase DB connection](supabase-connection.md) — must use pooler URL (port 6543) NOT direct IPv6; DDL needs pg pool directly, drizzle-kit push needs TTY
+- [Supabase client Node.js setup](supabase-node-client.md) — Node 20 needs `import ws from "ws"` + `realtime: { transport: ws }` in createClient options
+- [Seller registration system](seller-registration.md) — 6-step wizard, OTP stubs (MSG91/Zoho pending), Cloudinary doc upload, jsPDF, WhatsApp share

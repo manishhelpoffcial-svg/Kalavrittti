@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "wouter";
 import { Store, CheckCircle, ChevronRight, Star, Users, TrendingUp, Shield } from "lucide-react";
 
@@ -17,20 +17,6 @@ const STEPS = [
 ];
 
 export default function SellerPortal() {
-  const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({
-    name: "", craft: "", state: "", phone: "", email: "", description: "", experience: "",
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-  };
-
   return (
     <div className="w-full">
       {/* Hero Banner */}
@@ -91,66 +77,34 @@ export default function SellerPortal() {
         </div>
       </section>
 
-      {/* Registration Form */}
-      <section className="py-16 bg-white" id="register">
-        <div className="container mx-auto px-4 max-w-2xl">
-          <h2 className="font-serif text-3xl text-center text-maroon-dark mb-3">Artisan Registration</h2>
-          <p className="text-center text-muted-foreground mb-10">Fill in your details and our team will reach out within 3–5 working days.</p>
-
-          {submitted ? (
-            <div className="bg-green-50 border border-green-200 rounded-2xl p-10 text-center">
-              <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
-              <h3 className="font-serif text-2xl text-green-800 mb-2">Application Received!</h3>
-              <p className="text-green-700 mb-6">Thank you, {form.name}! We've received your application and will contact you at <strong>{form.email}</strong> within 3–5 business days.</p>
-              <Link href="/" className="inline-flex items-center gap-2 bg-maroon text-white px-6 py-3 rounded-full font-semibold hover:bg-maroon-light transition-colors">
-                Return to Home
+      {/* Registration CTA */}
+      <section className="py-20 bg-white" id="register">
+        <div className="container mx-auto px-4 max-w-2xl text-center">
+          <div className="bg-cream border border-gold/30 rounded-2xl p-12 shadow-sm">
+            <div className="w-16 h-16 bg-maroon rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Store className="w-8 h-8 text-gold" />
+            </div>
+            <h2 className="font-serif text-3xl text-maroon-dark mb-4">Ready to Start Selling?</h2>
+            <p className="text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed">
+              Complete your seller registration in minutes. Verify your identity, add your craft details, and set up your payment information — all in one guided flow.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/seller-registration"
+                className="inline-flex items-center justify-center gap-2 bg-maroon text-white px-8 py-4 rounded-full font-semibold hover:bg-maroon-light transition-colors text-sm">
+                Start Registration <ChevronRight className="w-4 h-4" />
+              </Link>
+              <Link href="/seller-guide"
+                className="inline-flex items-center justify-center gap-2 border-2 border-maroon text-maroon px-8 py-4 rounded-full font-semibold hover:bg-maroon/5 transition-colors text-sm">
+                Guide for Sellers
               </Link>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="bg-white border border-border rounded-2xl p-8 shadow-sm space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-sm font-semibold text-maroon-dark mb-1.5">Full Name *</label>
-                  <input name="name" value={form.name} onChange={handleChange} required placeholder="Your full name" className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-maroon-dark mb-1.5">Craft / Art Form *</label>
-                  <input name="craft" value={form.craft} onChange={handleChange} required placeholder="e.g. Madhubani Painting" className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-maroon-dark mb-1.5">State *</label>
-                  <input name="state" value={form.state} onChange={handleChange} required placeholder="Your state" className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-maroon-dark mb-1.5">Years of Experience *</label>
-                  <select name="experience" value={form.experience} onChange={handleChange} required className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all bg-white">
-                    <option value="">Select</option>
-                    <option>Less than 1 year</option>
-                    <option>1–3 years</option>
-                    <option>3–5 years</option>
-                    <option>5–10 years</option>
-                    <option>More than 10 years</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-maroon-dark mb-1.5">Phone Number *</label>
-                  <input name="phone" value={form.phone} onChange={handleChange} required type="tel" placeholder="+91 XXXXX XXXXX" className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-maroon-dark mb-1.5">Email Address *</label>
-                  <input name="email" value={form.email} onChange={handleChange} required type="email" placeholder="you@example.com" className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-maroon-dark mb-1.5">Tell Us About Your Craft</label>
-                <textarea name="description" value={form.description} onChange={handleChange} rows={4} placeholder="Describe your craft tradition, what you make, and what makes your work special..." className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all resize-none" />
-              </div>
-              <button type="submit" className="w-full bg-maroon text-white py-3.5 rounded-full font-semibold hover:bg-maroon-light transition-colors text-sm uppercase tracking-widest">
-                Submit Application
-              </button>
-              <p className="text-xs text-center text-muted-foreground">By submitting, you agree to our <Link href="/terms" className="text-maroon hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-maroon hover:underline">Privacy Policy</Link>.</p>
-            </form>
-          )}
+            <p className="text-xs text-muted-foreground mt-6">
+              Already have an account?{" "}
+              <a href="https://seller.kalavritti.in" target="_blank" rel="noopener noreferrer" className="text-maroon font-semibold hover:underline">
+                Go to Seller Portal ↗
+              </a>
+            </p>
+          </div>
         </div>
       </section>
     </div>

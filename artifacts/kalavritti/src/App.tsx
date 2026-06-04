@@ -20,6 +20,7 @@ import Login from "@/pages/login";
 import Register from "@/pages/register";
 import Cart from "@/pages/cart";
 import SellerPortal from "@/pages/seller-portal";
+import SellerRegistration from "@/pages/seller-registration";
 import HelpSupport from "@/pages/help-support";
 import SellerGuide from "@/pages/seller-guide";
 import NotFound from "@/pages/not-found";
@@ -53,6 +54,7 @@ function Router() {
         <Route path="/register" component={Register} />
         <Route path="/cart" component={Cart} />
         <Route path="/seller-portal" component={SellerPortal} />
+        <Route path="/seller-registration" component={SellerRegistration} />
         <Route path="/help-support" component={HelpSupport} />
         <Route path="/seller-guide" component={SellerGuide} />
         <Route component={NotFound} />
