@@ -85,7 +85,7 @@ export function Header() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <img src={logo} alt="Kalavritti" className="h-14 md:h-20 brightness-0 invert" style={{ filter: 'brightness(0) invert(1) drop-shadow(0 0 6px rgba(201,168,76,0.5))' }} />
+            <img src={logo} alt="Kalavritti" className="h-14 md:h-20" style={{ filter: 'drop-shadow(0 0 6px rgba(201,168,76,0.3))' }} />
           </Link>
 
           {/* Search */}
@@ -172,7 +172,7 @@ export function Header() {
           onClick={e => e.stopPropagation()}
         >
           <div className="bg-maroon-dark p-5 flex justify-between items-center border-b border-maroon/50">
-            <img src={logo} alt="Kalavritti" className="h-8 brightness-0 invert" />
+            <img src={logo} alt="Kalavritti" className="h-8" />
             <button onClick={closeMenu} className="text-cream/80 hover:text-gold transition-colors">
               <i className="fa-solid fa-xmark text-xl"></i>
             </button>

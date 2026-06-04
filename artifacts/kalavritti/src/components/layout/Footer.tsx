@@ -32,7 +32,7 @@ export function Footer() {
           {/* Brand Info */}
           <div className="lg:col-span-2">
             <Link href="/" className="inline-block mb-6">
-              <img src={logo} alt="Kalavritti" className="h-12" style={{ filter: "brightness(0) invert(1)" }} />
+              <img src={logo} alt="Kalavritti" className="h-12" />
             </Link>
             <p className="font-serif text-xl text-gold mb-2">Celebrating Handmade. Honoring Artisans.</p>
             <p className="text-white/70 text-sm mb-6 leading-relaxed">
@@ -58,22 +58,22 @@ export function Footer() {
           <div>
             <h3 className="font-serif text-xl text-gold mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-gold">Quick Links</h3>
             <ul className="space-y-3 text-sm text-white/70">
-              <li><Link href="/about" className="hover:text-gold transition-colors">About Us</Link></li>
               <li><Link href="/our-story" className="hover:text-gold transition-colors">Our Story</Link></li>
               <li><Link href="/artisans" className="hover:text-gold transition-colors">Our Artisans</Link></li>
               <li><Link href="/categories" className="hover:text-gold transition-colors">Shop by Category</Link></li>
               <li><Link href="/blog" className="hover:text-gold transition-colors">Blog & Journal</Link></li>
+              <li><Link href="/contact" className="hover:text-gold transition-colors">Contact Us</Link></li>
             </ul>
           </div>
 
-          {/* Help & Support */}
+          {/* Sell With Us */}
           <div>
-            <h3 className="font-serif text-xl text-gold mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-gold">Help & Support</h3>
+            <h3 className="font-serif text-xl text-gold mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-gold">Sell With Us</h3>
             <ul className="space-y-3 text-sm text-white/70">
+              <li><Link href="/seller-portal" className="hover:text-gold transition-colors">Seller Portal</Link></li>
+              <li><Link href="/seller-guide" className="hover:text-gold transition-colors">Seller Guide</Link></li>
+              <li><Link href="/help-support" className="hover:text-gold transition-colors">Help & Support</Link></li>
               <li><Link href="/faq" className="hover:text-gold transition-colors">FAQ</Link></li>
-              <li><Link href="/shipping" className="hover:text-gold transition-colors">Shipping Policy</Link></li>
-              <li><Link href="/returns" className="hover:text-gold transition-colors">Returns & Refunds</Link></li>
-              <li><Link href="/privacy" className="hover:text-gold transition-colors">Privacy Policy</Link></li>
               <li><Link href="/terms" className="hover:text-gold transition-colors">Terms of Service</Link></li>
             </ul>
           </div>

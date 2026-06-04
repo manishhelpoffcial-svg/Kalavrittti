@@ -19,6 +19,7 @@ import { ProductCard } from "@/components/shared/ProductCard";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { Heart, ShoppingBag, Star, Share2, ShieldCheck, Truck, RotateCcw, Minus, Plus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getProductBySlug as getMockProduct, MOCK_PRODUCTS, toProductCard } from "@/lib/mock-products";
 
 export default function ProductDetail() {
   const [, params] = useRoute("/products/:slug");
@@ -29,13 +30,19 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState<string | null>(null);
 
-  const { data: product, isLoading: isProductLoading } = useGetProductBySlug(slug, { 
+  const { data: apiProduct, isLoading: isProductLoading } = useGetProductBySlug(slug, { 
     query: { enabled: !!slug } 
   });
+
+  const mockProduct = getMockProduct(slug);
+  const product = apiProduct || (mockProduct as any) || undefined;
   
-  const { data: relatedProducts } = useGetRelatedProducts(product?.id || 0, {
-    query: { enabled: !!product?.id }
+  const { data: relatedApiProducts } = useGetRelatedProducts(apiProduct?.id || 0, {
+    query: { enabled: !!apiProduct?.id }
   });
+  const relatedProducts = relatedApiProducts?.length
+    ? relatedApiProducts
+    : MOCK_PRODUCTS.filter(p => p.slug !== slug && p.categorySlug === (mockProduct?.categorySlug)).slice(0, 4).map(toProductCard);
 
   const { data: wishlist = [] } = useGetWishlist();
   const isWishlisted = product ? wishlist.some(item => item.id === product.id) : false;
@@ -85,7 +92,7 @@ export default function ProductDetail() {
     }
   }, [product, activeImage]);
 
-  if (isProductLoading) {
+  if (isProductLoading && !product) {
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">

@@ -18,6 +18,9 @@ import FAQ from "@/pages/faq";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import Cart from "@/pages/cart";
+import SellerPortal from "@/pages/seller-portal";
+import HelpSupport from "@/pages/help-support";
+import SellerGuide from "@/pages/seller-guide";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -48,6 +51,9 @@ function Router() {
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
         <Route path="/cart" component={Cart} />
+        <Route path="/seller-portal" component={SellerPortal} />
+        <Route path="/help-support" component={HelpSupport} />
+        <Route path="/seller-guide" component={SellerGuide} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
