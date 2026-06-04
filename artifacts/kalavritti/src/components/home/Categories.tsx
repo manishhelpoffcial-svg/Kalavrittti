@@ -33,7 +33,7 @@ export function Categories() {
     : CATEGORY_DATA;
 
   return (
-    <section ref={sectionRef} className="overflow-hidden section-reveal bg-cream dark:bg-maroon-dark">
+    <section ref={sectionRef} className="overflow-hidden section-reveal bg-white">
 
       {/* Banner header image */}
       <div className="relative w-full h-36 md:h-48 overflow-hidden">

@@ -29,7 +29,7 @@ export function Testimonials() {
   const STAR_COLORS = ["text-gold", "text-saffron", "text-teal", "text-forest"];
 
   return (
-    <section ref={sectionRef} className="py-20 bg-cream-dark dark:bg-maroon overflow-hidden section-reveal">
+    <section ref={sectionRef} className="py-20 bg-white overflow-hidden section-reveal border-t border-maroon/10">
       <div className="container mx-auto px-4">
         <SectionHeading
           title="Words from Our Patrons"
@@ -40,7 +40,7 @@ export function Testimonials() {
           {isLoading ? (
             <div className="flex gap-5">
               {[1, 2, 3].map(i => (
-                <div key={i} className="flex-1 min-w-0 bg-cream dark:bg-maroon-dark p-6 rounded-2xl border border-gold/10 animate-pulse">
+                <div key={i} className="flex-1 min-w-0 bg-white p-6 rounded-2xl border border-maroon/10 animate-pulse shadow-sm">
                   <div className="h-3 w-20 bg-cream-dark dark:bg-maroon rounded mb-4"></div>
                   <div className="h-16 w-full bg-cream-dark dark:bg-maroon rounded mb-4"></div>
                   <div className="h-4 w-24 bg-cream-dark dark:bg-maroon rounded"></div>
@@ -57,7 +57,7 @@ export function Testimonials() {
                       key={testimonial.id}
                       className="flex-[0_0_100%] md:flex-[0_0_calc(50%-10px)] lg:flex-[0_0_calc(33.33%-14px)] min-w-0"
                     >
-                      <div className="bg-cream dark:bg-maroon-dark border border-gold/15 rounded-2xl p-7 h-full flex flex-col relative shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group">
+                      <div className="bg-white border border-maroon/10 rounded-2xl p-7 h-full flex flex-col relative shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group">
                         <i className="fa-solid fa-quote-left text-4xl absolute top-5 right-6 text-gold/10 group-hover:text-gold/20 transition-colors duration-300"></i>
 
                         <div className="flex gap-1 mb-4">

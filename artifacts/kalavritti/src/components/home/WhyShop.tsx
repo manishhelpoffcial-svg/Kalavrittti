@@ -46,7 +46,7 @@ export function WhyShop() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-20 bg-cream dark:bg-maroon-dark border-t border-gold/10 section-reveal">
+    <section ref={sectionRef} className="py-20 bg-white border-t border-gold/10 section-reveal">
 
       {/* Weaving image banner */}
       <div className="relative w-full h-28 md:h-36 overflow-hidden mb-14">
@@ -70,7 +70,7 @@ export function WhyShop() {
           {FEATURES.map((feature, idx) => (
             <div
               key={idx}
-              className="group relative flex flex-col p-7 rounded-2xl bg-cream-dark/50 dark:bg-maroon/30 border border-cream-dark dark:border-maroon/50 hover:border-transparent overflow-hidden cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-xl card-reveal"
+              className="group relative flex flex-col p-7 rounded-2xl bg-white border border-maroon/10 hover:border-transparent overflow-hidden cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-xl card-reveal shadow-sm"
               style={{ animationDelay: `${idx * 100}ms` }}
             >
               <div

@@ -37,7 +37,7 @@ export function ArtisanSpotlight() {
     : FALLBACK_ARTISANS;
 
   return (
-    <section ref={sectionRef} className="py-20 bg-maroon/5 relative overflow-hidden section-reveal">
+    <section ref={sectionRef} className="py-20 bg-white relative overflow-hidden section-reveal border-t border-maroon/10">
       <div className="container mx-auto px-4 relative z-10">
         {/* Heading */}
         <div className="flex flex-col items-center text-center mb-14">

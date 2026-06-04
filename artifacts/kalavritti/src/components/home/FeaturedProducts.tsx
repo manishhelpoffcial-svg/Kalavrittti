@@ -30,7 +30,7 @@ export function FeaturedProducts() {
   }
 
   return (
-    <section className="py-16 bg-cream-dark">
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <SectionHeading 
           title="Handpicked For You" 

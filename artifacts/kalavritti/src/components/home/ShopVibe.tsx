@@ -25,7 +25,7 @@ export function ShopVibe() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-20 bg-cream dark:bg-maroon-dark section-reveal">
+    <section ref={sectionRef} className="py-20 bg-white section-reveal">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <span className="inline-block text-maroon/50 dark:text-cream/40 text-xs uppercase tracking-[0.3em] font-bold mb-3">Collections</span>
