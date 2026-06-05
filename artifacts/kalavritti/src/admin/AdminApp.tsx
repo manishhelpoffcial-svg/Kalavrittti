@@ -9,51 +9,48 @@ import AdminArtisans from "@/admin/pages/AdminArtisans";
 import AdminBlog from "@/admin/pages/AdminBlog";
 import AdminContacts from "@/admin/pages/AdminContacts";
 import AdminReviews from "@/admin/pages/AdminReviews";
-import { AdminScaffold } from "@/admin/pages/AdminScaffold";
+import AdminCustomers from "@/admin/pages/AdminCustomers";
+import AdminOrders from "@/admin/pages/AdminOrders";
+import AdminFinancials from "@/admin/pages/AdminFinancials";
+import AdminMarketing from "@/admin/pages/AdminMarketing";
+import AdminSeo from "@/admin/pages/AdminSeo";
+import AdminWebsiteSettings from "@/admin/pages/AdminWebsiteSettings";
+import AdminPolicies from "@/admin/pages/AdminPolicies";
+import AdminPayments from "@/admin/pages/AdminPayments";
+import AdminEmail from "@/admin/pages/AdminEmail";
+import AdminUsers from "@/admin/pages/AdminUsers";
+import AdminSystem from "@/admin/pages/AdminSystem";
+import AdminNotifications from "@/admin/pages/AdminNotifications";
+
+function Wrap({ children }: { children: React.ReactNode }) {
+  return <AdminLayout>{children}</AdminLayout>;
+}
 
 export function AdminApp() {
   return (
     <Switch>
       <Route path="/admin/login" component={AdminLogin} />
 
-      <Route path="/admin">
-        <AdminLayout><AdminDashboard /></AdminLayout>
-      </Route>
-      <Route path="/admin/sellers">
-        <AdminLayout><AdminSellers /></AdminLayout>
-      </Route>
-      <Route path="/admin/products">
-        <AdminLayout><AdminProducts /></AdminLayout>
-      </Route>
-      <Route path="/admin/categories">
-        <AdminLayout><AdminCategories /></AdminLayout>
-      </Route>
-      <Route path="/admin/artisans">
-        <AdminLayout><AdminArtisans /></AdminLayout>
-      </Route>
-      <Route path="/admin/blog">
-        <AdminLayout><AdminBlog /></AdminLayout>
-      </Route>
-      <Route path="/admin/contacts">
-        <AdminLayout><AdminContacts /></AdminLayout>
-      </Route>
-      <Route path="/admin/reviews">
-        <AdminLayout><AdminReviews /></AdminLayout>
-      </Route>
-
-      {/* Scaffold pages */}
-      <Route path="/admin/customers"><AdminLayout><AdminScaffold title="Customer Management" description="View registered customers, order history, and loyalty points." /></AdminLayout></Route>
-      <Route path="/admin/orders"><AdminLayout><AdminScaffold title="Orders" description="Track orders, update fulfillment, manage returns and refunds." /></AdminLayout></Route>
-      <Route path="/admin/financials"><AdminLayout><AdminScaffold title="Financial Management" description="Revenue reports, seller payouts, and commission tracking." /></AdminLayout></Route>
-      <Route path="/admin/marketing"><AdminLayout><AdminScaffold title="Marketing" description="Discount codes, promotional banners, and featured collections." /></AdminLayout></Route>
-      <Route path="/admin/seo"><AdminLayout><AdminScaffold title="SEO Settings" description="Meta titles, descriptions, sitemap, and structured data." /></AdminLayout></Route>
-      <Route path="/admin/policies"><AdminLayout><AdminScaffold title="Policies" description="Terms & Conditions, Privacy Policy, Return Policy." /></AdminLayout></Route>
-      <Route path="/admin/settings"><AdminLayout><AdminScaffold title="Website Settings" description="Banners, footer links, social handles, and general settings." /></AdminLayout></Route>
-      <Route path="/admin/payments"><AdminLayout><AdminScaffold title="Payment Settings" description="Configure Razorpay, gateway keys, and payout schedules." /></AdminLayout></Route>
-      <Route path="/admin/notifications"><AdminLayout><AdminScaffold title="Notifications" description="Push notifications, SMS alerts, and WhatsApp integrations." /></AdminLayout></Route>
-      <Route path="/admin/email"><AdminLayout><AdminScaffold title="Email & Documents" description="Email templates, automated emails, and PDF settings." /></AdminLayout></Route>
-      <Route path="/admin/admin-users"><AdminLayout><AdminScaffold title="Admin Management" description="Add or remove admin accounts and set permissions." /></AdminLayout></Route>
-      <Route path="/admin/system"><AdminLayout><AdminScaffold title="System" description="System health, error logs, cache settings, and diagnostics." /></AdminLayout></Route>
+      <Route path="/admin"><Wrap><AdminDashboard /></Wrap></Route>
+      <Route path="/admin/sellers"><Wrap><AdminSellers /></Wrap></Route>
+      <Route path="/admin/products"><Wrap><AdminProducts /></Wrap></Route>
+      <Route path="/admin/categories"><Wrap><AdminCategories /></Wrap></Route>
+      <Route path="/admin/artisans"><Wrap><AdminArtisans /></Wrap></Route>
+      <Route path="/admin/blog"><Wrap><AdminBlog /></Wrap></Route>
+      <Route path="/admin/contacts"><Wrap><AdminContacts /></Wrap></Route>
+      <Route path="/admin/reviews"><Wrap><AdminReviews /></Wrap></Route>
+      <Route path="/admin/customers"><Wrap><AdminCustomers /></Wrap></Route>
+      <Route path="/admin/orders"><Wrap><AdminOrders /></Wrap></Route>
+      <Route path="/admin/financials"><Wrap><AdminFinancials /></Wrap></Route>
+      <Route path="/admin/marketing"><Wrap><AdminMarketing /></Wrap></Route>
+      <Route path="/admin/seo"><Wrap><AdminSeo /></Wrap></Route>
+      <Route path="/admin/settings"><Wrap><AdminWebsiteSettings /></Wrap></Route>
+      <Route path="/admin/policies"><Wrap><AdminPolicies /></Wrap></Route>
+      <Route path="/admin/payments"><Wrap><AdminPayments /></Wrap></Route>
+      <Route path="/admin/email"><Wrap><AdminEmail /></Wrap></Route>
+      <Route path="/admin/admin-users"><Wrap><AdminUsers /></Wrap></Route>
+      <Route path="/admin/system"><Wrap><AdminSystem /></Wrap></Route>
+      <Route path="/admin/notifications"><Wrap><AdminNotifications /></Wrap></Route>
     </Switch>
   );
 }

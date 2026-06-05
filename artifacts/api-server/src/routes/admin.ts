@@ -203,21 +203,49 @@ router.get("/admin/products", verifyAdminToken, async (req, res) => {
   }
 });
 
+router.post("/admin/products", verifyAdminToken, async (req, res) => {
+  try {
+    const body = req.body as Record<string, unknown>;
+    if (!body.title || !body.price || !body.mrp) {
+      res.status(400).json({ error: "title, price, mrp required" }); return;
+    }
+    const slug = (body.title as string).toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") + "-" + Date.now();
+    await db.insert(productsTable).values({
+      title: body.title as string, slug, shortDescription: body.shortDescription as string ?? null,
+      description: (body.description as string) || "",
+      price: String(body.price), mrp: String(body.mrp),
+      categoryId: body.categoryId ? Number(body.categoryId) : null,
+      categorySlug: (body.categorySlug as string) || null, categoryName: (body.categoryName as string) || null,
+      artisanId: body.artisanId ? Number(body.artisanId) : null,
+      mainImage: (body.mainImage as string) || null,
+      images: (body.images as string[]) || [],
+      material: (body.material as string) || null, placeOfOrigin: (body.placeOfOrigin as string) || null,
+      stockQuantity: Number(body.stockQuantity) || 0,
+      inStock: body.inStock !== false, isFeatured: !!body.isFeatured,
+      isBestSeller: !!body.isBestSeller, isNewArrival: !!body.isNewArrival,
+      isCustomizable: !!body.isCustomizable, freeShipping: !!body.freeShipping,
+      status: (body.status as string) || "active",
+      tags: (body.tags as string[]) || [],
+    });
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || "Failed to create product" });
+  }
+});
+
 router.patch("/admin/products/:id", verifyAdminToken, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const updates = req.body as {
-      isFeatured?: boolean; isBestSeller?: boolean; isNewArrival?: boolean;
-      inStock?: boolean; status?: string; stockQuantity?: number; price?: number;
-    };
+    const body = req.body as Record<string, unknown>;
     const setValues: Record<string, unknown> = {};
-    if (updates.isFeatured !== undefined) setValues.isFeatured = updates.isFeatured;
-    if (updates.isBestSeller !== undefined) setValues.isBestSeller = updates.isBestSeller;
-    if (updates.isNewArrival !== undefined) setValues.isNewArrival = updates.isNewArrival;
-    if (updates.inStock !== undefined) setValues.inStock = updates.inStock;
-    if (updates.status !== undefined) setValues.status = updates.status;
-    if (updates.stockQuantity !== undefined) setValues.stockQuantity = updates.stockQuantity;
-    if (updates.price !== undefined) setValues.price = updates.price;
+    const fields = ["title", "shortDescription", "description", "categoryId", "categorySlug", "categoryName",
+      "material", "placeOfOrigin", "stockQuantity", "inStock", "isFeatured", "isBestSeller",
+      "isNewArrival", "isCustomizable", "freeShipping", "status", "images", "mainImage", "tags"];
+    for (const f of fields) {
+      if (body[f] !== undefined) setValues[f] = body[f];
+    }
+    if (body.price !== undefined) setValues.price = String(body.price);
+    if (body.mrp !== undefined) setValues.mrp = String(body.mrp);
     if (Object.keys(setValues).length > 0) {
       await db.update(productsTable).set(setValues).where(eq(productsTable.id, id));
     }

@@ -7,22 +7,37 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Search, RefreshCw, Eye, Check, X, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, RefreshCw, Eye, Check, X, AlertCircle, ChevronLeft, ChevronRight, FileText, ShieldCheck, ExternalLink } from "lucide-react";
 
 interface Seller {
-  id: number; fullName: string; email: string; mobile: string; businessName: string;
-  businessType: string; state: string; city: string; status: string;
-  gstNumber: string | null; aadhaarUrl: string | null; panUrl: string | null;
-  createdAt: string; bankAccountNumber: string | null; bankIfsc: string | null;
-  bankName: string | null; accountHolderName: string | null;
+  id: number; applicationId: string; fullName: string; email: string; mobile: string;
+  age?: number; dob?: string; gender?: string; businessName: string | null;
+  businessAddress?: string | null; categoryName: string | null; categoryDescription?: string | null;
+  state?: string | null; city?: string | null; status: string; gstNumber: string | null;
+  aadhaarUrl: string | null; panCardUrl: string | null; videoKycRequested?: boolean;
+  createdAt: string; accountHolderName: string | null; accountNumber: string | null;
+  ifscCode: string | null; bankName: string | null; upiId: string | null;
 }
 
-const statusConfig: Record<string, string> = {
-  pending: "bg-amber-100 text-amber-800 border-amber-200",
-  approved: "bg-green-100 text-green-800 border-green-200",
-  rejected: "bg-red-100 text-red-800 border-red-200",
-  suspended: "bg-gray-100 text-gray-800 border-gray-200",
+const statusConfig: Record<string, { label: string; cls: string }> = {
+  pending: { label: "Pending", cls: "bg-amber-100 text-amber-800 border-amber-200" },
+  approved: { label: "Approved", cls: "bg-green-100 text-green-800 border-green-200" },
+  rejected: { label: "Rejected", cls: "bg-red-100 text-red-800 border-red-200" },
+  suspended: { label: "Suspended", cls: "bg-gray-100 text-gray-800 border-gray-200" },
 };
+
+function DocLink({ url, label }: { url: string | null; label: string }) {
+  if (!url) return <span className="text-muted-foreground text-xs">Not uploaded</span>;
+  const isImage = /\.(jpg|jpeg|png|webp|gif)(\?|$)/i.test(url);
+  return (
+    <div className="space-y-2">
+      {isImage && <img src={url} alt={label} className="max-h-32 rounded-lg border object-contain bg-muted" />}
+      <a href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-primary hover:underline">
+        <ExternalLink className="w-3 h-3" />View {label}
+      </a>
+    </div>
+  );
+}
 
 export default function AdminSellers() {
   const { toast } = useToast();
@@ -57,9 +72,17 @@ export default function AdminSellers() {
       await adminApi.patch(`/admin/sellers/${id}/status`, { status });
       toast({ title: "Updated", description: `Status changed to ${status}.` });
       load();
-      if (selected?.id === id) setSelected((s) => s ? { ...s, status } : s);
+      if (selected?.id === id) setSelected(s => s ? { ...s, status } : s);
     } catch { toast({ title: "Error", description: "Failed to update.", variant: "destructive" }); }
     finally { setUpdatingId(null); }
+  };
+
+  const openDetail = async (s: Seller) => {
+    setSelected(s);
+    try {
+      const res = await adminApi.get(`/admin/sellers/${s.id}`);
+      setSelected(res.data);
+    } catch {}
   };
 
   const totalPages = Math.ceil(total / LIMIT);
@@ -80,7 +103,7 @@ export default function AdminSellers() {
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             {["all", "pending", "approved", "rejected", "suspended"].map((s) => (
-              <SelectItem key={s} value={s}>{s === "all" ? "All Statuses" : s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
+              <SelectItem key={s} value={s}>{s === "all" ? "All Statuses" : (statusConfig[s]?.label ?? s)}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -92,8 +115,8 @@ export default function AdminSellers() {
             <thead className="bg-muted/50 border-b">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Seller</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Business</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Location</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Category</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">KYC Docs</th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Applied</th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Status</th>
                 <th className="text-right px-4 py-3 font-medium text-muted-foreground">Actions</th>
@@ -108,13 +131,22 @@ export default function AdminSellers() {
                 <tr><td colSpan={6} className="px-4 py-12 text-center text-muted-foreground"><AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-40" />No sellers found</td></tr>
               ) : sellers.map((s) => (
                 <tr key={s.id} className="hover:bg-muted/30 transition-colors">
-                  <td className="px-4 py-3"><p className="font-medium">{s.fullName}</p><p className="text-xs text-muted-foreground">{s.email}</p><p className="text-xs text-muted-foreground">{s.mobile}</p></td>
-                  <td className="px-4 py-3"><p className="font-medium">{s.businessName || "—"}</p><p className="text-xs text-muted-foreground capitalize">{s.businessType || "—"}</p></td>
-                  <td className="px-4 py-3 text-muted-foreground">{s.city ? `${s.city}, ` : ""}{s.state || "—"}</td>
+                  <td className="px-4 py-3">
+                    <p className="font-medium">{s.fullName}</p>
+                    <p className="text-xs text-muted-foreground">{s.email}</p>
+                    <p className="text-xs text-muted-foreground">{s.mobile}</p>
+                  </td>
+                  <td className="px-4 py-3"><p className="font-medium">{s.categoryName || "—"}</p><p className="text-xs text-muted-foreground">{s.businessName || ""}</p></td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${s.aadhaarUrl ? "bg-green-100 text-green-700" : "bg-muted text-muted-foreground"}`}>Aadhaar</span>
+                      <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${s.panCardUrl ? "bg-green-100 text-green-700" : "bg-muted text-muted-foreground"}`}>PAN</span>
+                    </div>
+                  </td>
                   <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{new Date(s.createdAt).toLocaleDateString("en-IN")}</td>
-                  <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${statusConfig[s.status] ?? ""}`}>{s.status}</span></td>
+                  <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${statusConfig[s.status]?.cls ?? ""}`}>{statusConfig[s.status]?.label ?? s.status}</span></td>
                   <td className="px-4 py-3"><div className="flex items-center justify-end gap-1">
-                    <Button size="sm" variant="ghost" onClick={() => setSelected(s)} className="h-7 px-2"><Eye className="w-3.5 h-3.5" /></Button>
+                    <Button size="sm" variant="ghost" onClick={() => openDetail(s)} className="h-7 px-2"><Eye className="w-3.5 h-3.5" /></Button>
                     {s.status !== "approved" && <Button size="sm" variant="ghost" onClick={() => updateStatus(s.id, "approved")} disabled={updatingId === s.id} className="h-7 px-2 text-green-600 hover:bg-green-50"><Check className="w-3.5 h-3.5" /></Button>}
                     {s.status !== "rejected" && <Button size="sm" variant="ghost" onClick={() => updateStatus(s.id, "rejected")} disabled={updatingId === s.id} className="h-7 px-2 text-red-600 hover:bg-red-50"><X className="w-3.5 h-3.5" /></Button>}
                   </div></td>
@@ -137,23 +169,87 @@ export default function AdminSellers() {
       )}
 
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>Seller Details</DialogTitle></DialogHeader>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5" />KYC Review — {selected?.fullName}
+            </DialogTitle>
+          </DialogHeader>
           {selected && (
-            <div className="space-y-4 text-sm">
-              <div className="grid grid-cols-2 gap-3">
-                {[["Name", selected.fullName], ["Email", selected.email], ["Mobile", selected.mobile], ["Business", selected.businessName], ["Type", selected.businessType], ["State", selected.state], ["City", selected.city], ["GST", selected.gstNumber], ["Bank", selected.bankName], ["Account", selected.bankAccountNumber], ["IFSC", selected.bankIfsc], ["Holder", selected.accountHolderName]].map(([l, v]) => (
-                  <div key={l}><p className="text-xs text-muted-foreground">{l}</p><p className="font-medium">{v || "—"}</p></div>
-                ))}
+            <div className="space-y-5 text-sm">
+              {/* Status badge */}
+              <div className="flex items-center gap-3">
+                <span className={`px-3 py-1 rounded-full border font-medium text-sm ${statusConfig[selected.status]?.cls ?? ""}`}>{statusConfig[selected.status]?.label ?? selected.status}</span>
+                <span className="text-xs text-muted-foreground font-mono">{selected.applicationId}</span>
               </div>
-              <div className="flex gap-2 text-xs">
-                {selected.aadhaarUrl && <a href={selected.aadhaarUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline">View Aadhaar →</a>}
-                {selected.panUrl && <a href={selected.panUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline ml-2">View PAN →</a>}
+
+              {/* Personal Info */}
+              <div>
+                <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-2">Personal Information</p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {[["Full Name", selected.fullName], ["Email", selected.email], ["Mobile", selected.mobile], ["Age", selected.age], ["Date of Birth", selected.dob], ["Gender", selected.gender]].map(([l, v]) => (
+                    <div key={String(l)}><p className="text-[10px] text-muted-foreground uppercase tracking-wide">{l}</p><p className="font-medium">{v || "—"}</p></div>
+                  ))}
+                </div>
               </div>
-              <div className="flex gap-2 pt-1">
-                <Button size="sm" variant="outline" className="flex-1" onClick={() => { updateStatus(selected.id, "approved"); setSelected(null); }}>Approve</Button>
-                <Button size="sm" variant="destructive" className="flex-1" onClick={() => { updateStatus(selected.id, "rejected"); setSelected(null); }}>Reject</Button>
-                <Button size="sm" variant="outline" className="flex-1" onClick={() => { updateStatus(selected.id, "suspended"); setSelected(null); }}>Suspend</Button>
+
+              {/* Craft Info */}
+              <div>
+                <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-2">Craft & Business</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {[["Category", selected.categoryName], ["Business Name", selected.businessName], ["GST Number", selected.gstNumber], ["Business Address", selected.businessAddress]].map(([l, v]) => (
+                    <div key={String(l)} className={l === "Business Address" || l === "Category Description" ? "col-span-2" : ""}><p className="text-[10px] text-muted-foreground uppercase tracking-wide">{l}</p><p className="font-medium">{v || "—"}</p></div>
+                  ))}
+                </div>
+                {selected.categoryDescription && <div className="mt-2"><p className="text-[10px] text-muted-foreground uppercase tracking-wide">Category Description</p><p className="font-medium">{selected.categoryDescription}</p></div>}
+              </div>
+
+              {/* KYC Documents */}
+              <div>
+                <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2"><FileText className="w-3.5 h-3.5" />KYC Documents</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-3 border rounded-lg bg-muted/30">
+                    <p className="text-xs font-semibold mb-2">Aadhaar Card</p>
+                    <DocLink url={selected.aadhaarUrl} label="Aadhaar" />
+                  </div>
+                  <div className="p-3 border rounded-lg bg-muted/30">
+                    <p className="text-xs font-semibold mb-2">PAN Card</p>
+                    <DocLink url={selected.panCardUrl} label="PAN Card" />
+                  </div>
+                </div>
+                {selected.videoKycRequested && (
+                  <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 px-2 py-1 rounded mt-2">📹 Seller requested Video KYC</p>
+                )}
+              </div>
+
+              {/* Bank Details */}
+              <div>
+                <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-2">Bank / Payment Details</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {[["Account Holder", selected.accountHolderName], ["Bank Name", selected.bankName], ["Account Number", selected.accountNumber], ["IFSC Code", selected.ifscCode], ["UPI ID", selected.upiId]].map(([l, v]) => (
+                    <div key={String(l)}><p className="text-[10px] text-muted-foreground uppercase tracking-wide">{l}</p><p className="font-medium font-mono text-sm">{v || "—"}</p></div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-2 pt-1 border-t">
+                {selected.status !== "approved" && (
+                  <Button className="flex-1 bg-green-600 hover:bg-green-700" onClick={() => { updateStatus(selected.id, "approved"); setSelected(null); }}>
+                    <Check className="w-4 h-4 mr-2" />Approve KYC
+                  </Button>
+                )}
+                {selected.status !== "rejected" && (
+                  <Button variant="destructive" className="flex-1" onClick={() => { updateStatus(selected.id, "rejected"); setSelected(null); }}>
+                    <X className="w-4 h-4 mr-2" />Reject KYC
+                  </Button>
+                )}
+                {selected.status !== "suspended" && (
+                  <Button variant="outline" onClick={() => { updateStatus(selected.id, "suspended"); setSelected(null); }}>Suspend</Button>
+                )}
+                {selected.status !== "pending" && (
+                  <Button variant="outline" onClick={() => { updateStatus(selected.id, "pending"); setSelected(null); }}>Reset to Pending</Button>
+                )}
               </div>
             </div>
           )}
