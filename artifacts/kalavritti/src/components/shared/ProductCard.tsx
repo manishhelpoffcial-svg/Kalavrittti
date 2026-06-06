@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "wouter";
 import { formatPrice, calculateDiscount } from "@/lib/format-price";
 import { useAddToCart, useAddToWishlist, useRemoveFromWishlist, useGetWishlist, getGetCartQueryKey, getGetWishlistQueryKey } from "@workspace/api-client-react";
-import { ProductCard as ProductCardType } from "@workspace/api-client-react/src/generated/api.schemas";
+import { ProductCard as ProductCardType } from "@workspace/api-client-react";
 import { Heart, ShoppingBag, Star } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";

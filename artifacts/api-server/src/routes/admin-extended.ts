@@ -49,7 +49,7 @@ router.post("/admin/customers", verifyAdminToken, async (req, res) => {
 
 router.patch("/admin/customers/:id", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const { fullName, email, mobile, city, state, isActive } = req.body;
     const set: Record<string, unknown> = {};
     if (fullName !== undefined) set.fullName = fullName;
@@ -65,7 +65,7 @@ router.patch("/admin/customers/:id", verifyAdminToken, async (req, res) => {
 
 router.delete("/admin/customers/:id", verifyAdminToken, async (req, res) => {
   try {
-    await db.delete(customersTable).where(eq(customersTable.id, parseInt(req.params.id)));
+    await db.delete(customersTable).where(eq(customersTable.id, parseInt(String(req.params.id))));
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: "Failed to delete customer" }); }
 });
@@ -97,7 +97,7 @@ router.get("/admin/orders", verifyAdminToken, async (req, res) => {
 
 router.patch("/admin/orders/:id/status", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const { status, paymentStatus } = req.body;
     const set: Record<string, unknown> = { updatedAt: new Date() };
     if (status) set.status = status;
@@ -109,8 +109,8 @@ router.patch("/admin/orders/:id/status", verifyAdminToken, async (req, res) => {
 
 router.delete("/admin/orders/:id", verifyAdminToken, async (req, res) => {
   try {
-    await db.delete(orderItemsTable).where(eq(orderItemsTable.orderId, parseInt(req.params.id)));
-    await db.delete(ordersTable).where(eq(ordersTable.id, parseInt(req.params.id)));
+    await db.delete(orderItemsTable).where(eq(orderItemsTable.orderId, parseInt(String(req.params.id))));
+    await db.delete(ordersTable).where(eq(ordersTable.id, parseInt(String(req.params.id))));
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: "Failed to delete order" }); }
 });
@@ -164,7 +164,7 @@ router.post("/admin/promotions", verifyAdminToken, async (req, res) => {
 
 router.patch("/admin/promotions/:id", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const { code, description, discountType, discountValue, minOrderAmount, maxDiscountAmount, usageLimit, isActive, startsAt, expiresAt } = req.body;
     const set: Record<string, unknown> = {};
     if (code !== undefined) set.code = code.toUpperCase();
@@ -184,7 +184,7 @@ router.patch("/admin/promotions/:id", verifyAdminToken, async (req, res) => {
 
 router.delete("/admin/promotions/:id", verifyAdminToken, async (req, res) => {
   try {
-    await db.delete(promotionsTable).where(eq(promotionsTable.id, parseInt(req.params.id)));
+    await db.delete(promotionsTable).where(eq(promotionsTable.id, parseInt(String(req.params.id))));
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: "Failed to delete promotion" }); }
 });
@@ -192,7 +192,7 @@ router.delete("/admin/promotions/:id", verifyAdminToken, async (req, res) => {
 // ─────────────────────────────── SITE SETTINGS ────────────────────────────
 router.get("/admin/settings/:category", verifyAdminToken, async (req, res) => {
   try {
-    const { category } = req.params;
+    const category = String(req.params.category);
     const rows = await db.select().from(siteSettingsTable).where(eq(siteSettingsTable.category, category));
     const map: Record<string, string | null> = {};
     rows.forEach(r => { map[r.key] = r.value; });
@@ -202,7 +202,7 @@ router.get("/admin/settings/:category", verifyAdminToken, async (req, res) => {
 
 router.put("/admin/settings/:category", verifyAdminToken, async (req, res) => {
   try {
-    const { category } = req.params;
+    const category = String(req.params.category);
     const entries = Object.entries(req.body as Record<string, string>);
     for (const [key, value] of entries) {
       const existing = await db.select().from(siteSettingsTable).where(eq(siteSettingsTable.key, key)).limit(1);
@@ -226,7 +226,7 @@ router.get("/admin/policies", verifyAdminToken, async (req, res) => {
 
 router.put("/admin/policies/:name", verifyAdminToken, async (req, res) => {
   try {
-    const { name } = req.params;
+    const name = String(req.params.name);
     const { title, content } = req.body;
     const existing = await db.select().from(policiesTable).where(eq(policiesTable.name, name)).limit(1);
     if (existing.length) {
@@ -262,7 +262,7 @@ router.post("/admin/admin-users", verifyAdminToken, async (req, res) => {
 
 router.patch("/admin/admin-users/:id", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const { name, role, isActive, password } = req.body;
     const set: Record<string, unknown> = { updatedAt: new Date() };
     if (name !== undefined) set.name = name;
@@ -276,7 +276,7 @@ router.patch("/admin/admin-users/:id", verifyAdminToken, async (req, res) => {
 
 router.delete("/admin/admin-users/:id", verifyAdminToken, async (req, res) => {
   try {
-    await db.delete(adminUsersTable).where(eq(adminUsersTable.id, parseInt(req.params.id)));
+    await db.delete(adminUsersTable).where(eq(adminUsersTable.id, parseInt(String(req.params.id))));
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: "Failed to delete admin user" }); }
 });
@@ -284,7 +284,7 @@ router.delete("/admin/admin-users/:id", verifyAdminToken, async (req, res) => {
 // ─────────────────── SELLER KYC (enhanced) ─────────────────────────────────
 router.get("/admin/sellers/:id", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const [seller] = await db.select().from(sellerApplications).where(eq(sellerApplications.id, id));
     if (!seller) { res.status(404).json({ error: "Not found" }); return; }
     res.json({ ...seller, createdAt: seller.createdAt?.toISOString() ?? "", updatedAt: seller.updatedAt?.toISOString() ?? "" });

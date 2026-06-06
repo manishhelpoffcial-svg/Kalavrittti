@@ -13,12 +13,12 @@ export default function CategoryDetail() {
   const [sortBy, setSortBy] = useState("popularity");
 
   const { data: category, isLoading: isCatLoading } = useGetCategoryBySlug(slug, { 
-    query: { enabled: !!slug } 
+    query: { enabled: !!slug } as any
   });
   
   const { data: productsData, isLoading: isProdLoading } = useListProducts(
     { categorySlug: slug, sortBy: sortBy as any }, 
-    { query: { enabled: !!slug } }
+    { query: { enabled: !!slug } as any }
   );
 
   return (

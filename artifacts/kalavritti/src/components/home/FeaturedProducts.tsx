@@ -17,7 +17,7 @@ export function FeaturedProducts() {
   if (activeTab === "bestseller") params.bestSeller = true;
 
   const { data: tabData, isLoading: isTabLoading } = useListProducts(params, {
-    query: { enabled: activeTab !== "all" }
+    query: { enabled: activeTab !== "all" } as any
   });
 
   const isLoading = activeTab === "all" ? isHomeLoading : isTabLoading;

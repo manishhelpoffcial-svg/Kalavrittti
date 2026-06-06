@@ -44,7 +44,7 @@ router.get("/artisans/:slug", async (req, res) => {
       .select()
       .from(artisansTable)
       .where(eq(artisansTable.slug, slug));
-    if (!artisan) return res.status(404).json({ error: "Artisan not found" });
+    if (!artisan) { res.status(404).json({ error: "Artisan not found" }); return; }
     res.json(artisan);
   } catch (err) {
     req.log.error(err);

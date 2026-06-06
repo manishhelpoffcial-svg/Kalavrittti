@@ -27,7 +27,7 @@ router.get("/categories/:slug", async (req, res) => {
       .from(categoriesTable)
       .where(eq(categoriesTable.slug, slug));
     if (!category) {
-      return res.status(404).json({ error: "Category not found" });
+      res.status(404).json({ error: "Category not found" }); return;
     }
     res.json(category);
   } catch (err) {

@@ -14,7 +14,7 @@ function getWishlistFromSession(req: any): number[] {
 router.get("/wishlist", async (req: any, res) => {
   try {
     const wishlist = getWishlistFromSession(req);
-    if (wishlist.length === 0) return res.json([]);
+    if (wishlist.length === 0) { res.json([]); return; }
 
     const products = await db
       .select()

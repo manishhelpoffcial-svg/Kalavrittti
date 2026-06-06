@@ -11,12 +11,12 @@ export default function BlogPost() {
   const slug = params?.slug || "";
   
   const { data: post, isLoading } = useGetBlogPostBySlug(slug, { 
-    query: { enabled: !!slug } 
+    query: { enabled: !!slug } as any
   });
 
   // Use a hardcoded product ID for related products since we don't have one linked to the blog directly
   const { data: relatedProducts } = useGetRelatedProducts(1, {
-    query: { enabled: !!post }
+    query: { enabled: !!post } as any
   });
 
   if (isLoading) {

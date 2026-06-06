@@ -180,9 +180,9 @@ export default function AdminProducts() {
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Product</th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Price</th>
-                <th className="text-center px-3 py-3 font-medium text-muted-foreground"><Star className="w-3.5 h-3.5 inline" title="Featured" /></th>
-                <th className="text-center px-3 py-3 font-medium text-muted-foreground"><Zap className="w-3.5 h-3.5 inline" title="Best Seller" /></th>
-                <th className="text-center px-3 py-3 font-medium text-muted-foreground"><Sparkles className="w-3.5 h-3.5 inline" title="New Arrival" /></th>
+                <th className="text-center px-3 py-3 font-medium text-muted-foreground" title="Featured"><Star className="w-3.5 h-3.5 inline" /></th>
+                <th className="text-center px-3 py-3 font-medium text-muted-foreground" title="Best Seller"><Zap className="w-3.5 h-3.5 inline" /></th>
+                <th className="text-center px-3 py-3 font-medium text-muted-foreground" title="New Arrival"><Sparkles className="w-3.5 h-3.5 inline" /></th>
                 <th className="text-center px-3 py-3 font-medium text-muted-foreground">In Stock</th>
                 <th className="text-right px-4 py-3 font-medium text-muted-foreground">Actions</th>
               </tr>

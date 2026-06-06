@@ -43,7 +43,7 @@ router.post("/cart/items", async (req: any, res) => {
       .select()
       .from(productsTable)
       .where(eq(productsTable.id, productId));
-    if (!product) return res.status(404).json({ error: "Product not found" });
+    if (!product) { res.status(404).json({ error: "Product not found" }); return; }
 
     const cart = getCartFromSession(req);
     const existing = cart.find((i) => i.productId === productId);

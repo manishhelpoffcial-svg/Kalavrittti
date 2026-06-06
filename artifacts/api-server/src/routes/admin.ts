@@ -151,7 +151,7 @@ router.get("/admin/sellers", verifyAdminToken, async (req, res) => {
 
 router.patch("/admin/sellers/:id/status", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const { status } = req.body as { status: string };
     if (!status || !["pending", "approved", "rejected", "suspended"].includes(status)) {
       res.status(400).json({ error: "Invalid status" });
@@ -235,7 +235,7 @@ router.post("/admin/products", verifyAdminToken, async (req, res) => {
 
 router.patch("/admin/products/:id", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const body = req.body as Record<string, unknown>;
     const setValues: Record<string, unknown> = {};
     const fields = ["title", "shortDescription", "description", "categoryId", "categorySlug", "categoryName",
@@ -257,7 +257,7 @@ router.patch("/admin/products/:id", verifyAdminToken, async (req, res) => {
 
 router.delete("/admin/products/:id", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     await db.delete(productsTable).where(eq(productsTable.id, id));
     res.json({ success: true, message: "Product deleted" });
   } catch (err) {
@@ -289,7 +289,7 @@ router.get("/admin/artisans", verifyAdminToken, async (req, res) => {
 
 router.patch("/admin/artisans/:id", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const { featured, craftType, state } = req.body as { featured?: boolean; craftType?: string; state?: string };
     const setValues: Record<string, unknown> = {};
     if (featured !== undefined) setValues.featured = featured;
@@ -306,7 +306,7 @@ router.patch("/admin/artisans/:id", verifyAdminToken, async (req, res) => {
 
 router.delete("/admin/artisans/:id", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     await db.delete(artisansTable).where(eq(artisansTable.id, id));
     res.json({ success: true, message: "Artisan deleted" });
   } catch (err) {
@@ -341,7 +341,7 @@ router.post("/admin/categories", verifyAdminToken, async (req, res) => {
 
 router.patch("/admin/categories/:id", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const { name, slug, description, image, icon } = req.body as {
       name?: string; slug?: string; description?: string; image?: string; icon?: string;
     };
@@ -362,7 +362,7 @@ router.patch("/admin/categories/:id", verifyAdminToken, async (req, res) => {
 
 router.delete("/admin/categories/:id", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     await db.delete(categoriesTable).where(eq(categoriesTable.id, id));
     res.json({ success: true, message: "Category deleted" });
   } catch (err) {
@@ -419,7 +419,7 @@ router.post("/admin/blog", verifyAdminToken, async (req, res) => {
 
 router.patch("/admin/blog/:id", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const { title, slug, content, excerpt, featuredImage, categoryTag, authorName } = req.body as {
       title?: string; slug?: string; content?: string;
       excerpt?: string; featuredImage?: string; categoryTag?: string; authorName?: string;
@@ -443,7 +443,7 @@ router.patch("/admin/blog/:id", verifyAdminToken, async (req, res) => {
 
 router.delete("/admin/blog/:id", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     await db.delete(blogPostsTable).where(eq(blogPostsTable.id, id));
     res.json({ success: true, message: "Blog post deleted" });
   } catch (err) {
@@ -509,7 +509,7 @@ router.get("/admin/reviews", verifyAdminToken, async (req, res) => {
 
 router.delete("/admin/reviews/:id", verifyAdminToken, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     await db.delete(reviewsTable).where(eq(reviewsTable.id, id));
     res.json({ success: true, message: "Review deleted" });
   } catch (err) {

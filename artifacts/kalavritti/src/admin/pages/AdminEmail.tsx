@@ -83,7 +83,7 @@ export default function AdminEmail() {
                       {(f as any).multiline ? (
                         <textarea value={values[f.key] ?? ""} onChange={e => setValues(v => ({ ...v, [f.key]: e.target.value }))} placeholder={f.ph} rows={3} className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background resize-y focus:outline-none focus:ring-2 focus:ring-ring" />
                       ) : (
-                        <Input type={f.type === "password" ? "password" : "text"} value={values[f.key] ?? ""} onChange={e => setValues(v => ({ ...v, [f.key]: e.target.value }))} placeholder={f.ph} />
+                        <Input type={(f as any).type === "password" ? "password" : "text"} value={values[f.key] ?? ""} onChange={e => setValues(v => ({ ...v, [f.key]: e.target.value }))} placeholder={f.ph} />
                       )}
                     </div>
                   ))}

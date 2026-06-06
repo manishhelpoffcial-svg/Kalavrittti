@@ -31,14 +31,14 @@ export default function ProductDetail() {
   const [activeImage, setActiveImage] = useState<string | null>(null);
 
   const { data: apiProduct, isLoading: isProductLoading } = useGetProductBySlug(slug, { 
-    query: { enabled: !!slug } 
+    query: { enabled: !!slug } as any
   });
 
   const mockProduct = getMockProduct(slug);
   const product = apiProduct || (mockProduct as any) || undefined;
   
   const { data: relatedApiProducts } = useGetRelatedProducts(apiProduct?.id || 0, {
-    query: { enabled: !!apiProduct?.id }
+    query: { enabled: !!apiProduct?.id } as any
   });
   const relatedProducts = relatedApiProducts?.length
     ? relatedApiProducts
@@ -171,7 +171,7 @@ export default function ProductDetail() {
           {/* Thumbnails */}
           {allImages.length > 1 && (
             <div className="flex gap-4 overflow-x-auto pb-2">
-              {allImages.map((img, idx) => (
+              {allImages.map((img: string, idx: number) => (
                 <button 
                   key={idx}
                   onClick={() => setActiveImage(img)}

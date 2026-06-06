@@ -11,11 +11,11 @@ export default function ArtisanDetail() {
   const slug = params?.slug || "";
   
   const { data: artisan, isLoading: isArtisanLoading } = useGetArtisanBySlug(slug, { 
-    query: { enabled: !!slug } 
+    query: { enabled: !!slug } as any
   });
 
   const { data: products, isLoading: isProductsLoading } = useGetArtisanProducts(artisan?.id || 0, {
-    query: { enabled: !!artisan?.id }
+    query: { enabled: !!artisan?.id } as any
   });
 
   if (isArtisanLoading) {

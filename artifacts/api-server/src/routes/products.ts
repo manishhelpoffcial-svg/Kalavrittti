@@ -92,7 +92,7 @@ router.get("/products/:slug", async (req, res) => {
       .select()
       .from(productsTable)
       .where(eq(productsTable.slug, slug));
-    if (!product) return res.status(404).json({ error: "Product not found" });
+    if (!product) { res.status(404).json({ error: "Product not found" }); return; }
 
     let artisan = null;
     if (product.artisanId) {
@@ -146,7 +146,7 @@ router.get("/products/:productId/related", async (req, res) => {
   try {
     const productId = parseInt(req.params.productId);
     const [product] = await db.select().from(productsTable).where(eq(productsTable.id, productId));
-    if (!product) return res.json([]);
+    if (!product) { res.json([]); return; }
 
     const conditions = [
       eq(productsTable.status, "active"),

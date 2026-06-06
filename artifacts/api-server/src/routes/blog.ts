@@ -57,7 +57,7 @@ router.get("/blog/:slug", async (req, res) => {
       .select()
       .from(blogPostsTable)
       .where(eq(blogPostsTable.slug, slug));
-    if (!post) return res.status(404).json({ error: "Blog post not found" });
+    if (!post) { res.status(404).json({ error: "Blog post not found" }); return; }
 
     res.json({
       id: post.id,

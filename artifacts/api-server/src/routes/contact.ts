@@ -8,7 +8,7 @@ router.post("/contact", async (req, res) => {
   try {
     const { fullName, email, phone, subject, message } = req.body;
     if (!fullName || !email || !subject || !message) {
-      return res.status(400).json({ error: "Missing required fields" });
+      res.status(400).json({ error: "Missing required fields" }); return;
     }
     await db.insert(contactsTable).values({ fullName, email, phone, subject, message });
     res.json({ success: true, message: "Message sent successfully" });
@@ -21,7 +21,7 @@ router.post("/contact", async (req, res) => {
 router.post("/newsletter/subscribe", async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ error: "Email required" });
+    if (!email) { res.status(400).json({ error: "Email required" }); return; }
 
     await db
       .insert(newsletterSubscribersTable)

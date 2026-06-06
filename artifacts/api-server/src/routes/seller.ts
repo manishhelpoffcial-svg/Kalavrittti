@@ -15,7 +15,7 @@ cloudinary.config({
 const supabaseAdmin = createClient(
   process.env.SUPABASE_URL || "",
   process.env.SUPABASE_SERVICE_ROLE_KEY || "",
-  { auth: { autoRefreshToken: false, persistSession: false }, realtime: { transport: ws } }
+  { auth: { autoRefreshToken: false, persistSession: false }, realtime: { transport: ws as any } }
 );
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
