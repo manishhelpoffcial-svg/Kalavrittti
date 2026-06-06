@@ -3,3 +3,4 @@
 - [Seller registration system](seller-registration.md) — 6-step wizard, OTP stubs (MSG91/Zoho pending), Cloudinary doc upload, jsPDF, WhatsApp share
 - [Admin panel architecture](admin-panel-arch.md) — auth, sidebar, routing, new tables, API structure for all admin pages
 - [Workflow port setup](workflow-ports.md) — frontend on port 8080 (ext 80, main preview), API on port 8081; Vite proxies /api to 8081; BASE_PATH=/ required
+- [Tailwind v4 + Replit plugins conflict](tailwind-replit-conflict.md) — NEVER use @replit/vite-plugin-cartographer or @replit/vite-plugin-dev-banner with Tailwind v4; dev-banner injects @tailwindcss/browser CDN which wipes compiled CSS → white screen
