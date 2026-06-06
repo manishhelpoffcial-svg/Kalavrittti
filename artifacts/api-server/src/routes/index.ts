@@ -12,6 +12,8 @@ import contactRouter from "./contact";
 import authRouter from "./auth";
 import uploadRouter from "./upload";
 import sellerRouter from "./seller";
+import adminRouter from "./admin";
+import adminExtendedRouter from "./admin-extended";
 
 const router: IRouter = Router();
 
@@ -28,5 +30,7 @@ router.use(contactRouter);
 router.use(authRouter);
 router.use(uploadRouter);
 router.use(sellerRouter);
+router.use(adminRouter);
+router.use(adminExtendedRouter);
 
 export default router;

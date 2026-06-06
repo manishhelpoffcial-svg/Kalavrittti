@@ -85,7 +85,7 @@ export function Header() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <img src={logo} alt="Kalavritti" className="h-14 md:h-20" style={{ filter: 'drop-shadow(0 0 6px rgba(201,168,76,0.3))' }} />
+            <img src={logo} alt="Kalavritti" className="h-14 md:h-20 w-auto object-contain" style={{ imageRendering: 'auto' }} />
           </Link>
 
           {/* Search */}
