@@ -9,8 +9,10 @@ import {
   blogPostsTable,
   contactsTable,
   reviewsTable,
+  ordersTable,
+  customersTable,
 } from "@workspace/db";
-import { eq, ilike, or, count, desc, sql } from "drizzle-orm";
+import { eq, ilike, or, count, desc, sql, sum, gte, and } from "drizzle-orm";
 
 const router = Router();
 
@@ -71,8 +73,15 @@ router.post("/admin/logout", verifyAdminToken, (_req, res) => {
 
 router.get("/admin/stats/overview", verifyAdminToken, async (_req, res) => {
   try {
-    const [[products], [artisans], [categories], [blogs], [contacts], [allSellers],
-      [pending], [approved], [rejected], recentSellers] = await Promise.all([
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const [
+      [products], [artisans], [categories], [blogs], [contacts],
+      [allSellers], [pending], [approved], [rejected], [suspended],
+      recentSellers, [totalCustomersRow], [totalOrdersRow], [revenueRow],
+      recentOrders, lowStockProducts,
+    ] = await Promise.all([
       db.select({ count: count() }).from(productsTable),
       db.select({ count: count() }).from(artisansTable),
       db.select({ count: count() }).from(categoriesTable),
@@ -82,7 +91,13 @@ router.get("/admin/stats/overview", verifyAdminToken, async (_req, res) => {
       db.select({ count: count() }).from(sellerApplications).where(eq(sellerApplications.status, "pending")),
       db.select({ count: count() }).from(sellerApplications).where(eq(sellerApplications.status, "approved")),
       db.select({ count: count() }).from(sellerApplications).where(eq(sellerApplications.status, "rejected")),
+      db.select({ count: count() }).from(sellerApplications).where(eq(sellerApplications.status, "suspended")),
       db.select().from(sellerApplications).orderBy(desc(sellerApplications.createdAt)).limit(5),
+      db.select({ count: count() }).from(customersTable),
+      db.select({ count: count() }).from(ordersTable),
+      db.select({ total: sum(ordersTable.totalAmount) }).from(ordersTable).where(eq(ordersTable.paymentStatus, "paid")),
+      db.select().from(ordersTable).orderBy(desc(ordersTable.createdAt)).limit(8),
+      db.select().from(productsTable).where(and(eq(productsTable.inStock, true), sql`${productsTable.stockQuantity} <= 5`)).limit(5),
     ]);
 
     res.json({
@@ -95,14 +110,59 @@ router.get("/admin/stats/overview", verifyAdminToken, async (_req, res) => {
       pendingSellers: Number(pending.count),
       approvedSellers: Number(approved.count),
       rejectedSellers: Number(rejected.count),
+      suspendedSellers: Number(suspended.count),
+      totalCustomers: Number(totalCustomersRow.count),
+      totalOrders: Number(totalOrdersRow.count),
+      totalRevenue: Number(revenueRow.total || 0),
       recentSellers: recentSellers.map((s) => ({
-        ...s,
-        createdAt: s.createdAt?.toISOString() ?? new Date().toISOString(),
+        ...s, createdAt: s.createdAt?.toISOString() ?? new Date().toISOString(),
+      })),
+      recentOrders: recentOrders.map((o) => ({
+        ...o, totalAmount: Number(o.totalAmount), createdAt: o.createdAt?.toISOString() ?? "",
+      })),
+      lowStockProducts: lowStockProducts.map((p) => ({
+        id: p.id, title: p.title, stockQuantity: p.stockQuantity, mainImage: p.mainImage,
       })),
     });
   } catch (err) {
     console.error("Admin stats error:", err);
     res.status(500).json({ error: "Failed to fetch stats" });
+  }
+});
+
+router.get("/admin/stats/charts", verifyAdminToken, async (_req, res) => {
+  try {
+    const days: { date: string; revenue: number; orders: number }[] = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      d.setHours(0, 0, 0, 0);
+      const next = new Date(d);
+      next.setDate(next.getDate() + 1);
+      const [row] = await db
+        .select({ revenue: sum(ordersTable.totalAmount), cnt: count() })
+        .from(ordersTable)
+        .where(and(gte(ordersTable.createdAt, d), sql`${ordersTable.createdAt} < ${next}`));
+      days.push({
+        date: d.toLocaleDateString("en-IN", { month: "short", day: "numeric" }),
+        revenue: Number(row?.revenue || 0),
+        orders: Number(row?.cnt || 0),
+      });
+    }
+
+    const categoryData = await db
+      .select({ name: productsTable.categoryName, cnt: count() })
+      .from(productsTable)
+      .groupBy(productsTable.categoryName)
+      .orderBy(desc(count()))
+      .limit(6);
+
+    res.json({
+      salesChart: days,
+      categoryDistribution: categoryData.map(c => ({ name: c.name || "Uncategorized", value: Number(c.cnt) })),
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch chart data" });
   }
 });
 

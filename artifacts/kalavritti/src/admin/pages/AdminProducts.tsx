@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Trash2, RefreshCw, AlertCircle, ChevronLeft, ChevronRight, Star, Zap, Sparkles, Plus, Upload, X, Loader2, ImageIcon } from "lucide-react";
+import { Search, Trash2, RefreshCw, AlertCircle, ChevronLeft, ChevronRight, Star, Zap, Sparkles, Plus, Upload, X, Loader2, ImageIcon, Package, CheckCircle, XCircle, Tag, Award } from "lucide-react";
 
 interface Product {
   id: number; title: string; slug: string; shortDescription: string | null; description: string;
@@ -32,6 +32,8 @@ const EMPTY_FORM = {
   isCustomizable: false, freeShipping: false, status: "active", tags: "",
 };
 
+interface ProductOverview { total: number; active: number; outOfStock: number; featured: number; bestSeller: number; }
+
 export default function AdminProducts() {
   const { toast } = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -41,6 +43,7 @@ export default function AdminProducts() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Product | null>(null);
@@ -48,6 +51,7 @@ export default function AdminProducts() {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [overview, setOverview] = useState<ProductOverview>({ total: 0, active: 0, outOfStock: 0, featured: 0, bestSeller: 0 });
   const LIMIT = 15;
 
   const load = useCallback(async () => {
@@ -55,6 +59,7 @@ export default function AdminProducts() {
     try {
       const params: Record<string, string> = { page: String(page), limit: String(LIMIT) };
       if (search.trim()) params.search = search.trim();
+      if (statusFilter !== "all") params.status = statusFilter;
       const [prodRes, catRes] = await Promise.all([
         adminApi.get("/admin/products", { params }),
         adminApi.get("/admin/categories"),
@@ -62,9 +67,21 @@ export default function AdminProducts() {
       setProducts(prodRes.data.products);
       setTotal(prodRes.data.total);
       setCategories(catRes.data.categories ?? catRes.data);
+
+      if (page === 1 && !search && statusFilter === "all") {
+        const allRes = await adminApi.get("/admin/products", { params: { page: "1", limit: "500" } });
+        const all: Product[] = allRes.data.products;
+        setOverview({
+          total: allRes.data.total,
+          active: all.filter(p => p.status === "active").length,
+          outOfStock: all.filter(p => !p.inStock).length,
+          featured: all.filter(p => p.isFeatured).length,
+          bestSeller: all.filter(p => p.isBestSeller).length,
+        });
+      }
     } catch { toast({ title: "Error", description: "Failed to load products.", variant: "destructive" }); }
     finally { setLoading(false); }
-  }, [page, search]);
+  }, [page, search, statusFilter]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -161,16 +178,63 @@ export default function AdminProducts() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div><h1 className="text-2xl font-bold">Products</h1><p className="text-muted-foreground text-sm mt-1">{total} products</p></div>
+        <div>
+          <h1 className="text-2xl font-bold">Product Management</h1>
+          <p className="text-muted-foreground text-sm mt-1">Manage your entire product catalogue</p>
+        </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={load} disabled={loading}><RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />Refresh</Button>
           <Button size="sm" onClick={openCreate}><Plus className="w-4 h-4 mr-2" />Add Product</Button>
         </div>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input placeholder="Search products…" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-9 max-w-md" />
+      {/* KPI Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        {[
+          { label: "Total Products", value: overview.total, icon: Package, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: "Active", value: overview.active, icon: CheckCircle, color: "text-green-600", bg: "bg-green-50" },
+          { label: "Out of Stock", value: overview.outOfStock, icon: XCircle, color: "text-red-600", bg: "bg-red-50" },
+          { label: "Featured", value: overview.featured, icon: Star, color: "text-amber-600", bg: "bg-amber-50" },
+          { label: "Best Sellers", value: overview.bestSeller, icon: Award, color: "text-purple-600", bg: "bg-purple-50" },
+        ].map(({ label, value, icon: Icon, color, bg }) => (
+          <Card key={label}>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${bg}`}>
+                  <Icon className={`w-4 h-4 ${color}`} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">{label}</p>
+                  <p className="text-xl font-bold">{loading ? "…" : value}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Search & Filters */}
+      <div className="flex gap-3 flex-wrap">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input placeholder="Search products…" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-9" />
+        </div>
+        <Select value={statusFilter} onValueChange={v => { setStatusFilter(v); setPage(1); }}>
+          <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value="draft">Draft</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={categories.length ? "cat" : "cat"} onValueChange={() => {}}>
+          <SelectTrigger className="w-40"><SelectValue placeholder={`${categories.length} categories`} /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="cat">All Categories</SelectItem>
+            {categories.map(c => <SelectItem key={c.slug} value={c.slug}>{c.name}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
 
       <Card><CardContent className="p-0">
