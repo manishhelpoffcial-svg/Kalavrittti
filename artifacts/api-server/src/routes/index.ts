@@ -14,9 +14,11 @@ import uploadRouter from "./upload";
 import sellerRouter from "./seller";
 import adminRouter from "./admin";
 import adminExtendedRouter from "./admin-extended";
+import notificationsRouter from "./notifications";
 
 const router: IRouter = Router();
 
+router.use(notificationsRouter);
 router.use(healthRouter);
 router.use(homepageRouter);
 router.use(categoriesRouter);

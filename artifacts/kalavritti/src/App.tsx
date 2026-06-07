@@ -26,6 +26,21 @@ import HelpSupport from "@/pages/help-support";
 import SellerGuide from "@/pages/seller-guide";
 import NotFound from "@/pages/not-found";
 
+// Buyer Account Pages
+import AccountDashboard from "@/pages/account/AccountDashboard";
+import AccountProfile from "@/pages/account/AccountProfile";
+import AccountOrders from "@/pages/account/AccountOrders";
+import AccountOrderDetail from "@/pages/account/AccountOrderDetail";
+import AccountTrackOrder from "@/pages/account/AccountTrackOrder";
+import AccountWishlist from "@/pages/account/AccountWishlist";
+import AccountAddresses from "@/pages/account/AccountAddresses";
+import AccountPaymentMethods from "@/pages/account/AccountPaymentMethods";
+import AccountReturns from "@/pages/account/AccountReturns";
+import AccountReviews from "@/pages/account/AccountReviews";
+import AccountNotifications from "@/pages/account/AccountNotifications";
+import AccountHelpSupport from "@/pages/account/AccountHelpSupport";
+import AccountChangePassword from "@/pages/account/AccountChangePassword";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -69,6 +84,22 @@ function Router() {
             <Route path="/seller-registration" component={SellerRegistration} />
             <Route path="/help-support" component={HelpSupport} />
             <Route path="/seller-guide" component={SellerGuide} />
+
+            {/* Buyer Account */}
+            <Route path="/account" component={AccountDashboard} />
+            <Route path="/account/profile" component={AccountProfile} />
+            <Route path="/account/orders" component={AccountOrders} />
+            <Route path="/account/orders/:id/track" component={AccountTrackOrder} />
+            <Route path="/account/orders/:id" component={AccountOrderDetail} />
+            <Route path="/account/wishlist" component={AccountWishlist} />
+            <Route path="/account/addresses" component={AccountAddresses} />
+            <Route path="/account/payment-methods" component={AccountPaymentMethods} />
+            <Route path="/account/returns" component={AccountReturns} />
+            <Route path="/account/reviews" component={AccountReviews} />
+            <Route path="/account/notifications" component={AccountNotifications} />
+            <Route path="/account/help" component={AccountHelpSupport} />
+            <Route path="/account/change-password" component={AccountChangePassword} />
+
             <Route component={NotFound} />
           </Switch>
         </Layout>

@@ -77,6 +77,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.107.0",
     "axios": "^1.17.0",
-    "jspdf": "^4.2.1"
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8"
   }
 }
