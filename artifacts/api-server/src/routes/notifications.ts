@@ -24,9 +24,10 @@ function sendWhatsApp(
   bodyParams: string[] = []
 ): Promise<{ ok: boolean; body: string }> {
   return new Promise((resolve) => {
-    const components = bodyParams.length
+    // MSG91 expects empty object `{}` when no params, array when params present
+    const components: any = bodyParams.length
       ? [{ type: "body", parameters: bodyParams.map((text) => ({ type: "text", text })) }]
-      : [];
+      : {};
 
     const payload = JSON.stringify({
       integrated_number: process.env.MSG91_INTEGRATED_NUMBER || "919476211198",
@@ -639,7 +640,7 @@ const EMAIL_TEMPLATES: Record<string, (params?: any) => string> = {
 // ─── API Routes ────────────────────────────────────────────────────────────────
 
 // Send email
-router.post("/api/notifications/email/send", async (req, res) => {
+router.post("/notifications/email/send", async (req, res) => {
   try {
     const { to, subject, html, text, template, params } = req.body;
     if (!to || !subject) return res.status(400).json({ error: "to and subject are required" });
@@ -659,7 +660,7 @@ router.post("/api/notifications/email/send", async (req, res) => {
 });
 
 // Test email
-router.post("/api/notifications/email/test", async (req, res) => {
+router.post("/notifications/email/test", async (req, res) => {
   try {
     const transporter = createTransporter();
     const html = tplOtpVerification({ name: "Admin", otp: "KALAVRITTI-TEST", purpose: "Email Connectivity Test" });
@@ -676,7 +677,7 @@ router.post("/api/notifications/email/test", async (req, res) => {
 });
 
 // Order confirmed email
-router.post("/api/notifications/email/order-confirmed", async (req, res) => {
+router.post("/notifications/email/order-confirmed", async (req, res) => {
   try {
     const { customerEmail, ...rest } = req.body;
     const transporter = createTransporter();
@@ -692,13 +693,127 @@ router.post("/api/notifications/email/order-confirmed", async (req, res) => {
   }
 });
 
-// Email template preview
-router.get("/api/notifications/email/preview/:template", (req, res) => {
+// ─── Universal generic template preview (covers all 200 templates) ───────────
+function tplGenericPreview(templateName: string): string {
+  // Determine category + theme from template name
+  const n = templateName.toLowerCase();
+  type Theme = { hdr: string; accent: string; badge: string; badgeTxt: string; icon: string; categoryLabel: string; };
+  let theme: Theme = { hdr: "#7c2d12", accent: "#d97706", badge: "#fef9f0", badgeTxt: "#92400e", icon: "✉️", categoryLabel: "General" };
+  if (/otp|verify|password|login|2fa|security|lock|device|suspicious|account/.test(n))
+    theme = { hdr: "#1e40af", accent: "#3b82f6", badge: "#eff6ff", badgeTxt: "#1e40af", icon: "🔐", categoryLabel: "Authentication & Account" };
+  else if (/order|ship|deliver|pickup|pack|dispatch|track|out_for/.test(n))
+    theme = { hdr: "#166534", accent: "#16a34a", badge: "#f0fdf4", badgeTxt: "#166534", icon: "📦", categoryLabel: "Orders" };
+  else if (/payment|invoice|receipt|refund|wallet|cod|chargeback|billing|tax|settlement|subscription/.test(n))
+    theme = { hdr: "#065f46", accent: "#10b981", badge: "#ecfdf5", badgeTxt: "#065f46", icon: "💳", categoryLabel: "Payments & Billing" };
+  else if (/return|exchange|store_credit|return_refund|return_delay|return_escal/.test(n))
+    theme = { hdr: "#92400e", accent: "#d97706", badge: "#fffbeb", badgeTxt: "#92400e", icon: "🔄", categoryLabel: "Returns & Exchanges" };
+  else if (/flash_sale|festival|sale|newsletter|marketing|new_arriv|bestseller|coupon|loyalty|referral|birthday|anniversary|seasonal|free_ship|recommend|trending|reactivat|vip|last_chance|survey/.test(n))
+    theme = { hdr: "#9f1239", accent: "#f43f5e", badge: "#fff1f2", badgeTxt: "#9f1239", icon: "🎉", categoryLabel: "Marketing & Promotions" };
+  else if (/cart|wishlist|checkout|review|rating|nps|feedback|saved/.test(n))
+    theme = { hdr: "#4c1d95", accent: "#7c3aed", badge: "#f5f3ff", badgeTxt: "#4c1d95", icon: "🛒", categoryLabel: "Cart, Wishlist & Reviews" };
+  else if (/seller|kyc|store_creat|store_appro|store_reject|store_suspend|bank_verif|tax_detail|seller_prof|seller_perf|seller_welc/.test(n))
+    theme = { hdr: "#7c2d12", accent: "#ea580c", badge: "#fff7ed", badgeTxt: "#9a3412", icon: "🏪", categoryLabel: "Seller Management" };
+  else if (/product|low_stock|out_of_stock|back_in_stock|featured|product_report/.test(n))
+    theme = { hdr: "#155e75", accent: "#0891b2", badge: "#ecfeff", badgeTxt: "#155e75", icon: "🎨", categoryLabel: "Products" };
+  else if (/payout|commission|bonus|earning|settlement_gen|weekly_earn|monthly_earn/.test(n))
+    theme = { hdr: "#312e81", accent: "#6366f1", badge: "#eef2ff", badgeTxt: "#312e81", icon: "💰", categoryLabel: "Payouts" };
+  else if (/ticket|support|inquiry|negotiation|unread_msg|reply|new_message|customer_message/.test(n))
+    theme = { hdr: "#1e3a5f", accent: "#3b82f6", badge: "#eff6ff", badgeTxt: "#1e3a5f", icon: "💬", categoryLabel: "Support & Messaging" };
+  else if (/admin|daily_revenue|weekly_revenue|monthly_revenue|fraud|server_alert|backup|maintenance|terms_update|privacy_policy|kyc_reminder|policy_violation|suspension|reinstatement/.test(n))
+    theme = { hdr: "#111827", accent: "#374151", badge: "#f3f4f6", badgeTxt: "#374151", icon: "⚙️", categoryLabel: "Admin & System" };
+
+  // Prettify name
+  const prettyName = templateName.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+  // Rich sample content based on category
+  const contentMap: Record<string, string> = {
+    "Authentication & Account": `
+      <p class="greeting">Hello, Priya Sharma 👋</p>
+      <p class="text">We received a request related to your Kalavritti account. This email is to keep you informed about this activity.</p>
+      <div class="otp-box"><p style="font-size:13px;color:#9ca3af;margin:0 0 8px">Your verification code</p><p class="otp-number">847291</p><p class="otp-note">Valid for 10 minutes · Do not share this code with anyone</p></div>
+      <p class="text">If you did not initiate this action, please contact us immediately at <a href="mailto:namaste@kalavritti.in" style="color:#7c2d12">namaste@kalavritti.in</a></p>`,
+    "Orders": `
+      <p class="greeting">Your Order Update, Priya! 📦</p>
+      <p class="text">Great news! Here's the latest update on your Kalavritti order.</p>
+      <div class="info-box"><strong>Order ID:</strong> KL-2025-0042<br/><strong>Status:</strong> <span style="color:#16a34a;font-weight:700">Confirmed</span><br/><strong>Estimated Delivery:</strong> 5–7 business days<br/><strong>Artisan:</strong> Meena Devi, West Bengal</div>
+      <table class="items"><thead><tr><th>Product</th><th>Qty</th><th>Price</th></tr></thead><tbody>
+      <tr><td>Dokra Brass Figurine</td><td>1</td><td>₹2,400</td></tr>
+      <tr><td>Kantha Stitch Dupatta</td><td>1</td><td>₹1,100</td></tr>
+      <tr class="total-row"><td colspan="2"><strong>Total</strong></td><td>₹3,500</td></tr>
+      </tbody></table>
+      <a href="https://kalavritti.in/account/orders" class="cta-btn">Track Your Order →</a>`,
+    "Payments & Billing": `
+      <p class="greeting">Payment Update, Priya! 💳</p>
+      <p class="text">Here is a summary of your recent payment activity on Kalavritti.</p>
+      <div class="info-box"><strong>Transaction ID:</strong> TXN-9876543<br/><strong>Order:</strong> KL-2025-0042<br/><strong>Amount:</strong> ₹3,500<br/><strong>Date:</strong> ${new Date().toLocaleDateString("en-IN")}<br/><strong>Status:</strong> <span style="color:#16a34a;font-weight:700">Successful</span></div>
+      <a href="https://kalavritti.in/account/orders" class="cta-btn">View Invoice →</a>`,
+    "Returns & Exchanges": `
+      <p class="greeting">Return Update, Priya 🔄</p>
+      <p class="text">We have received your return/exchange request and are processing it with care.</p>
+      <div class="info-box"><strong>Order ID:</strong> KL-2025-0042<br/><strong>Return ID:</strong> RET-2025-0018<br/><strong>Status:</strong> <span style="color:#d97706;font-weight:700">Processing</span><br/><strong>Refund Mode:</strong> Original Payment Method</div>
+      <div class="alert-box alert-amber"><strong>Timeline:</strong> Refunds are processed within 5–7 business days after we receive your item. Our artisans' time and craftsmanship matter — we ensure fair resolutions for all parties.</div>`,
+    "Marketing & Promotions": `
+      <p class="greeting">Exclusive Offer for You, Priya! 🎉</p>
+      <p class="text">Kalavritti brings you a special handpicked offer on authentic handmade products from Bengal &amp; Assam.</p>
+      <div style="text-align:center;padding:24px 0"><div style="background:linear-gradient(135deg,#7c2d12,#9a3412);border-radius:16px;padding:24px;color:white"><p style="font-size:13px;opacity:0.85;margin:0 0 4px;letter-spacing:2px;text-transform:uppercase">Limited Time Offer</p><p style="font-size:40px;font-weight:900;margin:4px 0">25% OFF</p><p style="font-size:13px;opacity:0.85;margin:0">On all Terracotta &amp; Dokra craft — ends in 48 hours</p></div></div>
+      <div style="text-align:center"><code style="background:#f9f5f0;border:2px dashed #d97706;color:#7c2d12;font-size:18px;font-weight:800;padding:10px 24px;border-radius:8px;display:inline-block;letter-spacing:4px">KALA25</code></div>
+      <div style="text-align:center;margin-top:16px"><a href="https://kalavritti.in/categories" class="cta-btn">Shop Now →</a></div>`,
+    "Cart, Wishlist & Reviews": `
+      <p class="greeting">You left something behind, Priya! 🛒</p>
+      <p class="text">Your cart is waiting with beautiful handmade treasures. Come back and complete your purchase before they're gone!</p>
+      <div class="info-box"><strong>Items in Cart:</strong> 3<br/><strong>Cart Value:</strong> ₹4,200<br/><strong>Ships from:</strong> Kolkata, West Bengal</div>
+      <div class="alert-box alert-amber">Each piece is handcrafted by skilled artisans — stock is limited. Don't miss out!</div>
+      <a href="https://kalavritti.in/cart" class="cta-btn">Return to Cart →</a>`,
+    "Seller Management": `
+      <p class="greeting">Hello, Meena Devi 🏪</p>
+      <p class="text">Here is an update regarding your seller account on Kalavritti — India's trusted marketplace for handmade crafts.</p>
+      <div class="info-box"><strong>Seller:</strong> Meena Devi<br/><strong>Business:</strong> Meena's Terracotta Studio<br/><strong>Craft:</strong> Terracotta, West Bengal<br/><strong>Application ID:</strong> KLV-SEL-2025-0031<br/><strong>Status:</strong> <span style="color:#16a34a;font-weight:700">Under Review</span></div>
+      <a href="https://kalavritti.in/seller-portal" class="cta-btn">View Seller Dashboard →</a>`,
+    "Products": `
+      <p class="greeting">Product Update, Meena! 🎨</p>
+      <p class="text">Here's the latest status update for your product listing on Kalavritti.</p>
+      <div class="info-box"><strong>Product:</strong> Dokra Brass Horse Figurine<br/><strong>SKU:</strong> KLV-TRC-0042<br/><strong>Stock:</strong> <span style="color:#d97706;font-weight:700">Low (3 remaining)</span><br/><strong>Status:</strong> Active &amp; Listed</div>
+      <div class="alert-box alert-amber">Please restock soon to avoid losing potential buyers. Update your inventory from the Seller Dashboard.</div>`,
+    "Payouts": `
+      <p class="greeting">Payout Update, Meena! 💰</p>
+      <p class="text">Your earnings from Kalavritti have been processed. Here are the details.</p>
+      <div class="stat-row"><div class="stat-box"><div class="stat-value">₹18,500</div><div class="stat-label">Payout Amount</div></div><div class="stat-box"><div class="stat-value">14</div><div class="stat-label">Orders</div></div><div class="stat-box"><div class="stat-value">June 2025</div><div class="stat-label">Period</div></div></div>
+      <div class="info-box"><strong>Reference:</strong> PAY-20250601-0018<br/><strong>Bank:</strong> SBI ****4321<br/><strong>Expected:</strong> 1–2 business days</div>`,
+    "Support & Messaging": `
+      <p class="greeting">We're here to help, Priya! 💬</p>
+      <p class="text">Your support request has been received and our team is actively working on it.</p>
+      <div class="info-box"><strong>Ticket ID:</strong> TKT-2025-0089<br/><strong>Subject:</strong> Order delivery query<br/><strong>Priority:</strong> Normal<br/><strong>Status:</strong> <span style="color:#2563eb;font-weight:700">In Progress</span></div>
+      <p class="text">Our average response time is 4–6 hours during business hours (Mon–Sat, 9am–6pm IST).</p>
+      <a href="mailto:namaste@kalavritti.in" class="cta-btn">Reply to This Ticket →</a>`,
+    "Admin & System": `
+      <p class="greeting">Admin Alert ⚙️</p>
+      <p class="text">This is an automated notification from the Kalavritti system. Please review the details below.</p>
+      <div class="alert-box alert-amber"><strong>Alert Type:</strong> System Notification<br/><strong>Date:</strong> ${new Date().toLocaleDateString("en-IN")}<br/><strong>Time:</strong> ${new Date().toLocaleTimeString("en-IN")}</div>
+      <div class="stat-row"><div class="stat-box"><div class="stat-value">₹42,500</div><div class="stat-label">Revenue Today</div></div><div class="stat-box"><div class="stat-value">18</div><div class="stat-label">Orders</div></div><div class="stat-box"><div class="stat-value">3</div><div class="stat-label">New Users</div></div></div>`,
+    "General": `
+      <p class="greeting">Hello from Kalavritti! 🌸</p>
+      <p class="text">This is a notification from Kalavritti — India's trusted marketplace for authentic handmade products from Bengal and Assam.</p>
+      <div class="info-box">Thank you for being part of the Kalavritti community. This message was sent to keep you informed about your account and activities.</div>
+      <a href="https://kalavritti.in" class="cta-btn">Visit Kalavritti →</a>`,
+  };
+
+  const bodyContent = contentMap[theme.categoryLabel] || contentMap["General"];
+
+  return emailBase(`
+    <div class="section-label" style="color:${theme.accent}">${theme.categoryLabel}</div>
+    ${bodyContent}
+    <div class="divider"></div>
+    <div style="background:${theme.badge};border:1px solid ${theme.accent}33;border-radius:10px;padding:14px 18px;margin-top:16px">
+      <p style="font-size:11px;font-weight:700;color:${theme.accent};margin:0 0 8px;text-transform:uppercase;letter-spacing:1px">Template Info</p>
+      <p style="font-size:12px;color:#6b7280;margin:0"><strong style="color:#374151">Template ID:</strong> <code style="background:white;padding:2px 6px;border-radius:4px;font-size:11px">${templateName}</code></p>
+      <p style="font-size:11px;color:#9ca3af;margin:6px 0 0">This is a preview with sample data. Real emails will use dynamic values.</p>
+    </div>
+  `, `Preview: ${prettyName}`);
+}
+
+// Email template preview — covers ALL 200 templates
+router.get("/notifications/email/preview/:template", (req, res) => {
   const name = req.params.template;
-  const fn = EMAIL_TEMPLATES[name];
-  if (!fn) {
-    return res.status(404).json({ error: "Template not found" });
-  }
   const sampleParams: Record<string, any> = {
     customerName: "Priya Sharma", orderId: "KL-2025-0042", otp: "847291",
     sellerName: "Meena Devi", businessName: "Meena's Terracotta Studio",
@@ -714,11 +829,13 @@ router.get("/api/notifications/email/preview/:template", (req, res) => {
     period: "June 2025",
   };
   res.setHeader("Content-Type", "text/html");
-  res.send(fn(sampleParams));
+  // Use specific template if registered, otherwise generate a rich branded preview
+  const fn = EMAIL_TEMPLATES[name];
+  res.send(fn ? fn(sampleParams) : tplGenericPreview(name));
 });
 
 // WhatsApp OTP
-router.post("/api/notifications/whatsapp/send-otp", async (req, res) => {
+router.post("/notifications/whatsapp/send-otp", async (req, res) => {
   try {
     const { phone, otp } = req.body;
     if (!phone || !otp) return res.status(400).json({ error: "phone and otp required" });
@@ -732,7 +849,7 @@ router.post("/api/notifications/whatsapp/send-otp", async (req, res) => {
 });
 
 // WhatsApp order update
-router.post("/api/notifications/whatsapp/order-update", async (req, res) => {
+router.post("/notifications/whatsapp/order-update", async (req, res) => {
   try {
     const { phone, event, orderId, customerName, trackingNumber } = req.body;
     const templateMap: Record<string, string> = {
@@ -752,7 +869,7 @@ router.post("/api/notifications/whatsapp/order-update", async (req, res) => {
 });
 
 // Broadcast
-router.post("/api/notifications/broadcast", async (req, res) => {
+router.post("/notifications/broadcast", async (req, res) => {
   try {
     const { recipients, subject, templateName, params, channel } = req.body;
     if (!recipients || !Array.isArray(recipients)) return res.status(400).json({ error: "recipients array required" });

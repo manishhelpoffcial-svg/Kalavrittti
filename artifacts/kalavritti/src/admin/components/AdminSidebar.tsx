@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, UserCheck, Package, Tag, Palette,
   ShoppingCart, DollarSign, FileText, Megaphone, Mail, Star,
   Search, Shield, Settings, CreditCard, Bell, Send, Lock,
-  Server, LogOut, Flower2, ChevronLeft, ChevronRight, X, Menu,
+  Server, LogOut, Flower2, ChevronLeft, ChevronRight, X, Menu, BarChart3,
 } from "lucide-react";
 import { useAdminAuth } from "@/admin/hooks/useAdminAuth";
 import { useCallback } from "react";
@@ -43,6 +43,7 @@ const NAV: NavGroup[] = [
     { label: "Email & Documents", href: `${BASE}/email`, icon: Send },
   ]},
   { title: "Admin", items: [
+    { label: "PDF Reports", href: `${BASE}/pdf-reports`, icon: BarChart3 },
     { label: "Admin Users", href: `${BASE}/admin-users`, icon: Lock },
     { label: "System", href: `${BASE}/system`, icon: Server },
   ]},
