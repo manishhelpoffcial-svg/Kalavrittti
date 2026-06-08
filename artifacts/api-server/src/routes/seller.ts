@@ -3,20 +3,12 @@ import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
 import { db } from "@workspace/db";
 import { sellerApplications } from "@workspace/db";
-import { createClient } from "@supabase/supabase-js";
-import ws from "ws";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
-const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL || "",
-  process.env.SUPABASE_SERVICE_ROLE_KEY || "",
-  { auth: { autoRefreshToken: false, persistSession: false }, realtime: { transport: ws as any } }
-);
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 const router = Router();
@@ -165,17 +157,6 @@ router.post("/seller/register", async (req, res) => {
 
     const applicationId = generateApplicationId();
 
-    let supabaseUserId: string | null = null;
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email: data.email,
-      password: data.password,
-      email_confirm: true,
-      user_metadata: { full_name: data.fullName, role: "seller", status: "pending" },
-    });
-    if (!authError && authData.user) {
-      supabaseUserId = authData.user.id;
-    }
-
     const [application] = await db.insert(sellerApplications).values({
       applicationId,
       fullName: data.fullName,
@@ -202,7 +183,7 @@ router.post("/seller/register", async (req, res) => {
       termsAccepted: data.termsAccepted,
       privacyAccepted: data.privacyAccepted,
       status: "pending",
-      supabaseUserId,
+      supabaseUserId: null,
     }).returning();
 
     if (process.env.ZOHO_MAIL_USER) {
