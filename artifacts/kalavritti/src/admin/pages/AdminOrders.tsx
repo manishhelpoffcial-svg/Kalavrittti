@@ -64,6 +64,25 @@ export default function AdminOrders() {
   const [chartData, setChartData] = useState<Array<{ date: string; orders: number; revenue: number }>>([]);
   const LIMIT = 15;
 
+  const exportCsv = async () => {
+    try {
+      const token = localStorage.getItem("kv_admin_token") ?? sessionStorage.getItem("kv_admin_token") ?? "";
+      const params = new URLSearchParams();
+      if (statusFilter !== "all") params.set("status", statusFilter);
+      const res = await fetch(`/api/admin/export/orders?${params}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `kalavritti-orders-${new Date().toISOString().split("T")[0]}.csv`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      toast({ title: "Export Downloaded", description: "Orders CSV saved to your device." });
+    } catch { toast({ title: "Export Failed", variant: "destructive" }); }
+  };
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -125,8 +144,8 @@ export default function AdminOrders() {
           <Button variant="outline" size="sm" onClick={load} disabled={loading}>
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />Refresh
           </Button>
-          <Button variant="outline" size="sm" onClick={() => toast({ title: "Export started" })}>
-            <Download className="w-4 h-4 mr-2" />Export
+          <Button variant="outline" size="sm" onClick={exportCsv} disabled={loading}>
+            <Download className="w-4 h-4 mr-2" />Export CSV
           </Button>
         </div>
       </div>

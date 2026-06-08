@@ -2,5 +2,8 @@
 - [Supabase client Node.js setup](supabase-node-client.md) — Node 20 needs `import ws from "ws"` + `realtime: { transport: ws as any }` in createClient options (strict WebSocket type)
 - [Seller registration system](seller-registration.md) — 6-step wizard, OTP stubs (MSG91/Zoho pending), Cloudinary doc upload, jsPDF, WhatsApp share
 - [Admin panel architecture](admin-panel-arch.md) — auth, sidebar, routing, new tables, API structure for all admin pages
-- [Workflow port setup](workflow-ports.md) — frontend on port 8080 (ext 80, main preview), API on port 8081; Vite proxies /api to 8081; BASE_PATH=/ required
+- [Workflow port setup](workflow-ports.md) — frontend port 5000, API port 3001; Vite proxies /api to 3001; BASE_PATH=/ required; admin panel at /admin
 - [Tailwind v4 + Replit plugins conflict](tailwind-replit-conflict.md) — NEVER use @replit/vite-plugin-cartographer or @replit/vite-plugin-dev-banner with Tailwind v4; dev-banner injects @tailwindcss/browser CDN which wipes compiled CSS → white screen
+- [Email templates + MSG91](email-msg91.md) — 24 branded HTML email functions in notifications.ts; MSG91 fixed to use bodyParams string[] not Record; preview endpoint GET /api/notifications/email/preview/:template
+- [CSV export endpoints](csv-export.md) — GET /api/admin/export/orders|customers|sellers|financials; all auth-gated; frontend uses fetch+Blob download pattern with Bearer token
+- [DB priority](db-priority.md) — lib/db/src/index.ts prefers SUPABASE_DATABASE_URL over DATABASE_URL; both env vars exist in Replit secrets

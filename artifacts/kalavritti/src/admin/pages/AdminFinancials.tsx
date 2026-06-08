@@ -39,6 +39,23 @@ export default function AdminFinancials() {
   const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState<Array<{ date: string; revenue: number; orders: number }>>([]);
 
+  const exportCsv = async () => {
+    try {
+      const token = localStorage.getItem("kv_admin_token") ?? sessionStorage.getItem("kv_admin_token") ?? "";
+      const res = await fetch("/api/admin/export/financials", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `kalavritti-financials-${new Date().toISOString().split("T")[0]}.csv`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      toast({ title: "Export Downloaded", description: "Financials CSV saved to your device." });
+    } catch { toast({ title: "Export Failed", variant: "destructive" }); }
+  };
+
   const load = async () => {
     setLoading(true);
     try {
@@ -69,7 +86,7 @@ export default function AdminFinancials() {
         <div><h1 className="text-2xl font-bold">Financial Management</h1><p className="text-muted-foreground text-sm mt-1">Platform revenue, commissions, payouts and analytics</p></div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={load} disabled={loading}><RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />Refresh</Button>
-          <Button variant="outline" size="sm" onClick={() => toast({ title: "Export started" })}><Download className="w-4 h-4 mr-2" />Export Report</Button>
+          <Button variant="outline" size="sm" onClick={exportCsv}><Download className="w-4 h-4 mr-2" />Export CSV</Button>
         </div>
       </div>
 
@@ -181,7 +198,7 @@ export default function AdminFinancials() {
           <Card>
             <CardHeader className="pb-3 flex flex-row items-center justify-between">
               <CardTitle className="text-sm font-semibold">Recent Transactions</CardTitle>
-              <Button size="sm" variant="outline" className="h-7 text-xs"><Download className="w-3.5 h-3.5 mr-1" />CSV</Button>
+              <Button size="sm" variant="outline" className="h-7 text-xs" onClick={exportCsv}><Download className="w-3.5 h-3.5 mr-1" />CSV</Button>
             </CardHeader>
             <CardContent className="p-0">
               {loading ? <Skeleton className="h-48 m-4 rounded-xl" /> : (

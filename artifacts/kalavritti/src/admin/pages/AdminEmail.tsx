@@ -265,7 +265,7 @@ const EMAIL_CATEGORIES: Array<{ id: string; label: string; color: string; templa
       { name: "policy_violation_notice", label: "Policy Violation Notice", trigger: "admin.policy_violation", vars: ["seller_name", "violation", "action"] },
       { name: "account_suspension_notice", label: "Account Suspension Notice", trigger: "admin.suspension", vars: ["name", "reason", "review_date"] },
       { name: "reinstatement_notice", label: "Reinstatement Notice", trigger: "admin.reinstatement", vars: ["name"] },
-      { name: "chargeback_alert", label: "Chargeback Alert (Admin)", trigger: "admin.chargeback", vars: ["order_id", "amount", "customer_name"] },
+      { name: "chargeback_alert_admin", label: "Chargeback Alert (Admin)", trigger: "admin.chargeback", vars: ["order_id", "amount", "customer_name"] },
     ],
   },
 ];
@@ -302,6 +302,8 @@ export default function AdminEmail() {
   const [testPhone, setTestPhone] = useState("");
   const [testEmail, setTestEmail] = useState("");
   const [sending, setSending] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -338,6 +340,17 @@ export default function AdminEmail() {
       toast({ title: res.data.success ? "OTP Sent!" : "MSG91 Response", description: res.data.success ? `OTP ${otp} sent to ${testPhone}` : res.data.raw });
     } catch (e: any) { toast({ title: "Error", description: e?.response?.data?.error || "Failed", variant: "destructive" }); }
     finally { setSending(false); }
+  };
+
+  const openPreview = async (t: any) => {
+    setPreviewTemplate(t);
+    setPreviewHtml(null);
+    setPreviewLoading(true);
+    try {
+      const res = await fetch(`/api/notifications/email/preview/${t.name}`);
+      if (res.ok) { setPreviewHtml(await res.text()); }
+    } catch { }
+    finally { setPreviewLoading(false); }
   };
 
   const allTemplates = EMAIL_CATEGORIES.flatMap(c => c.templates.map(t => ({ ...t, catId: c.id, catLabel: c.label, catColor: c.color })));
@@ -410,8 +423,8 @@ export default function AdminEmail() {
                       </div>
                     </div>
                     <div className="flex flex-col gap-1 shrink-0">
-                      <Button size="sm" variant="ghost" className="h-6 px-1.5" onClick={() => setPreviewTemplate(t)}><Eye className="w-3.5 h-3.5" /></Button>
-                      <Button size="sm" variant="ghost" className="h-6 px-1.5" onClick={() => setPreviewTemplate(t)}><Pencil className="w-3.5 h-3.5" /></Button>
+                      <Button size="sm" variant="ghost" className="h-6 px-1.5" onClick={() => openPreview(t)}><Eye className="w-3.5 h-3.5" /></Button>
+                      <Button size="sm" variant="ghost" className="h-6 px-1.5" onClick={() => openPreview(t)}><Pencil className="w-3.5 h-3.5" /></Button>
                     </div>
                   </div>
                 </CardContent>
@@ -511,34 +524,55 @@ export default function AdminEmail() {
       </Tabs>
 
       {/* Template Preview Dialog */}
-      <Dialog open={!!previewTemplate} onOpenChange={() => setPreviewTemplate(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Template: {previewTemplate?.label}</DialogTitle></DialogHeader>
-          {previewTemplate && (
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-2 items-center">
-                <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${previewTemplate.catColor}`}>{previewTemplate.catLabel}</span>
-                <code className="text-xs bg-muted px-2 py-1 rounded font-mono">trigger: {previewTemplate.trigger}</code>
+      <Dialog open={!!previewTemplate} onOpenChange={() => { setPreviewTemplate(null); setPreviewHtml(null); }}>
+        <DialogContent className="max-w-3xl h-[90vh] flex flex-col p-0 overflow-hidden">
+          <DialogHeader className="px-5 pt-5 pb-3 border-b shrink-0">
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="w-4 h-4 text-[#7c2d12]" />
+              {previewTemplate?.label}
+              {previewTemplate && <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ml-1 ${previewTemplate.catColor}`}>{previewTemplate.catLabel}</span>}
+            </DialogTitle>
+            {previewTemplate && (
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                <code className="text-[10px] bg-muted px-2 py-0.5 rounded font-mono text-muted-foreground">trigger: {previewTemplate.trigger}</code>
+                {previewTemplate.vars.map((v: string) => <code key={v} className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">{`{{${v}}}`}</code>)}
               </div>
-              <div>
-                <p className="text-xs font-semibold mb-2 text-muted-foreground">Template Variables</p>
-                <div className="flex flex-wrap gap-1.5">{previewTemplate.vars.map((v: string) => <code key={v} className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">{`{{${v}}}`}</code>)}</div>
-              </div>
-              <div className="space-y-1.5"><Label>Subject Line</Label><Input placeholder={`${previewTemplate.label} — Kalavritti`} /></div>
-              <div className="space-y-1.5"><Label>Email Body (HTML)</Label><textarea rows={8} placeholder="Enter HTML email body or select a base template to start…" className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background resize-y focus:outline-none focus:ring-2 focus:ring-ring font-mono" /></div>
-              <div className="p-3 bg-muted/30 rounded-xl text-xs">
-                <p className="font-semibold mb-2">HTML Preview</p>
-                <div className="bg-white border rounded-lg p-4">
-                  <p className="font-medium text-sm">{previewTemplate.label} — Kalavritti</p>
-                  <p className="text-muted-foreground text-xs mt-1">Namaste {`{{${previewTemplate.vars[0] || "name"}}}`} 🙏</p>
-                  <div className="mt-3 p-3 bg-gray-50 rounded text-xs text-muted-foreground">Email body will appear here. Use the variables above to personalize the content.</div>
+            )}
+          </DialogHeader>
+          <div className="flex-1 overflow-hidden min-h-0 p-4">
+            {previewLoading ? (
+              <div className="h-full flex items-center justify-center">
+                <div className="text-center space-y-3">
+                  <RefreshCw className="w-8 h-8 animate-spin mx-auto text-[#7c2d12]" />
+                  <p className="text-sm text-muted-foreground">Loading template preview…</p>
                 </div>
               </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setPreviewTemplate(null)}>Close</Button>
-            <Button onClick={() => { toast({ title: "Template Saved" }); setPreviewTemplate(null); }}><Save className="w-4 h-4 mr-2" />Save Template</Button>
+            ) : previewHtml ? (
+              <iframe
+                srcDoc={previewHtml}
+                className="w-full h-full border rounded-xl bg-white"
+                title="Email Preview"
+                sandbox="allow-same-origin"
+              />
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <div className="text-center space-y-3 p-8">
+                  <Mail className="w-12 h-12 mx-auto text-muted-foreground opacity-30" />
+                  <p className="font-semibold text-muted-foreground">{previewTemplate?.label}</p>
+                  <p className="text-sm text-muted-foreground max-w-sm">This template does not have a server-side preview yet. Configure its HTML body above.</p>
+                  <div className="mt-4 p-4 bg-[#f9f5f0] border border-[#fcd9bd] rounded-xl text-left">
+                    <p className="text-xs font-bold text-[#7c2d12] mb-2">Template Variables:</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {previewTemplate?.vars.map((v: string) => <code key={v} className="text-xs bg-white border border-[#fcd9bd] text-[#7c2d12] px-2 py-0.5 rounded">{`{{${v}}}`}</code>)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter className="px-5 py-3 border-t shrink-0">
+            <Button variant="outline" onClick={() => { setPreviewTemplate(null); setPreviewHtml(null); }}>Close</Button>
+            <Button onClick={() => { toast({ title: "Template Saved" }); setPreviewTemplate(null); setPreviewHtml(null); }}><Save className="w-4 h-4 mr-2" />Save Template</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

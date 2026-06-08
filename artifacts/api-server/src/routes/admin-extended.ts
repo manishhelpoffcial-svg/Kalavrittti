@@ -291,4 +291,86 @@ router.get("/admin/sellers/:id", verifyAdminToken, async (req, res) => {
   } catch (e) { res.status(500).json({ error: "Failed to fetch seller" }); }
 });
 
+// ─────────────────────────────── CSV EXPORT ───────────────────────────────
+function toCsv(headers: string[], rows: string[][]): string {
+  const escape = (v: string) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  return [headers.map(escape).join(","), ...rows.map(r => r.map(escape).join(","))].join("\r\n");
+}
+
+router.get("/admin/export/orders", verifyAdminToken, async (req, res) => {
+  try {
+    const { status, from, to } = req.query as Record<string, string>;
+    const conditions = [];
+    if (status && status !== "all") conditions.push(eq(ordersTable.status, status));
+    const where = conditions.length > 0 ? and(...conditions) : undefined;
+    const orders = where
+      ? await db.select().from(ordersTable).where(where).orderBy(desc(ordersTable.createdAt))
+      : await db.select().from(ordersTable).orderBy(desc(ordersTable.createdAt));
+    const headers = ["Order ID", "Customer Name", "Customer Email", "Mobile", "Total Amount", "Payment Method", "Payment Status", "Order Status", "City", "State", "Date"];
+    const rows = orders.map(o => [
+      o.orderId, o.customerName, o.customerEmail, o.customerMobile ?? "",
+      String(Number(o.totalAmount)), o.paymentMethod ?? "", o.paymentStatus, o.status,
+      o.city ?? "", o.state ?? "", o.createdAt?.toISOString().split("T")[0] ?? "",
+    ]);
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="kalavritti-orders-${new Date().toISOString().split("T")[0]}.csv"`);
+    res.send(toCsv(headers, rows));
+  } catch (e) { res.status(500).json({ error: "Failed to export orders" }); }
+});
+
+router.get("/admin/export/customers", verifyAdminToken, async (req, res) => {
+  try {
+    const customers = await db.select().from(customersTable).orderBy(desc(customersTable.createdAt));
+    const headers = ["ID", "Full Name", "Email", "Mobile", "City", "State", "Active", "Joined Date"];
+    const rows = customers.map(c => [
+      String(c.id), c.fullName, c.email, c.mobile ?? "", c.city ?? "", c.state ?? "",
+      c.isActive ? "Yes" : "No", c.createdAt?.toISOString().split("T")[0] ?? "",
+    ]);
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="kalavritti-customers-${new Date().toISOString().split("T")[0]}.csv"`);
+    res.send(toCsv(headers, rows));
+  } catch (e) { res.status(500).json({ error: "Failed to export customers" }); }
+});
+
+router.get("/admin/export/sellers", verifyAdminToken, async (req, res) => {
+  try {
+    const sellers = await db.select().from(sellerApplications).orderBy(desc(sellerApplications.createdAt));
+    const headers = ["ID", "Business Name", "Contact Name", "Email", "Mobile", "City", "State", "Craft Type", "Status", "Applied Date"];
+    const rows = sellers.map(s => [
+      String(s.id), s.businessName ?? "", s.contactName ?? "", s.email ?? "",
+      s.mobile ?? "", s.city ?? "", s.state ?? "", s.craftType ?? "",
+      s.status ?? "", s.createdAt?.toISOString().split("T")[0] ?? "",
+    ]);
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="kalavritti-sellers-${new Date().toISOString().split("T")[0]}.csv"`);
+    res.send(toCsv(headers, rows));
+  } catch (e) { res.status(500).json({ error: "Failed to export sellers" }); }
+});
+
+router.get("/admin/export/financials", verifyAdminToken, async (req, res) => {
+  try {
+    const [totals, byStatus] = await Promise.all([
+      db.select({ totalRevenue: sum(ordersTable.totalAmount), totalOrders: count() }).from(ordersTable),
+      db.select({ status: ordersTable.status, cnt: count(), revenue: sum(ordersTable.totalAmount) }).from(ordersTable).groupBy(ordersTable.status),
+    ]);
+    const headers = ["Metric", "Value"];
+    const totalRev = Number(totals[0]?.totalRevenue || 0);
+    const totalOrd = Number(totals[0]?.totalOrders || 0);
+    const rows: string[][] = [
+      ["Total Revenue (All Orders)", `₹${totalRev.toLocaleString("en-IN")}`],
+      ["Total Orders", String(totalOrd)],
+      ["Average Order Value", `₹${totalOrd > 0 ? Math.round(totalRev / totalOrd) : 0}`],
+      ["Platform Commission (10%)", `₹${Math.round(totalRev * 0.1).toLocaleString("en-IN")}`],
+      ["Seller Earnings (90%)", `₹${Math.round(totalRev * 0.9).toLocaleString("en-IN")}`],
+      ["Report Generated", new Date().toLocaleString("en-IN")],
+      ["", ""],
+      ["-- Orders by Status --", ""],
+      ...byStatus.map(s => [`${s.status} (${s.cnt} orders)`, `₹${Number(s.revenue || 0).toLocaleString("en-IN")}`]),
+    ];
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="kalavritti-financials-${new Date().toISOString().split("T")[0]}.csv"`);
+    res.send(toCsv(headers, rows));
+  } catch (e) { res.status(500).json({ error: "Failed to export financials" }); }
+});
+
 export default router;
