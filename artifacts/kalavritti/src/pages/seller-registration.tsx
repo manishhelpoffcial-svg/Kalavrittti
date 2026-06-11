@@ -51,6 +51,85 @@ function Field({ label, req, children }: { label: string; req?: boolean; childre
   );
 }
 
+// ─── Sub-components defined outside to prevent remount on re-render ─────────────
+
+function Indicator({ step }: { step: number }) {
+  return (
+    <div className="flex items-center justify-center mb-10 overflow-x-auto pb-2">
+      {STEPS.map((label, i) => {
+        const n = i + 1; const done = step > n; const cur = step === n;
+        return (
+          <React.Fragment key={i}>
+            <div className="flex flex-col items-center shrink-0">
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all ${done ? "bg-gold border-gold text-black" : cur ? "bg-maroon border-maroon text-white shadow-md" : "bg-white border-border text-muted-foreground"}`}>
+                {done ? <CheckCircle className="w-4 h-4" /> : n}
+              </div>
+              <span className={`text-xs mt-1 font-medium hidden sm:block whitespace-nowrap ${cur ? "text-maroon-dark" : done ? "text-gold" : "text-muted-foreground"}`}>{label}</span>
+            </div>
+            {i < STEPS.length - 1 && <div className={`h-0.5 w-6 sm:w-10 mx-1 rounded transition-all shrink-0 ${step > n ? "bg-gold" : "bg-border"}`} />}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
+
+function NavBtns({ onNext, nextLabel = "Next", nextDisabled = false, back }: {
+  onNext: () => void; nextLabel?: string; nextDisabled?: boolean; back: () => void;
+}) {
+  return (
+    <div className="flex justify-between pt-2">
+      <button onClick={back} className="flex items-center gap-2 border border-border text-maroon-dark px-6 py-3 rounded-full font-semibold hover:bg-cream transition-colors text-sm">
+        <ChevronLeft className="w-4 h-4" /> Back
+      </button>
+      <button onClick={onNext} disabled={nextDisabled} className="flex items-center gap-2 bg-maroon text-white px-8 py-3 rounded-full font-semibold hover:bg-maroon-light transition-colors text-sm disabled:opacity-50">
+        {nextLabel} <ChevronRight className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
+function OtpBlock({
+  type, verified, otpSent, otp, onSend, onOtpChange, onVerify, value, onChange, placeholder, prefix,
+}: {
+  type: "mobile" | "email"; verified: boolean; otpSent: boolean; otp: string;
+  onSend: () => void; onOtpChange: (v: string) => void; onVerify: () => void;
+  value: string; onChange: (v: string) => void; placeholder: string; prefix?: string;
+}) {
+  return (
+    <div className="border border-border rounded-xl p-5 space-y-3">
+      <div className="flex items-center gap-2">
+        {type === "mobile" ? <Phone className="w-4 h-4 text-maroon" /> : <Mail className="w-4 h-4 text-maroon" />}
+        <span className="font-semibold text-sm text-maroon-dark">{type === "mobile" ? "Mobile Verification" : "Email Verification"}</span>
+        {verified && <span className="ml-auto text-xs text-green-600 font-semibold flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" />Verified</span>}
+      </div>
+      <div className="flex gap-2">
+        {prefix && <div className="flex items-center border border-border rounded-lg px-3 bg-cream text-sm font-semibold text-maroon-dark shrink-0">{prefix}</div>}
+        <input
+          value={value}
+          onChange={e => onChange(type === "mobile" ? e.target.value.replace(/\D/g, "") : e.target.value)}
+          placeholder={placeholder}
+          className={inp}
+          disabled={verified}
+          maxLength={type === "mobile" ? 10 : undefined}
+          type={type === "email" ? "email" : "tel"}
+        />
+        {!verified && (
+          <button type="button" onClick={onSend} className="shrink-0 bg-maroon text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-maroon-light transition-colors whitespace-nowrap">
+            {otpSent ? "Resend" : "Send OTP"}
+          </button>
+        )}
+      </div>
+      {otpSent && !verified && (
+        <div className="flex gap-2">
+          <input value={otp} onChange={e => onOtpChange(e.target.value)} placeholder="Enter 6-digit OTP" className={inp} maxLength={6} />
+          <button type="button" onClick={onVerify} className="shrink-0 bg-gold text-black px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-gold/90 transition-colors whitespace-nowrap">Verify</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function SellerRegistration() {
   const { toast } = useToast();
   const [, navigate] = useLocation();
@@ -244,66 +323,7 @@ export default function SellerRegistration() {
     window.open(`https://wa.me/?text=${text}`, "_blank");
   };
 
-  const Indicator = () => (
-    <div className="flex items-center justify-center mb-10 overflow-x-auto pb-2">
-      {STEPS.map((label, i) => {
-        const n = i + 1; const done = step > n; const cur = step === n;
-        return (
-          <React.Fragment key={i}>
-            <div className="flex flex-col items-center shrink-0">
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all ${done ? "bg-gold border-gold text-black" : cur ? "bg-maroon border-maroon text-white shadow-md" : "bg-white border-border text-muted-foreground"}`}>
-                {done ? <CheckCircle className="w-4 h-4" /> : n}
-              </div>
-              <span className={`text-xs mt-1 font-medium hidden sm:block whitespace-nowrap ${cur ? "text-maroon-dark" : done ? "text-gold" : "text-muted-foreground"}`}>{label}</span>
-            </div>
-            {i < STEPS.length - 1 && <div className={`h-0.5 w-6 sm:w-10 mx-1 rounded transition-all shrink-0 ${step > n ? "bg-gold" : "bg-border"}`} />}
-          </React.Fragment>
-        );
-      })}
-    </div>
-  );
-
-  const NavBtns = ({ onNext, nextLabel = "Next", nextDisabled = false }: { onNext: () => void; nextLabel?: string; nextDisabled?: boolean }) => (
-    <div className="flex justify-between pt-2">
-      <button onClick={back} className="flex items-center gap-2 border border-border text-maroon-dark px-6 py-3 rounded-full font-semibold hover:bg-cream transition-colors text-sm">
-        <ChevronLeft className="w-4 h-4" /> Back
-      </button>
-      <button onClick={onNext} disabled={nextDisabled} className="flex items-center gap-2 bg-maroon text-white px-8 py-3 rounded-full font-semibold hover:bg-maroon-light transition-colors text-sm disabled:opacity-50">
-        {nextLabel} <ChevronRight className="w-4 h-4" />
-      </button>
-    </div>
-  );
-
-  const OtpBlock = ({
-    type, verified, otpSent, otp, onSend, onOtpChange, onVerify, value, onChange, placeholder, prefix,
-  }: {
-    type: "mobile" | "email"; verified: boolean; otpSent: boolean; otp: string;
-    onSend: () => void; onOtpChange: (v: string) => void; onVerify: () => void;
-    value: string; onChange: (v: string) => void; placeholder: string; prefix?: string;
-  }) => (
-    <div className="border border-border rounded-xl p-5 space-y-3">
-      <div className="flex items-center gap-2">
-        {type === "mobile" ? <Phone className="w-4 h-4 text-maroon" /> : <Mail className="w-4 h-4 text-maroon" />}
-        <span className="font-semibold text-sm text-maroon-dark">{type === "mobile" ? "Mobile Verification" : "Email Verification"}</span>
-        {verified && <span className="ml-auto text-xs text-green-600 font-semibold flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" />Verified</span>}
-      </div>
-      <div className="flex gap-2">
-        {prefix && <div className="flex items-center border border-border rounded-lg px-3 bg-cream text-sm font-semibold text-maroon-dark shrink-0">{prefix}</div>}
-        <input value={value} onChange={e => onChange(e.target.value.replace(type === "mobile" ? /\D/g : /^/, ""))} placeholder={placeholder} className={inp} disabled={verified} maxLength={type === "mobile" ? 10 : undefined} type={type === "email" ? "email" : "tel"} />
-        {!verified && (
-          <button type="button" onClick={onSend} className="shrink-0 bg-maroon text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-maroon-light transition-colors whitespace-nowrap">
-            {otpSent ? "Resend" : "Send OTP"}
-          </button>
-        )}
-      </div>
-      {otpSent && !verified && (
-        <div className="flex gap-2">
-          <input value={otp} onChange={e => onOtpChange(e.target.value)} placeholder="Enter 6-digit OTP" className={inp} maxLength={6} />
-          <button type="button" onClick={onVerify} className="shrink-0 bg-gold text-black px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-gold/90 transition-colors whitespace-nowrap">Verify</button>
-        </div>
-      )}
-    </div>
-  );
+  // Indicator, NavBtns, OtpBlock are defined as module-level functions above
 
   const UploadBox = ({
     label, req, url, loading, fileRef, field, note,
@@ -380,7 +400,7 @@ export default function SellerRegistration() {
 
       <div className="container mx-auto px-4 py-10 max-w-2xl">
         <div className="bg-white rounded-2xl shadow-sm border border-gold/20 p-8 md:p-10">
-          <Indicator />
+          <Indicator step={step} />
 
           {/* ─── Step 1 ─── */}
           {step === 1 && (
@@ -436,7 +456,7 @@ export default function SellerRegistration() {
                 <input value={form.categoryName} onChange={e => upd({ categoryName: e.target.value })} placeholder="e.g. Madhubani Painting, Blue Pottery, Pashmina Weaving" className={inp} />
                 <p className="text-xs text-muted-foreground mt-1">This will be your primary product category on the platform.</p>
               </Field>
-              <NavBtns onNext={() => { if (!form.categoryName || !form.categoryDescription) { toast({ title: "Fill all required fields", variant: "destructive" }); return; } next(); }} />
+              <NavBtns onNext={() => { if (!form.categoryName || !form.categoryDescription) { toast({ title: "Fill all required fields", variant: "destructive" }); return; } next(); }} back={back} />
             </div>
           )}
 
@@ -475,7 +495,7 @@ export default function SellerRegistration() {
                   </button>
                 </div>
               </div>
-              <NavBtns onNext={() => { if (!form.panCardUrl && !form.videoKycRequested) { toast({ title: "PAN Card required", description: "Upload PAN card or request Video KYC", variant: "destructive" }); return; } next(); }} />
+              <NavBtns onNext={() => { if (!form.panCardUrl && !form.videoKycRequested) { toast({ title: "PAN Card required", description: "Upload PAN card or request Video KYC", variant: "destructive" }); return; } next(); }} back={back} />
             </div>
           )}
 
@@ -507,7 +527,7 @@ export default function SellerRegistration() {
                 if (!form.accountHolderName || !form.bankName || !form.accountNumber || !form.ifscCode) { toast({ title: "Fill all required payment fields", variant: "destructive" }); return; }
                 if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(form.ifscCode)) { toast({ title: "Invalid IFSC code", description: "Format: SBIN0001234", variant: "destructive" }); return; }
                 next();
-              }} />
+              }} back={back} />
             </div>
           )}
 
@@ -540,7 +560,7 @@ export default function SellerRegistration() {
                   <span className="text-sm">I agree to the <a href="/privacy" target="_blank" className="text-maroon font-semibold hover:underline">Privacy Policy</a>. I consent to Kalavritti collecting and processing my data for verification and payment purposes.</span>
                 </label>
               </div>
-              <NavBtns onNext={() => { if (!form.termsAccepted || !form.privacyAccepted) { toast({ title: "Accept both agreements to continue", variant: "destructive" }); return; } next(); }} />
+              <NavBtns onNext={() => { if (!form.termsAccepted || !form.privacyAccepted) { toast({ title: "Accept both agreements to continue", variant: "destructive" }); return; } next(); }} back={back} />
             </div>
           )}
 

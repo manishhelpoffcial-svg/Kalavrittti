@@ -7,6 +7,7 @@ import {
   customersTable, promotionsTable, adminUsersTable, sellerApplications,
 } from "@workspace/db";
 import { eq, desc, count, sum, ilike, or, and } from "drizzle-orm";
+import { sendEmail } from "./notifications";
 
 const router = Router();
 const JWT_SECRET = process.env.ADMIN_JWT_SECRET || "kalavritti-admin-jwt-secret-2025";
@@ -98,11 +99,40 @@ router.get("/admin/orders", verifyAdminToken, async (req, res) => {
 router.patch("/admin/orders/:id/status", verifyAdminToken, async (req, res) => {
   try {
     const id = parseInt(String(req.params.id));
-    const { status, paymentStatus } = req.body;
+    const { status, paymentStatus, trackingNumber, courierName, estimatedDelivery } = req.body;
     const set: Record<string, unknown> = { updatedAt: new Date() };
     if (status) set.status = status;
     if (paymentStatus) set.paymentStatus = paymentStatus;
+    if (trackingNumber) set.trackingNumber = trackingNumber;
     await db.update(ordersTable).set(set).where(eq(ordersTable.id, id));
+
+    // Fire-and-forget email notifications for key status transitions
+    if (status && ["confirmed", "shipped", "delivered", "cancelled"].includes(status)) {
+      (async () => {
+        try {
+          const [order] = await db.select().from(ordersTable).where(eq(ordersTable.id, id));
+          if (!order?.customerEmail) return;
+          const name = order.customerName || "Valued Customer";
+          const oid = order.orderId || String(order.id);
+          if (status === "confirmed") {
+            await sendEmail(order.customerEmail, `Order Confirmed — ${oid} | Kalavritti`,
+              buildOrderConfirmedHtml(name, oid, Number(order.totalAmount)));
+          } else if (status === "shipped") {
+            await sendEmail(order.customerEmail, `Your Order Is On Its Way — ${oid} | Kalavritti`,
+              buildOrderShippedHtml(name, oid, trackingNumber || "", courierName || "Delhivery", estimatedDelivery || ""));
+          } else if (status === "delivered") {
+            await sendEmail(order.customerEmail, `Order Delivered — ${oid} | Kalavritti`,
+              buildOrderDeliveredHtml(name, oid));
+          } else if (status === "cancelled") {
+            await sendEmail(order.customerEmail, `Order Cancelled — ${oid} | Kalavritti`,
+              buildOrderCancelledHtml(name, oid));
+          }
+        } catch (emailErr) {
+          console.error("[Order email trigger error]", emailErr);
+        }
+      })();
+    }
+
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: "Failed to update order" }); }
 });
@@ -372,5 +402,161 @@ router.get("/admin/export/financials", verifyAdminToken, async (req, res) => {
     res.send(toCsv(headers, rows));
   } catch (e) { res.status(500).json({ error: "Failed to export financials" }); }
 });
+
+// ─── Seller application approve/reject ────────────────────────────────────────
+router.patch("/admin/sellers/:id/status", verifyAdminToken, async (req, res) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const { status, rejectionReason } = req.body as { status?: string; rejectionReason?: string };
+    if (!status || !["approved", "rejected", "pending", "under_review"].includes(status)) {
+      res.status(400).json({ error: "Invalid status" }); return;
+    }
+    await db.update(sellerApplications).set({ status, updatedAt: new Date() } as any).where(eq(sellerApplications.id, id));
+
+    // Fire-and-forget email to the seller
+    (async () => {
+      try {
+        const [seller] = await db.select().from(sellerApplications).where(eq(sellerApplications.id, id));
+        if (!seller?.email) return;
+        const name = seller.fullName || "Artisan";
+        const biz = seller.businessName || "";
+        if (status === "approved") {
+          await sendEmail(seller.email, `Congratulations! Your Kalavritti Seller Application is Approved`,
+            buildSellerApprovedHtml(name, biz));
+        } else if (status === "rejected") {
+          await sendEmail(seller.email, `Update on Your Kalavritti Seller Application`,
+            buildSellerRejectedHtml(name, rejectionReason || "The submitted documents or information did not meet our current requirements."));
+        }
+      } catch (emailErr) {
+        console.error("[Seller email trigger error]", emailErr);
+      }
+    })();
+
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: "Failed to update seller status" }); }
+});
+
+// ─── Email HTML builders for notification triggers ─────────────────────────────
+function emailWrapper(body: string) {
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#f5f0ea;font-family:'Segoe UI',Arial,sans-serif">
+<div style="max-width:560px;margin:32px auto;padding:0 16px">
+  <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)">
+    <div style="background:linear-gradient(135deg,#7c2d12,#9a3412);padding:36px 32px;text-align:center">
+      <p style="color:#fff;font-size:24px;font-weight:800;margin:0;letter-spacing:0.3px">Kalavritti</p>
+      <p style="color:rgba(255,255,255,0.78);font-size:11px;margin:5px 0 0;letter-spacing:1.5px;text-transform:uppercase">Celebrating Handmade &middot; Honouring Artisans</p>
+    </div>
+    <div style="padding:36px 32px">${body}</div>
+    <div style="background:#1c0a00;padding:20px 32px;text-align:center">
+      <p style="color:#6b7280;font-size:11px;margin:0">
+        &copy; ${new Date().getFullYear()} Kalavritti &middot;
+        <a href="mailto:namaste@kalavritti.in" style="color:#d97706;text-decoration:none">namaste@kalavritti.in</a>
+      </p>
+    </div>
+  </div>
+</div></body></html>`;
+}
+
+function buildOrderConfirmedHtml(customerName: string, orderId: string, total: number) {
+  return emailWrapper(`
+    <p style="font-size:17px;font-weight:700;color:#111827;margin:0 0 8px">Order Confirmed!</p>
+    <p style="font-size:14px;color:#4b5563;line-height:1.7;margin:0 0 20px">
+      Namaste <strong>${customerName}</strong>! Thank you for supporting handmade artisans.
+      Your order has been confirmed and the artisan has been notified.
+      You will receive a shipping update as soon as your parcel is dispatched.
+    </p>
+    <div style="background:#f9f5f0;border-radius:10px;padding:16px 20px;margin:0 0 20px;font-size:13px;color:#374151;line-height:1.8">
+      <strong style="color:#7c2d12">Order ID:</strong> ${orderId}<br/>
+      <strong style="color:#7c2d12">Date:</strong> ${new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}<br/>
+      <strong style="color:#7c2d12">Total:</strong> &#8377;${total.toLocaleString("en-IN")}<br/>
+      <strong style="color:#7c2d12">Status:</strong> Confirmed &amp; Processing
+    </div>
+    <a href="https://kalavritti.in/account/orders" style="display:inline-block;background:#7c2d12;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Track Your Order &rarr;</a>
+    <p style="font-size:12px;color:#9ca3af;margin:20px 0 0">Questions? Reply to this email or WhatsApp us at <a href="https://wa.me/919476211198" style="color:#d97706">+91 94762 11198</a></p>`);
+}
+
+function buildOrderShippedHtml(customerName: string, orderId: string, trackingNumber: string, courierName: string, estimatedDelivery: string) {
+  return emailWrapper(`
+    <p style="font-size:17px;font-weight:700;color:#111827;margin:0 0 8px">Your Order Is On Its Way!</p>
+    <p style="font-size:14px;color:#4b5563;line-height:1.7;margin:0 0 20px">
+      Great news, <strong>${customerName}</strong>! Your handcrafted treasures have been carefully packaged
+      by the artisan and handed over to our courier partner. Your order is now in transit.
+    </p>
+    <div style="background:#f9f5f0;border-radius:10px;padding:16px 20px;margin:0 0 20px;font-size:13px;color:#374151;line-height:1.8">
+      <strong style="color:#7c2d12">Order ID:</strong> ${orderId}<br/>
+      ${trackingNumber ? `<strong style="color:#7c2d12">Tracking Number:</strong> ${trackingNumber}<br/>` : ""}
+      ${courierName ? `<strong style="color:#7c2d12">Courier Partner:</strong> ${courierName}<br/>` : ""}
+      ${estimatedDelivery ? `<strong style="color:#7c2d12">Expected Delivery:</strong> ${estimatedDelivery}` : ""}
+    </div>
+    ${trackingNumber ? `<a href="https://kalavritti.in/account/orders/${orderId}/track" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Track Shipment &rarr;</a>` : ""}
+    <div style="background:#fefce8;border-left:4px solid #d97706;border-radius:0 8px 8px 0;padding:14px 16px;margin:20px 0 0;font-size:13px;color:#92400e">
+      Your package contains handcrafted goods made with love. Please handle with care upon delivery.
+    </div>`);
+}
+
+function buildOrderDeliveredHtml(customerName: string, orderId: string) {
+  return emailWrapper(`
+    <p style="font-size:17px;font-weight:700;color:#111827;margin:0 0 8px">Your Order Has Been Delivered!</p>
+    <p style="font-size:14px;color:#4b5563;line-height:1.7;margin:0 0 20px">
+      We hope you love your handcrafted purchase, <strong>${customerName}</strong>!
+      Every piece from Kalavritti carries the passion and heritage of skilled artisans from Bengal and Assam.
+    </p>
+    <div style="background:#f9f5f0;border-radius:10px;padding:14px 20px;margin:0 0 20px;font-size:13px;color:#374151">
+      <strong style="color:#7c2d12">Order ID:</strong> ${orderId}
+    </div>
+    <a href="https://kalavritti.in/account/orders/${orderId}" style="display:inline-block;background:#16a34a;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;margin-right:12px">Write a Review &rarr;</a>
+    <p style="font-size:13px;color:#6b7280;margin:20px 0 0">Not satisfied? <a href="https://kalavritti.in/account/returns" style="color:#d97706">Initiate a return within 7 days &rarr;</a></p>`);
+}
+
+function buildOrderCancelledHtml(customerName: string, orderId: string) {
+  return emailWrapper(`
+    <p style="font-size:17px;font-weight:700;color:#111827;margin:0 0 8px">Order Cancelled</p>
+    <p style="font-size:14px;color:#4b5563;line-height:1.7;margin:0 0 20px">
+      Namaste <strong>${customerName}</strong>, your order <strong>${orderId}</strong> has been cancelled.
+      If a payment was made, a refund will be processed within 5&ndash;7 business days to your original payment method.
+    </p>
+    <a href="https://kalavritti.in/shop" style="display:inline-block;background:#7c2d12;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Continue Shopping &rarr;</a>
+    <p style="font-size:12px;color:#9ca3af;margin:20px 0 0">Need help? Contact us at <a href="mailto:namaste@kalavritti.in" style="color:#d97706">namaste@kalavritti.in</a></p>`);
+}
+
+function buildSellerApprovedHtml(sellerName: string, businessName: string) {
+  return emailWrapper(`
+    <p style="font-size:17px;font-weight:700;color:#111827;margin:0 0 8px">Congratulations, ${sellerName}!</p>
+    <p style="font-size:14px;color:#4b5563;line-height:1.7;margin:0 0 20px">
+      We are thrilled to welcome <strong>${businessName || "your craft"}</strong> to the Kalavritti family!
+      Your seller application has been reviewed and approved. Your account is now active and ready to use.
+    </p>
+    <div style="background:#f0fdf4;border-radius:10px;padding:16px 20px;margin:0 0 20px;font-size:13px;color:#374151;line-height:1.9">
+      <strong style="color:#15803d;display:block;margin-bottom:8px">Your seller account is ready:</strong>
+      <div>&#10003; Login to your Seller Dashboard</div>
+      <div>&#10003; Add your first product listing</div>
+      <div>&#10003; Set your prices and manage inventory</div>
+      <div>&#10003; Track orders and earnings in real-time</div>
+    </div>
+    <a href="https://kalavritti.in/seller-portal" style="display:inline-block;background:#16a34a;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Go to Seller Dashboard &rarr;</a>
+    <div style="background:#fef9f0;border-left:4px solid #d97706;border-radius:0 8px 8px 0;padding:14px 16px;margin:20px 0 0;font-size:13px;color:#92400e">
+      As a new seller, your first 3 listings will be featured on our homepage for 7 days!
+    </div>`);
+}
+
+function buildSellerRejectedHtml(sellerName: string, reason: string) {
+  return emailWrapper(`
+    <p style="font-size:17px;font-weight:700;color:#111827;margin:0 0 8px">Update on Your Application</p>
+    <p style="font-size:14px;color:#4b5563;line-height:1.7;margin:0 0 20px">
+      Namaste <strong>${sellerName}</strong>, thank you for your interest in becoming a Kalavritti artisan partner.
+      After reviewing your application, we are unable to approve it at this time.
+    </p>
+    <div style="background:#fef2f2;border-radius:10px;padding:14px 20px;margin:0 0 20px;font-size:13px;color:#991b1b">
+      <strong>Reason:</strong> ${reason}
+    </div>
+    <p style="font-size:14px;color:#4b5563;line-height:1.7;margin:0 0 20px">
+      We encourage you to address the points mentioned above and re-apply after 30 days.
+      Our team is happy to guide you through the requirements.
+    </p>
+    <a href="mailto:namaste@kalavritti.in" style="display:inline-block;background:#7c2d12;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Contact Us for Help &rarr;</a>
+    <div style="background:#fefce8;border-left:4px solid #d97706;border-radius:0 8px 8px 0;padding:14px 16px;margin:20px 0 0;font-size:13px;color:#92400e">
+      <strong>Tip:</strong> Ensure your KYC documents are clear, all products are original handmade crafts, and your business information is accurate and complete.
+    </div>`);
+}
 
 export default router;
