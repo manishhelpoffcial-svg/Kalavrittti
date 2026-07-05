@@ -1,13 +1,31 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
 import { db } from "@workspace/db";
 import {
   siteSettingsTable, policiesTable, ordersTable, orderItemsTable,
   customersTable, promotionsTable, adminUsersTable, sellerApplications,
+  websiteImagesTable,
 } from "@workspace/db";
-import { eq, desc, count, sum, ilike, or, and } from "drizzle-orm";
+import { eq, desc, count, sum, ilike, or, and, asc } from "drizzle-orm";
 import { sendEmail } from "./notifications";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const adminUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter(_req, file, cb) {
+    if (file.mimetype.startsWith("image/")) cb(null, true);
+    else cb(new Error("Only image files are allowed"));
+  },
+});
 
 const router = Router();
 const JWT_SECRET = process.env.ADMIN_JWT_SECRET || "kalavritti-admin-jwt-secret-2025";
@@ -401,6 +419,79 @@ router.get("/admin/export/financials", verifyAdminToken, async (req, res) => {
     res.setHeader("Content-Disposition", `attachment; filename="kalavritti-financials-${new Date().toISOString().split("T")[0]}.csv"`);
     res.send(toCsv(headers, rows));
   } catch (e) { res.status(500).json({ error: "Failed to export financials" }); }
+});
+
+// ─── Website Images CRUD ──────────────────────────────────────────────────────
+router.get("/admin/website-images", verifyAdminToken, async (req, res) => {
+  try {
+    const rows = await db.select().from(websiteImagesTable).orderBy(asc(websiteImagesTable.sortOrder), asc(websiteImagesTable.id));
+    res.json(rows);
+  } catch { res.status(500).json({ error: "Failed to load website images" }); }
+});
+
+router.post("/admin/website-images", verifyAdminToken, async (req, res) => {
+  try {
+    const { key, label, section, url, description, altText, sortOrder } = req.body as Record<string, string>;
+    if (!key || !label || !url) { res.status(400).json({ error: "key, label, and url are required" }); return; }
+    const [row] = await db.insert(websiteImagesTable).values({
+      key: key.trim(),
+      label: label.trim(),
+      section: (section || "general").trim(),
+      url: url.trim(),
+      description: description?.trim() || null,
+      altText: altText?.trim() || null,
+      sortOrder: sortOrder ? parseInt(sortOrder) : 0,
+    }).returning();
+    res.json(row);
+  } catch (e: any) {
+    if (e?.code === "23505") { res.status(409).json({ error: "A website image with this key already exists" }); return; }
+    res.status(500).json({ error: "Failed to create website image" });
+  }
+});
+
+router.patch("/admin/website-images/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const { label, section, url, description, altText, sortOrder, isActive } = req.body as Record<string, any>;
+    const patch: Record<string, any> = { updatedAt: new Date() };
+    if (label !== undefined) patch.label = label;
+    if (section !== undefined) patch.section = section;
+    if (url !== undefined) patch.url = url;
+    if (description !== undefined) patch.description = description || null;
+    if (altText !== undefined) patch.altText = altText || null;
+    if (sortOrder !== undefined) patch.sortOrder = parseInt(sortOrder);
+    if (isActive !== undefined) patch.isActive = isActive;
+    const [row] = await db.update(websiteImagesTable).set(patch).where(eq(websiteImagesTable.id, id)).returning();
+    if (!row) { res.status(404).json({ error: "Not found" }); return; }
+    res.json(row);
+  } catch { res.status(500).json({ error: "Failed to update website image" }); }
+});
+
+router.delete("/admin/website-images/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    await db.delete(websiteImagesTable).where(eq(websiteImagesTable.id, id));
+    res.json({ success: true });
+  } catch { res.status(500).json({ error: "Failed to delete website image" }); }
+});
+
+router.post("/admin/website-images/upload", verifyAdminToken, adminUpload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) { res.status(400).json({ error: "No image file provided" }); return; }
+    const result = await new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "kalavritti/website", resource_type: "image", transformation: [{ quality: "auto", fetch_format: "auto" }] },
+        (error, result) => {
+          if (error || !result) reject(error ?? new Error("Upload failed"));
+          else resolve(result as { secure_url: string; public_id: string });
+        }
+      );
+      stream.end(req.file!.buffer);
+    });
+    res.json({ url: result.secure_url, publicId: result.public_id });
+  } catch (e: any) {
+    res.status(500).json({ error: e instanceof Error ? e.message : "Upload failed" });
+  }
 });
 
 // ─── Seller application approve/reject ────────────────────────────────────────

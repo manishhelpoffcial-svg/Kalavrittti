@@ -12,3 +12,4 @@ export * from "./orders";
 export * from "./customers";
 export * from "./promotions";
 export * from "./admin-users";
+export * from "./website-images";

@@ -22,6 +22,7 @@ import AdminUsers from "@/admin/pages/AdminUsers";
 import AdminSystem from "@/admin/pages/AdminSystem";
 import AdminNotifications from "@/admin/pages/AdminNotifications";
 import AdminPdfReports from "@/admin/pages/AdminPdfReports";
+import AdminWebsiteImages from "@/admin/pages/AdminWebsiteImages";
 
 function Wrap({ children }: { children: React.ReactNode }) {
   return <AdminLayout>{children}</AdminLayout>;
@@ -53,6 +54,7 @@ export function AdminApp() {
       <Route path="/admin/system"><Wrap><AdminSystem /></Wrap></Route>
       <Route path="/admin/notifications"><Wrap><AdminNotifications /></Wrap></Route>
       <Route path="/admin/pdf-reports"><Wrap><AdminPdfReports /></Wrap></Route>
+      <Route path="/admin/website-images"><Wrap><AdminWebsiteImages /></Wrap></Route>
     </Switch>
   );
 }

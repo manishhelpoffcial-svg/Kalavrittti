@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, UserCheck, Package, Tag, Palette,
   ShoppingCart, DollarSign, FileText, Megaphone, Mail, Star,
   Search, Shield, Settings, CreditCard, Bell, Send, Lock,
-  Server, LogOut, Flower2, ChevronLeft, ChevronRight, X, Menu, BarChart3,
+  Server, LogOut, Flower2, ChevronLeft, ChevronRight, X, Menu, BarChart3, Image,
 } from "lucide-react";
 import { useAdminAuth } from "@/admin/hooks/useAdminAuth";
 import { useCallback } from "react";
@@ -35,6 +35,7 @@ const NAV: NavGroup[] = [
     { label: "Reviews", href: `${BASE}/reviews`, icon: Star },
   ]},
   { title: "Configuration", items: [
+    { label: "Website Images", href: `${BASE}/website-images`, icon: Image },
     { label: "SEO Settings", href: `${BASE}/seo`, icon: Search },
     { label: "Policies", href: `${BASE}/policies`, icon: Shield },
     { label: "Website Settings", href: `${BASE}/settings`, icon: Settings },
