@@ -25,6 +25,7 @@ export const ordersTable = pgTable("orders", {
 export const orderItemsTable = pgTable("order_items", {
   id: serial("id").primaryKey(),
   orderId: integer("order_id").notNull(),
+  sellerId: integer("seller_id"),
   productId: integer("product_id"),
   productTitle: text("product_title").notNull(),
   productImage: text("product_image"),

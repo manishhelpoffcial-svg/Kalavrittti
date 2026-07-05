@@ -218,6 +218,14 @@ router.patch("/admin/sellers/:id/status", verifyAdminToken, async (req, res) => 
       return;
     }
     await db.update(sellerApplications).set({ status, updatedAt: new Date() }).where(eq(sellerApplications.id, id));
+
+    // Auto-create seller account on approval
+    if (status === "approved") {
+      const { createSellerAccount } = await import("./seller.js");
+      const result = await createSellerAccount(id);
+      if (!result.success) console.warn(`Seller account creation failed for id=${id}: ${result.error}`);
+    }
+
     res.json({ success: true, message: "Status updated" });
   } catch (err) {
     res.status(500).json({ error: "Failed to update status" });
