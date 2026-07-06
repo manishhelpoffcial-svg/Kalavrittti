@@ -7,3 +7,5 @@
 - [Email templates + MSG91](email-msg91.md) — 24 branded HTML email functions in notifications.ts; MSG91 fixed to use bodyParams string[] not Record; preview endpoint GET /api/notifications/email/preview/:template
 - [CSV export endpoints](csv-export.md) — GET /api/admin/export/orders|customers|sellers|financials; all auth-gated; frontend uses fetch+Blob download pattern with Bearer token
 - [DB priority](db-priority.md) — lib/db/src/index.ts prefers SUPABASE_DATABASE_URL over DATABASE_URL; both env vars exist in Replit secrets
+- [Supabase DDL migration](supabase-ddl-migration.md) — drizzle-kit push hangs (needs TTY); run DDL via node --input-type=module from lib/db, import pg from /home/runner/workspace/node_modules/.pnpm/pg@8.20.0/node_modules/pg/lib/index.js
+- [Seller panel architecture](seller-panel-arch.md) — JWT auth, SellerApp.tsx at src/seller/, /seller/* routes in App.tsx same pattern as /admin/*, admin seller-profiles endpoints added to admin-extended.ts

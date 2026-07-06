@@ -7,7 +7,7 @@ import { db } from "@workspace/db";
 import {
   siteSettingsTable, policiesTable, ordersTable, orderItemsTable,
   customersTable, promotionsTable, adminUsersTable, sellerApplications,
-  websiteImagesTable,
+  websiteImagesTable, sellerProfilesTable, sellerAnalyticsTable, sellerPayoutsTable,
 } from "@workspace/db";
 import { eq, desc, count, sum, ilike, or, and, asc } from "drizzle-orm";
 import { sendEmail } from "./notifications";
@@ -649,5 +649,126 @@ function buildSellerRejectedHtml(sellerName: string, reason: string) {
       <strong>Tip:</strong> Ensure your KYC documents are clear, all products are original handmade crafts, and your business information is accurate and complete.
     </div>`);
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADMIN: Seller Profiles (approved sellers with shop data + analytics)
+// ─────────────────────────────────────────────────────────────────────────────
+
+router.get("/admin/seller-profiles", verifyAdminToken, async (req, res) => {
+  try {
+    const { page = "1", limit = "20", search } = req.query as Record<string, string>;
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(100, parseInt(limit));
+    const offset = (pageNum - 1) * limitNum;
+
+    const conditions: any[] = [];
+    if (search) {
+      conditions.push(
+        or(
+          ilike(sellerProfilesTable.email, `%${search}%`),
+          ilike(sellerProfilesTable.shopName, `%${search}%`),
+        )
+      );
+    }
+    const where = conditions.length ? and(...conditions) : undefined;
+
+    const [profiles, [{ total }]] = await Promise.all([
+      db.select().from(sellerProfilesTable).where(where)
+        .orderBy(desc(sellerProfilesTable.createdAt)).limit(limitNum).offset(offset),
+      db.select({ total: count() }).from(sellerProfilesTable).where(where),
+    ]);
+
+    res.json({
+      profiles: profiles.map(p => ({
+        ...p,
+        totalRevenue: Number(p.totalRevenue),
+        commissionRate: Number(p.commissionRate),
+        passwordHash: undefined,
+        passwordResetToken: undefined,
+        setupToken: undefined,
+      })),
+      total: Number(total),
+      page: pageNum,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch seller profiles" });
+  }
+});
+
+router.patch("/admin/seller-profiles/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const allowed = ["isActive", "isVerified", "commissionRate", "shopName"];
+    const set: Record<string, unknown> = { updatedAt: new Date() };
+    for (const k of allowed) {
+      if (req.body[k] !== undefined) set[k] = req.body[k];
+    }
+    if (req.body.commissionRate !== undefined) set.commissionRate = String(req.body.commissionRate);
+    await db.update(sellerProfilesTable).set(set).where(eq(sellerProfilesTable.id, id));
+    res.json({ success: true });
+  } catch {
+    res.status(500).json({ error: "Failed to update seller profile" });
+  }
+});
+
+router.post("/admin/seller-profiles/:id/payout", verifyAdminToken, async (req, res) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const { periodStart, periodEnd, notes } = req.body as {
+      periodStart: string; periodEnd: string; notes?: string;
+    };
+    if (!periodStart || !periodEnd) {
+      res.status(400).json({ error: "periodStart and periodEnd required" });
+      return;
+    }
+
+    const [profile] = await db.select().from(sellerProfilesTable).where(eq(sellerProfilesTable.id, id));
+    if (!profile) { res.status(404).json({ error: "Seller profile not found" }); return; }
+
+    const commissionRate = Number(profile.commissionRate ?? 10);
+    const grossRevenue = Number(profile.totalRevenue ?? 0);
+    const commissionAmount = (grossRevenue * commissionRate) / 100;
+    const netPayout = grossRevenue - commissionAmount;
+    const payoutId = `PAY-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const [payout] = await db.insert(sellerPayoutsTable).values({
+      sellerId: id,
+      payoutId,
+      periodStart,
+      periodEnd,
+      grossRevenue: String(grossRevenue),
+      commissionAmount: String(commissionAmount),
+      platformFee: "0",
+      taxDeducted: "0",
+      netPayout: String(netPayout),
+      ordersCount: profile.totalOrders,
+      status: "pending",
+      notes: notes || null,
+    }).returning();
+
+    res.json({ success: true, payout });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create payout" });
+  }
+});
+
+router.get("/admin/seller-profiles/:id/payouts", verifyAdminToken, async (req, res) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const payouts = await db.select().from(sellerPayoutsTable)
+      .where(eq(sellerPayoutsTable.sellerId, id))
+      .orderBy(desc(sellerPayoutsTable.createdAt)).limit(50);
+    res.json({
+      payouts: payouts.map(p => ({
+        ...p,
+        netPayout: Number(p.netPayout),
+        grossRevenue: Number(p.grossRevenue),
+        commissionAmount: Number(p.commissionAmount),
+      }))
+    });
+  } catch {
+    res.status(500).json({ error: "Failed to fetch payouts" });
+  }
+});
 
 export default router;

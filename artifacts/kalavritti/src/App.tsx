@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Layout } from "@/components/layout/Layout";
 import { AuthProvider } from "@/hooks/use-auth";
 import { AdminApp } from "@/admin/AdminApp";
+import { SellerApp } from "@/seller/SellerApp";
 
 import Home from "@/pages/home";
 import Categories from "@/pages/categories";
@@ -61,6 +62,14 @@ function Router() {
       <Route path="/admin">
         <AdminApp />
       </Route>
+
+      {/* Seller panel routes — bypass main site Layout */}
+      <Route path="/seller/login"><SellerApp /></Route>
+      <Route path="/seller/setup"><SellerApp /></Route>
+      <Route path="/seller/forgot-password"><SellerApp /></Route>
+      <Route path="/seller/reset-password"><SellerApp /></Route>
+      <Route path="/seller/:rest*"><SellerApp /></Route>
+      <Route path="/seller"><SellerApp /></Route>
 
       {/* Main website routes */}
       <Route>
